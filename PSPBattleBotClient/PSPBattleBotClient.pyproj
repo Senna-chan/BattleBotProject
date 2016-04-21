@@ -22,7 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="danzeff\danzeff.py" />
-    <Compile Include="newkey.py" />
     <Compile Include="script.py" />
   </ItemGroup>
   <ItemGroup>

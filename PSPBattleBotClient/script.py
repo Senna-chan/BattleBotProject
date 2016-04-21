@@ -1,4 +1,4 @@
-import socket, sys, os
+import socket, sys, os, math
 from time import sleep
 import psp2d, pspnet, pspos
 execfile(".\\danzeff\\danzeff.py")
@@ -10,10 +10,11 @@ white = psp2d.Color(255,255,255);
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 val = "";
 ip = "";
+analogX = 0
+analogY = 0
 def keyBoard():
     global screen, bg, font, white, val
 
-    # ptDanzeff PyOSK: Initialise and load OSK graphics
     danzeff_load()						
     val = ''
     # ptDanzeff PyOSK: Returns whether OSK is initialised or not as a boolean
@@ -80,44 +81,65 @@ def connectToSocket():
 
     
 def controll():
-    global client_socket, ip
+    global client_socket, ip, analogX, analogY
+    cruisecontroll = False
+    oldpad = psp2d.Controller()
     while True:
         pad = psp2d.Controller()
-        if pad.circle:
+        if pad.start:
             break
-        analogX = pad.analogX
-        analogY = pad.analogY
-        
+        #if(pad.cross):
+            #client_socket.send("PEWPEW");
+        if(not pad.l and oldpad.l):
+            cruisecontroll = not cruisecontroll
+
+
+        analogX = int(round(pad.analogX / 1.27))
+        analogY = int(round(pad.analogY / 1.27)) * -1
+        if(analogX > 100):
+            analogX = 100
+        if(analogY > 100):
+            analogY = 100
+        if(analogX < -100):
+            analogX = -100
+        if(analogY < -100):
+            analogY = -100
         screen.clear(black)
         font.drawText(screen, 0, 0, "X sideways:"+str(analogX));
         font.drawText(screen, 0, 25, "Y up/down:"+str(analogY));
-        screen.swap()
-        #client_socket.close();
-        #client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #client_socket.connect((ip, 20010))
-        if(not pad.r):
-            client_socket.send("MC:"+str(analogY)+','+str(analogX)+','+str(analogX)+',500');
-            
-        else:
-            client_socket.send("SC:"+str(analogY)+','+str(analogX))
         
+        if(cruisecontroll):
+            font.drawText(screen, 0, 40, "Cruise");
+            #client_socket.send("SC:"+str(analogY)+','+str(analogX))
+        else:
+            if(not pad.square):
+                font.drawText(screen, 0, 40, "no cruise and driving")
+                #client_socket.send("MC:"+str(analogY)+','+str(analogX)+','+str(analogX)+',500');
+            else:
+                font.drawText(screen, 0, 40, "No cruise and servo")
+                #client_socket.send("SC:"+str(analogY)+','+str(analogX))
+                
+            
+        screen.swap()
+        oldpad = pad
         sleep(0.050)
         
     pspnet.disconnectAPCTL()
 
 def main():
     global val;
-    font.drawText(screen, 0, 2, 'What is the network number')
-    screen.swap()
-    keyBoard()
-    def cb(s):
-        #if s >= 0:
-        font.drawText(screen, 0, 50, 'State: %d/4' % s)
-        #else:
-        #    font.drawText(screen, 0, 70, 'Connected. IP: %s' % pspnet.getIP())
-        screen.swap()
-    
     if(pspnet.wlanSwitchState()):
+        font.drawText(screen, 0, 2, 'What is the network number')
+        screen.swap()
+        keyBoard()
+        def cb(s):
+            #if s >= 0:
+            font.drawText(screen, 0, 50, 'State: %d/4' % s)
+            #else:
+            #    font.drawText(screen, 0, 70, 'Connected. IP: %s' % pspnet.getIP())
+            screen.swap()
+    
+    
         if(pspnet.getAPCTLState() != 4):
             pspnet.connectToAPCTL(int(val), cb)
     else:
@@ -129,7 +151,8 @@ def main():
                 main();
         #
     
-    connectToSocket()
+    #connectToSocket()
+    controll()
 # end of main 
     
 if __name__ == '__main__':
