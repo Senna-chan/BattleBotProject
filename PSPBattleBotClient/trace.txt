@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "script.py", line 136, in <module>
+    main()
+  File "script.py", line 130, in main
+    connectToSocket()
+  File "script.py", line 77, in connectToSocket
+    controll()
+  File "script.py", line 97, in controll
+    client_socket.send("MC:"+str(analogY)+','+str(analogX)+','+str(analogX)+',500');
+error: (32, 'Broken pipe')
