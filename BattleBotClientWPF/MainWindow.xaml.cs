@@ -28,7 +28,7 @@ namespace BattleBotClientWPF
             CloseApp();
         }
 
-        public static void CloseAppS(bool normal = true)
+        public static void CloseAppS(bool normal = false)
         {
             if(normal)
                 VariableStorage._socketHelper.SendToServer("CLIENT:DISCONNECT");
@@ -37,7 +37,7 @@ namespace BattleBotClientWPF
             Thread.Sleep(1000);
             Process.GetCurrentProcess().Kill();
         }
-        public void CloseApp(bool normal = true)
+        public void CloseApp(bool normal = false)
         {
             if(normal)
                 VariableStorage._socketHelper.SendToServer("CLIENT:DISCONNECT");

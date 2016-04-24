@@ -58,7 +58,7 @@
         </DockPanel>
 
         <Grid Name="GridLeft" Margin="0,21,383,0" Background="Fuchsia" Height="720" Width="979">
-            <cefSharp:ChromiumWebBrowser Address="{Binding WebAddress}" WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}" Name="webBrowser" Margin="0,0,0,0"/>
+<!--            <cefSharp:ChromiumWebBrowser Address="{Binding WebAddress, Mode=TwoWay}" WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}" Name="webBrowser" Margin="0,0,0,0"/>-->
             <!-- This will contain the hud. -->
 
             <Image Source="Images/glass.png" Name="Image1" IsHitTestVisible="False" Visibility="{Binding isWebCrackVisible, Converter={StaticResource BooleanToVisibilityConverter} }" Margin="10,0,-10,0"/>

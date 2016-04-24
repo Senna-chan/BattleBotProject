@@ -2,6 +2,10 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
+using AdafruitPorts;
+using Raspberry.IO.Components.Controllers.Pca9685;
+using Raspberry.IO.GeneralPurpose;
+using Raspberry.IO.InterIntegratedCircuit;
 
 namespace BattleBotServer
 {
@@ -10,14 +14,14 @@ namespace BattleBotServer
         private static int mhfreq = 500;
         private static int OldServoSpeed;
 
-//        private static readonly I2cDriver driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
-//
-//        private static readonly Pca9685Connection sh = new Pca9685Connection(driver.Connect(0x40));
-//        public static Motor_Hat mh = new Motor_Hat(driver, 0x60, mhfreq);
-//        public static MotorHelper DC1Helper = new MotorHelper(mh.GetMotor(1)); 
-//        public static MotorHelper DC2Helper = new MotorHelper(mh.GetMotor(2)); // Right motor
-//        public static MotorHelper DC3Helper = new MotorHelper(mh.GetMotor(3)); // Left motor
-//        public static MotorHelper DC4Helper = new MotorHelper(mh.GetMotor(4)); 
+        private static readonly I2cDriver driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
+
+        private static readonly Pca9685Connection sh = new Pca9685Connection(driver.Connect(0x40));
+        public static Motor_Hat mh = new Motor_Hat(driver, 0x60, mhfreq);
+        public static MotorHelper DC1Helper = new MotorHelper(mh.GetMotor(1)); 
+        public static MotorHelper DC2Helper = new MotorHelper(mh.GetMotor(2));
+        public static MotorHelper DC3Helper = new MotorHelper(mh.GetMotor(3));
+        public static MotorHelper DC4Helper = new MotorHelper(mh.GetMotor(4)); 
 
         public static bool IsLinux
         {
@@ -104,7 +108,7 @@ namespace BattleBotServer
             if (mhfreq != freq)
             {
                 mhfreq = freq;
-                //mh._pwm.SetPwmUpdateRate(mhfreq);
+                mh._pwm.SetPwmUpdateRate(mhfreq);
             }
 
             int DC1motorSpeed = 0, DC2motorSpeed = 0;
@@ -141,12 +145,12 @@ namespace BattleBotServer
                 DC1motorSpeed += 255;
                 DC2motorSpeed += 255;
             }
-//            if (DC1motorSpeed < 0)  DC2Helper.Backward(DC1motorSpeed);
-//            if (DC1motorSpeed > 0)  DC2Helper.Forward(DC1motorSpeed);
-//            if (DC1motorSpeed == 0) DC2Helper.Stop();
-//            if (DC2motorSpeed < 0)  DC3Helper.Backward(DC2motorSpeed);
-//            if (DC2motorSpeed > 0)  DC3Helper.Forward(DC2motorSpeed);
-//            if (DC2motorSpeed == 0) DC3Helper.Stop();
+            if (DC1motorSpeed < 0)  DC2Helper.Backward(DC1motorSpeed);
+            if (DC1motorSpeed > 0)  DC2Helper.Forward(DC1motorSpeed);
+            if (DC1motorSpeed == 0) DC2Helper.Stop();
+            if (DC2motorSpeed < 0)  DC3Helper.Backward(DC2motorSpeed);
+            if (DC2motorSpeed > 0)  DC3Helper.Forward(DC2motorSpeed);
+            if (DC2motorSpeed == 0) DC3Helper.Stop();
             return new[] {0, DC1motorSpeed, DC2motorSpeed};
         }
 
@@ -155,9 +159,9 @@ namespace BattleBotServer
             if (mhfreq != freq)
             {
                 mhfreq = freq;
-               // mh._pwm.SetPwmUpdateRate(mhfreq);
+                mh._pwm.SetPwmUpdateRate(mhfreq);
             }
-           // sh.SetPwmUpdateRate(60);
+            sh.SetPwmUpdateRate(60);
             var DC1motorSpeed = 0;
             if (speed > 0)
             {
@@ -172,13 +176,13 @@ namespace BattleBotServer
 
             if (ServoSpeed != OldServoSpeed)
             {
-                //sh.SetPwm(0, 0, ServoSpeed);
+                sh.SetPwm(0, 0, ServoSpeed);
                 Console.WriteLine(ServoSpeed);
             }
             OldServoSpeed = ServoSpeed;
-//            if (DC1motorSpeed > 0) DC1Helper.Backward(DC1motorSpeed); // I screwed up the wiring
-//            if (DC1motorSpeed < 0) DC1Helper.Forward(DC1motorSpeed); // I screwed up the wiring
-//            if (DC1motorSpeed == 0) DC1Helper.Stop();
+            if (DC1motorSpeed > 0) DC2Helper.Backward(DC1motorSpeed);
+            if (DC1motorSpeed < 0) DC2Helper.Forward(DC1motorSpeed);
+            if (DC1motorSpeed == 0) DC2Helper.Stop();
             return new[] {0, DC1motorSpeed, ServoSpeed};
         }
 
@@ -189,12 +193,12 @@ namespace BattleBotServer
         /// <param name="PanTiltY">PanTilt Y Axis</param>
         public static void MovePanTilt(int PanTiltX, int PanTiltY) // Doing servo stuff is so darn easy
         {
-//            sh.SetPwmUpdateRate(60);
-//            var PanX = (int) Math.Floor(PanTiltX*1.50 + 365);
-//            var PanY = (int) Math.Floor(PanTiltY*1.50 + 365);
-//            sh.SetPwm(4, 0, PanX);
-//            sh.SetPwm(5, 0, PanY);
-//            Console.WriteLine($"PanX: {PanX}, PanY: {PanY}");
+            sh.SetPwmUpdateRate(60);
+            var PanX = (int) Math.Floor(PanTiltX*1.50 + 365);
+            var PanY = (int) Math.Floor(PanTiltY*1.50 + 365);
+            sh.SetPwm(4, 0, PanX);
+            sh.SetPwm(5, 0, PanY);
+            Console.WriteLine($"PanX: {PanX}, PanY: {PanY}");
         }
 
         public static void ShutDown()
@@ -203,13 +207,15 @@ namespace BattleBotServer
             Console.WriteLine("Switching Server To Client communication off");
             MainClass.ServerToClientObject.RequestStop();
             Console.WriteLine("Switching of Motor and Servo hat outputs");
-//            DC1Helper.Stop();
-//            DC2Helper.Stop();
-//            for (var i = 0; i < 12; i++)
-//            {
-//                mh._pwm.SetFull(i, false);
-//                sh.SetFull(i, false);
-//            }
+            DC1Helper.Stop();
+            DC2Helper.Stop();
+            DC3Helper.Stop();
+            DC4Helper.Stop();
+            for (var i = 0; i < 12; i++)
+            {
+                mh._pwm.SetFull(i, false);
+                sh.SetFull(i, false);
+            }
             Console.WriteLine("If no error then outputs have been disabled");
             Console.WriteLine("Bye bye");
             Environment.Exit(1);
