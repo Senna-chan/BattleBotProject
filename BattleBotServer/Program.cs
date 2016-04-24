@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using BattleBotServer.Firmata;
@@ -83,10 +84,11 @@ namespace BattleBotServer
                     formatted[i] = Buffer[i];
                 }
                 var strData = Encoding.ASCII.GetString(formatted);
-                Console.WriteLine(strData);
+//                Console.WriteLine(strData);
                 var typcom = strData.Split(':');
                 if (typcom.Length == 2 || typcom.Length == 3)
                 {
+                    Console.WriteLine("Normal command recieved");
                     var commandtype = typcom[0];
                     var command = typcom[1].ToLower();
                     string parameters = null;
@@ -113,7 +115,7 @@ namespace BattleBotServer
                             speed = int.Parse(temp[0]);
                             wheelPos1 = int.Parse(temp[1]);
                             wheelPos2 = int.Parse(temp[2]);
-                            freq = int.Parse(temp[3]);
+                            freq = int.Parse(temp[3].Substring(0,3));
                             MotorConfig = "Tank";
                         }
                         else if (temp.Length == 3)
@@ -290,11 +292,15 @@ namespace BattleBotServer
 
             public void CountTimeSinceLastCommand()
             {
-                Thread.Sleep(1);
-                timeSinceLastCommand++;
-                if (timeSinceLastCommand > 100)
+                while (!_shouldStop)
                 {
-                    Helpers.motorCalcsTank(0, 0, 0);
+                    Thread.Sleep(1);
+                    timeSinceLastCommand++;
+                    if (timeSinceLastCommand > 150)
+                    {
+                        Console.WriteLine("Didn't recieve a command for 0.100 seconds");
+                        Helpers.motorCalcsTank(0, 0, 0);
+                        timeSinceLastCommand = 0;}
                 }
             }
         }
