@@ -57,8 +57,9 @@ def keyBoard():
 
 def connectToSocket():
     global client_socket, val;
-    keyBoard()
-    ip = val
+    #keyBoard()
+    #ip = val
+    ip = "192.168.0.121"
     font.drawText(screen, 0, 0, val)
     screen.swap()
     try:
@@ -76,7 +77,11 @@ def connectToSocket():
                 connectToSocket()
             if pad.circle:
                 pass 
-                
+    test = 0
+    client_socket.sendall("client:psp", test)
+    font.drawText(screen, 0, 0, str(test))
+    screen.swap()
+    sleep(1)
     controll()
 
     
@@ -89,7 +94,7 @@ def controll():
         if pad.start:
             break
         #if(pad.cross):
-            #client_socket.send("PEWPEW");
+            #client_socket.sendall("PEWPEW");
         if(not pad.l and oldpad.l):
             cruisecontroll = not cruisecontroll
 
@@ -110,19 +115,17 @@ def controll():
         
         if(cruisecontroll):
             font.drawText(screen, 0, 40, "Cruise");
-            #client_socket.send("SC:"+str(analogY)+','+str(analogX))
+            client_socket.sendall("SC:"+str(analogY)+','+str(analogX))
         else:
             if(not pad.square):
                 font.drawText(screen, 0, 40, "no cruise and driving")
-                #client_socket.send("MC:"+str(analogY)+','+str(analogX)+','+str(analogX)+',500');
+                client_socket.sendall("MC:"+str(analogY)+','+str(analogX)+','+str(analogX)+',500');
             else:
                 font.drawText(screen, 0, 40, "No cruise and servo")
-                #client_socket.send("SC:"+str(analogY)+','+str(analogX))
-                
-            
+                client_socket.sendall("SC:"+str(analogY)+','+str(analogX))
         screen.swap()
         oldpad = pad
-        sleep(0.050)
+        sleep(0.100)
         
     pspnet.disconnectAPCTL()
 
@@ -131,7 +134,7 @@ def main():
     if(pspnet.wlanSwitchState()):
         font.drawText(screen, 0, 2, 'What is the network number')
         screen.swap()
-        keyBoard()
+        #keyBoard()
         def cb(s):
             #if s >= 0:
             font.drawText(screen, 0, 50, 'State: %d/4' % s)
@@ -141,7 +144,8 @@ def main():
     
     
         if(pspnet.getAPCTLState() != 4):
-            pspnet.connectToAPCTL(int(val), cb)
+            pspnet.connectToAPCTL(3, cb)
+            #pspnet.connectToAPCTL(int(val), cb)
     else:
         screen.clear(black);
         font.drawText(screen, 0, 0, "Please turn on WiFi")
@@ -151,8 +155,8 @@ def main():
                 main();
         #
     
-    #connectToSocket()
-    controll()
+    connectToSocket()
+    #controll()
 # end of main 
     
 if __name__ == '__main__':

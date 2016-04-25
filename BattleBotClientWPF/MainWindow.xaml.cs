@@ -7,7 +7,6 @@ using BattleBotClientWPF.Helpers;
 using BattleBotClientWPF.Properties;
 using BattleBotClientWPF.ViewModels;
 using BattleBotClientWPF.Views;
-using CefSharp;
 
 namespace BattleBotClientWPF
 {

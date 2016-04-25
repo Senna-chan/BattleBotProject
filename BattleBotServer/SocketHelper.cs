@@ -33,9 +33,16 @@ namespace BattleBotServer
         {
             Reconnect();
             var data = Encoding.ASCII.GetBytes(dataToSend);
-            socket.Send(data);
-            Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
-            socket.Close();
+            try
+            {
+                socket.Send(data);
+                Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
+                socket.Close();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Couldn't send the command.\nCheck if the client didn't crash");
+            }
             Thread.Sleep(50);
         }
 

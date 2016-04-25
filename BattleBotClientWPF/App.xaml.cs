@@ -35,7 +35,7 @@ namespace BattleBotClientWPF
             x = new MainWindow();
             
             var socketServerThread = new Thread(ClientToServerSocketHandler.StartSocketHandling);
-            socketServerThread.Start();
+            //socketServerThread.Start();
 
             setupSocketConnection();
             SetupFirstRun();
@@ -189,7 +189,7 @@ namespace BattleBotClientWPF
                 ? $"MC:{speed},{WheelPos},{WheelPos2},{freq}"
                 : $"MC:{speed},{WheelPos},{freq}");
 
-            Thread.Sleep(5);
+            Thread.Sleep(10);
             VariableStorage._socketHelper.SendToServer($"SC:{PanTiltX},{PanTiltY}");
         }
 

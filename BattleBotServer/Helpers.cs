@@ -145,12 +145,12 @@ namespace BattleBotServer
                 DC1motorSpeed += 255;
                 DC2motorSpeed += 255;
             }
-            if (DC1motorSpeed < 0)  DC2Helper.Backward(DC1motorSpeed);
-            if (DC1motorSpeed > 0)  DC2Helper.Forward(DC1motorSpeed);
-            if (DC1motorSpeed == 0) DC2Helper.Stop();
-            if (DC2motorSpeed < 0)  DC3Helper.Backward(DC2motorSpeed);
-            if (DC2motorSpeed > 0)  DC3Helper.Forward(DC2motorSpeed);
-            if (DC2motorSpeed == 0) DC3Helper.Stop();
+            if (DC1motorSpeed < 0)  DC3Helper.Backward(DC1motorSpeed);
+            if (DC1motorSpeed > 0)  DC3Helper.Forward(DC1motorSpeed);
+            if (DC1motorSpeed == 0) DC3Helper.Stop();
+            if (DC2motorSpeed < 0)  DC2Helper.Backward(DC2motorSpeed);
+            if (DC2motorSpeed > 0)  DC2Helper.Forward(DC2motorSpeed);
+            if (DC2motorSpeed == 0) DC2Helper.Stop();
             return new[] {0, DC1motorSpeed, DC2motorSpeed};
         }
 

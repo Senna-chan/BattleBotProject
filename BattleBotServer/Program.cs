@@ -54,26 +54,16 @@ namespace BattleBotServer
             var checkConnectionThread = new Thread(CheckConnectionToClientObject.CountTimeSinceLastCommand);
             //arduinoBridgeThread.Start();
             Console.WriteLine("Awaiting Data");
-            socket.Listen(100);
-            accepted = socket.Accept();
             while (true)
             {
-//                if (!Helpers.CheckWiFiUplink())
-//                {
-////                    Helpers.DC1Helper.Stop();
-////                    Helpers.DC2Helper.Stop();
-////                    Helpers.DC3Helper.Stop();
-////                    Helpers.DC4Helper.Stop();
-////                    continue;
-//                }
-
-                
+                socket.Listen(100);
+                accepted = socket.Accept();
 
                 if (clientIP == null)
                 {
                     var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
                     clientIP = clientIPEndPoint.Address;
-                    //serverToClientThread.Start();
+                    serverToClientThread.Start();
                     checkConnectionThread.Start();
                 }
                 Buffer = new byte[accepted.SendBufferSize];
@@ -89,6 +79,7 @@ namespace BattleBotServer
                 if (typcom.Length == 2 || typcom.Length == 3)
                 {
                     Console.WriteLine("Normal command recieved");
+                    Console.WriteLine($"Command: {strData}");
                     var commandtype = typcom[0];
                     var command = typcom[1].ToLower();
                     string parameters = null;
@@ -109,21 +100,28 @@ namespace BattleBotServer
                     }
                     if (commandtype == "MC") // We are dealing with motor commands. 
                     {
-                        var temp = command.Split(',');
-                        if (temp.Length == 4)
+                        if (typcom.Length <= 2)
                         {
-                            speed = int.Parse(temp[0]);
-                            wheelPos1 = int.Parse(temp[1]);
-                            wheelPos2 = int.Parse(temp[2]);
-                            freq = int.Parse(temp[3].Substring(0,3));
-                            MotorConfig = "Tank";
-                        }
-                        else if (temp.Length == 3)
-                        {
-                            speed = int.Parse(temp[0]);
-                            WheelPos = int.Parse(temp[1]);
-                            freq = int.Parse(temp[2]);
-                            MotorConfig = "Normal";
+                            var temp = command.Split(',');
+                            if (temp.Length == 4)
+                            {
+                                speed = int.Parse(temp[0]);
+                                wheelPos1 = int.Parse(temp[1]);
+                                wheelPos2 = int.Parse(temp[2]);
+                                freq = int.Parse(temp[3].Substring(0, 3));
+                                MotorConfig = "Tank";
+                            }
+                            else if (temp.Length == 3)
+                            {
+                                speed = int.Parse(temp[0]);
+                                WheelPos = int.Parse(temp[1]);
+                                freq = int.Parse(temp[2]);
+                                MotorConfig = "Normal";
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error, can't parse motor command \"" + command + "\"");
+                            }
                         }
                         else
                         {

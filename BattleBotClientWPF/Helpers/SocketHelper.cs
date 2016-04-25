@@ -44,28 +44,16 @@ namespace BattleBotClientWPF
             _ipendpoint = ip;
         }
         
-//        public void SendToServer(string dataToSend)
-//        {
-//            if (Reconnect())
-//            {
-//                byte[] data = Encoding.ASCII.GetBytes(dataToSend);
-//                _socket.Send(data);
-//                Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
-//                _socket.Close();
-//                Thread.Sleep(App.sleepTime);
-//            }
-//        }
-
         public void SendToServer(string dataToSend)
         {
-//            if (Reconnect())
-//            {
+            if (Reconnect())
+            {
                 byte[] data = Encoding.ASCII.GetBytes(dataToSend);
                 _socket.Send(data);
                 Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
-//                _socket.Close();
+                _socket.Close();
                 Thread.Sleep(App.sleepTime);
-//            }
+            }
         }
 
         public void Close()
