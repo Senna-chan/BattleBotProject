@@ -15,7 +15,6 @@ namespace BattleBotServer
         private static int OldServoSpeed;
 
         private static readonly I2cDriver driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
-
         private static readonly Pca9685Connection sh = new Pca9685Connection(driver.Connect(0x40));
         public static Motor_Hat mh = new Motor_Hat(driver, 0x60, mhfreq);
         public static MotorHelper DC1Helper = new MotorHelper(mh.GetMotor(1)); 
@@ -31,6 +30,7 @@ namespace BattleBotServer
                 return (p == 4) || (p == 6) || (p == 128);
             }
         }
+        
 
         public static bool isRaspberry()
         {
@@ -134,16 +134,6 @@ namespace BattleBotServer
                     DC1motorSpeed = Convert.ToInt32(Math.Floor(wheelPos2*2.55));
                     DC2motorSpeed = Convert.ToInt32(Math.Floor(wheelPos2*2.55*-1 + 1));
                 }
-            }
-            if (DC1motorSpeed > 255 || DC2motorSpeed > 255)
-            {
-                DC1motorSpeed -= 255;
-                DC2motorSpeed -= 255;
-            }
-            if (DC1motorSpeed < -255 || DC2motorSpeed < -255)
-            {
-                DC1motorSpeed += 255;
-                DC2motorSpeed += 255;
             }
             if (DC1motorSpeed < 0)  DC3Helper.Backward(DC1motorSpeed);
             if (DC1motorSpeed > 0)  DC3Helper.Forward(DC1motorSpeed);

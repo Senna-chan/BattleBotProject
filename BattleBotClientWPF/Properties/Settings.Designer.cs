@@ -190,5 +190,17 @@ namespace BattleBotClientWPF.Properties {
                 this["ControllerConfig"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public int Frequency {
+            get {
+                return ((int)(this["Frequency"]));
+            }
+            set {
+                this["Frequency"] = value;
+            }
+        }
     }
 }

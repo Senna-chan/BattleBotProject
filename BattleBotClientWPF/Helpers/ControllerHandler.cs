@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using OpenTK.Input;
 
 namespace BattleBotClientWPF.Helpers
@@ -22,13 +23,14 @@ namespace BattleBotClientWPF.Helpers
             _freq = freq;
             if (controllmode != 0 && controllmode <= 2) _controllMode = controllmode;
             else _controllMode = 1;
-            if (Joystick.GetState(0).IsConnected)
+            
+            JoystickState joyStick = Joystick.GetState(0);
+            if (joyStick.IsConnected)
             {
-                JoystickState joyStick = Joystick.GetState(0);
-                _xl = joyStick.GetAxisRaw(JoystickAxis.Axis0); // Left  stick sideways
-                _yl = joyStick.GetAxisRaw(JoystickAxis.Axis1) * -1; // Left  stick updown
-                _xr = joyStick.GetAxisRaw(JoystickAxis.Axis3) * -1; // Right stick sideways
-                _yr = joyStick.GetAxisRaw(JoystickAxis.Axis4); // Right stick updown
+                _xl = Convert.ToInt16(Math.Floor(joyStick.GetAxis(JoystickAxis.Axis0) * 100)); // Left  stick sideways
+                _yl = Convert.ToInt16(Math.Floor(joyStick.GetAxis(JoystickAxis.Axis1) * 100 * -1)); // Left  stick updown
+                _xr = Convert.ToInt16(Math.Floor(joyStick.GetAxis(JoystickAxis.Axis3) * 100 * -1)); // Right stick sideways
+                _yr = Convert.ToInt16(Math.Floor(joyStick.GetAxis(JoystickAxis.Axis4) * 100)); // Right stick updown
                 _cross = joyStick.GetButton(JoystickButton.Button0); // Cross
                 _circle = joyStick.GetButton(JoystickButton.Button1); // Circle
                 _triangle = joyStick.GetButton(JoystickButton.Button3); // Triangle
@@ -76,13 +78,11 @@ namespace BattleBotClientWPF.Helpers
                     if (_controllMode == 1)
                     {
                         // Backwards
-                        if (_yl > 500) _speed = _yl * ConversionFactor * 100;
-                        else if (_yl < 500 && _speed < 1) _speed += 5f;
+                        if (_yl > 5) _speed = _yl;
+                        else if (_yl < 5 && _speed < 1) _speed += 5;
                         // Forwards
-                        if (_yl < -500 && _yl != -32510)
-                            _speed = _yl * ConversionFactor * 100; // gives an value between 0 and 100
-                        else if (_yl == -32510 && _speed > 1) _speed = 100;
-                        else if (_yl > -500 && _speed > 1) _speed -= 5f;
+                        if (_yl < -5) _speed = _yl;
+                        else if (_yl > -5 && _speed > 1) _speed -= 5;
                         if (_speed >= -5 && _speed <= 5) _speed = 0; // Fix for absolute stop of engines
                     }
 
@@ -133,88 +133,46 @@ namespace BattleBotClientWPF.Helpers
 
                     #endregion
                     #region steering controll code
-                    #region Tank
-                    if (mode == "Tank")
+                    #region leftstick
+
+                    if (_controllMode == 1)
                     {
-                        
-
-                        #region leftstick
-
-                        if (_controllMode == 1)
+                        // Backwards
+                        if (_xl > 5) _wheelPos1 = _xl;
+                        else if (_xl < 5 && _wheelPos1 > 1) _wheelPos1 = 0;
+                        // Forwards
+                        if (_xl < -5) _wheelPos2 = _xl;
+                        else if (_xl > -5 && _wheelPos2 < -1) _wheelPos2 = 0;
+                        if (_xl == 0)
                         {
-                            // Backwards
-                            if (_xl > 500) _wheelPos1 = _xl * ConversionFactor * 100;
-                            else if (_xl < 500 && _wheelPos1 > 1) _wheelPos1 = 0;
-                            // Forwards
-                            if (_xl < -500 && _xl != 32510) _wheelPos2 = _xl * ConversionFactor * 100 * -1;
-                            else if (_xl == 32510 && _wheelPos2 > 1) _wheelPos2 = -100;
-                            else if (_xl > -500 && _wheelPos2 < -1) _wheelPos2 = 0;
-                            if (_xl == 0)
-                            {
-                                _wheelPos1 = 0;
-                                _wheelPos2 = 0;
-                            }
+                            _wheelPos1 = 0;
+                            _wheelPos2 = 0;
                         }
-
-                        #endregion
-
-                        #region cross+circle
-
-                        if (_controllMode == 2)
-                        {
-                            if (_hatSwitch.IsRight && _wheelPos1 < 50) _wheelPos1 += 10;
-                            else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos1 > 0) _wheelPos1 = 0;
-                            if (_hatSwitch.IsLeft && _wheelPos2 < 50) _wheelPos2 += 10;
-                            else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos2 > 0) _wheelPos2 = 0;
-                        }
-
-                        #endregion
-
-                        
                     }
+
                     #endregion
-                    #region Normal
-                    if (mode == "Normal")
+
+                    #region cross+circle
+
+                    if (_controllMode == 2)
                     {
-                        #region leftstick
-                        if (_controllMode == 1)
-                        {
-                            // Backwards
-                            if (_xl > 500) _wheelPos = _xl * ConversionFactor * 100;
-                            else if (_xl < 500 && _wheelPos > 1) _wheelPos = 0;
-                            // Forwards
-                            if (_xl < -500 && _xl != 32510) _wheelPos = _xl * ConversionFactor * 100;
-                            else if (_xl == 32510 && _wheelPos > 1) _wheelPos = -100;
-                            else if (_xl > -500 && _wheelPos < -1) _wheelPos = 0;
-                            if (_xl == 0)
-                            {
-                                _wheelPos = 0;
-                            }
-                        }
-                        #endregion
-                        #region cross+circle
-
-                        if (_controllMode == 2)
-                        {
-                            if (_hatSwitch.IsRight) _wheelPos = 50;
-                            else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos > 0) _wheelPos = 0;
-                            if (_hatSwitch.IsLeft) _wheelPos = -50;
-                            else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos < 0) _wheelPos = 0;
-                        }
-
-                        #endregion
+                        if (_hatSwitch.IsRight && _wheelPos1 < 50) _wheelPos1 += 10;
+                        else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos1 > 0) _wheelPos1 = 0;
+                        if (_hatSwitch.IsLeft && _wheelPos2 < 50) _wheelPos2 += 10;
+                        else if (_hatSwitch.Position == HatPosition.Centered && _wheelPos2 > 0) _wheelPos2 = 0;
                     }
+
                     #endregion
+                        
                     #endregion
 
                     #region pan_tilt
                     #region servoPosY
-                    if (_yr > 500) servoPosY = _yr * ConversionFactor * 100;
-                    else if (_yr < 500 && servoPosY > 1) servoPosY = 0;
+                    if (_yr > 5) servoPosY = _yr;
+                    else if (_yr < 5 && servoPosY > 1) servoPosY = 0;
                     // Forwards
-                    if (_yr < -500 && _yr != 32510) servoPosY = _yr * ConversionFactor * 100;
-                    else if (_yr == 32510 && servoPosY > 1) servoPosY = -100;
-                    else if (_yr > -500 && servoPosY < -1) servoPosY = 0;
+                    if (_yr < -5) servoPosY = _yr;
+                    else if (_yr > -5 && servoPosY < -1) servoPosY = 0;
                     if (_yr == 0)
                     {
                         servoPosY = 0;
@@ -306,12 +264,7 @@ namespace BattleBotClientWPF.Helpers
 
         public int GetWheelPos2()
         {
-            return Convert.ToInt32(Math.Floor(_wheelPos2));
-        }
-
-        public int GetWheelPos()
-        {
-            return Convert.ToInt32(Math.Floor(_wheelPos));
+            return Convert.ToInt32(Math.Floor(_wheelPos2)) * -1;
         }
 
         public int GetServoX()

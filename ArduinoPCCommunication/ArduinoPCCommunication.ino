@@ -27,6 +27,7 @@ Last updated by Jeff Hoefs: January 10th, 2016
 #include <Wire.h>
 #include <Servo.h>
 #include <Firmata.h>
+#include <Arduino.h>
 
 #define I2C_WRITE                   B00000000
 #define I2C_READ                    B00001000

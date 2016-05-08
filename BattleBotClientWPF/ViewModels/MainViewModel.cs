@@ -41,9 +41,21 @@ namespace BattleBotClientWPF.ViewModels
         private volatile string _Laser_Detector_2 = "0";
         private volatile string _MotorConfig = Settings.Default.MotorConfig;
         private volatile string _ControllerConfig = Settings.Default.ControllerConfig;
+        private volatile int _Frequency = Settings.Default.Frequency;
 
 
-
+        public int Frequency
+        {
+            get { return _Frequency; }
+            set
+            {
+                if (_Frequency != value)
+                {
+                    _Frequency = value;
+                    RaisePropertyChanged("Frequency");
+                }
+            }
+        }
 
 
         public IWpfWebBrowser WebBrowser

@@ -1,22 +1,17 @@
-TARGET = netdialog
-OBJS = main.o
+TARGET = BattleBotClient
+OBJS = main.o common/callback.o danzeff/danzeff.o common/graphics.o common/framebuffer.o
 
-# For OE firmware:
-PSP_FW_VERSION = 200
-BUILD_PRX = 1
-
-
+INCDIR = 
 CFLAGS = -O2 -G0 -Wall
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 
+BUILD_PRX = 1
+EXTRA_TARGETS = EBOOT.PBP
 
 LIBDIR =
-LDFLAGS =
-LIBS = -lpsputility -lpspgum -lpspgu -lm
-
-EXTRA_TARGETS = EBOOT.PBP
-PSP_EBOOT_TITLE = Net Dialog Sample
+LDFLAGS = 
+LIBS =  -lpsputility -lpsphttp -lpspssl -lpspgum -lpspgu -lpng -ljpeg -lz -lm
 
 PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak

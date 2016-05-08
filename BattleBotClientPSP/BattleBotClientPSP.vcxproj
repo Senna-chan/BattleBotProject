@@ -76,6 +76,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\callback.c" />
+    <ClCompile Include="common\framebuffer.c" />
+    <ClCompile Include="common\graphics.c" />
+    <ClCompile Include="danzeff\danzeff.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +86,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\callback.h" />
+    <ClInclude Include="common\framebuffer.h" />
+    <ClInclude Include="common\graphics.h" />
+    <ClInclude Include="danzeff\danzeff.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="danzeff\danzeff_readme.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

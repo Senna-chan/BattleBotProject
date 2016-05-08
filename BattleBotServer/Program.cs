@@ -54,16 +54,15 @@ namespace BattleBotServer
             var checkConnectionThread = new Thread(CheckConnectionToClientObject.CountTimeSinceLastCommand);
             //arduinoBridgeThread.Start();
             Console.WriteLine("Awaiting Data");
+            socket.Listen(100);
+            accepted = socket.Accept();
             while (true)
             {
-                socket.Listen(100);
-                accepted = socket.Accept();
-
                 if (clientIP == null)
                 {
                     var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
                     clientIP = clientIPEndPoint.Address;
-                    serverToClientThread.Start();
+                    //serverToClientThread.Start();
                     checkConnectionThread.Start();
                 }
                 Buffer = new byte[accepted.SendBufferSize];
@@ -74,7 +73,7 @@ namespace BattleBotServer
                     formatted[i] = Buffer[i];
                 }
                 var strData = Encoding.ASCII.GetString(formatted);
-//                Console.WriteLine(strData);
+                Console.WriteLine(strData);
                 var typcom = strData.Split(':');
                 if (typcom.Length == 2 || typcom.Length == 3)
                 {
@@ -91,47 +90,50 @@ namespace BattleBotServer
                     {
                         if (command == "disconnected")
                         {
+                            CheckConnectionToClientObject.RequestStop();
                             ServerToClientObject.RequestStop();
                         }
                         if (command == "connected")
                         {
-                            ServerToClientObject.RequestStart();
+                            CheckConnectionToClientObject.RequestStart();
+                            if (!parameters.Equals("psp"))
+                            {
+                                ServerToClientObject.RequestStart();
+                            }
                         }
                     }
-                    if (commandtype == "MC") // We are dealing with motor commands. 
+                    if (commandtype == "DC") // We are dealing with drive commands. 
                     {
-                        if (typcom.Length <= 2)
+                        if (typcom.Length == 3)
                         {
-                            var temp = command.Split(',');
-                            if (temp.Length == 4)
+                            var motorpart = command.Split(',');
+                            var servopart = parameters.Split(',');
+                            if (motorpart.Length == 4)
                             {
-                                speed = int.Parse(temp[0]);
-                                wheelPos1 = int.Parse(temp[1]);
-                                wheelPos2 = int.Parse(temp[2]);
-                                freq = int.Parse(temp[3].Substring(0, 3));
-                                MotorConfig = "Tank";
-                            }
-                            else if (temp.Length == 3)
-                            {
-                                speed = int.Parse(temp[0]);
-                                WheelPos = int.Parse(temp[1]);
-                                freq = int.Parse(temp[2]);
-                                MotorConfig = "Normal";
+                                speed = int.Parse(motorpart[0]);
+                                wheelPos1 = int.Parse(motorpart[1]);
+                                wheelPos2 = int.Parse(motorpart[2]);
+                                freq = int.Parse(motorpart[3]);   
                             }
                             else
                             {
                                 Console.WriteLine("Error, can't parse motor command \"" + command + "\"");
                             }
+                            if (servopart.Length == 2)
+                            {
+                                Thread.Sleep(2);
+                                Helpers.MovePanTilt(int.Parse(servopart[0]), int.Parse(servopart[1]));
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error, can't parse servo command \"" + parameters + "\"");
+                            }
+                            Helpers.motorCalcsTank(speed, wheelPos1, wheelPos2, freq);
                         }
                         else
                         {
-                            Console.WriteLine("Error, can't parse motor command \"" + command + "\"");
+                            Console.WriteLine("Error, can't parse drive command \"" + strData + "\"");
                         }
-                    }
-                    if (commandtype == "SC") // Servo Command
-                    {
-                        var temp = command.Split(',');
-                        Helpers.MovePanTilt(int.Parse(temp[0]), int.Parse(temp[1]));
                     }
                     if (commandtype == "L") // We are dealing with something we need to log server sided. 
                     {
@@ -246,14 +248,7 @@ namespace BattleBotServer
                 int[] motorSpeeds = {0, 0, 0};
                 if (timeSinceLastCommand < 80)
                 {
-                    if (MotorConfig == "Tank")
-                    {
-                        motorSpeeds = Helpers.motorCalcsTank(speed, wheelPos1, wheelPos2, freq);
-                    }
-                    else if (MotorConfig == "Normal")
-                    {
-                        motorSpeeds = Helpers.motorCalcsNormal(speed, WheelPos, freq);
-                    }
+                    
                     CheckConnectionToClientObject.timeSinceLastCommand = 0;
                 }
                 else
@@ -263,7 +258,6 @@ namespace BattleBotServer
                 }
                 LeftMotorSpeed = motorSpeeds[1];
                 RightMotorSpeed = motorSpeeds[2];
-                //Thread.Sleep(sleepTime);
             }
             socket.Close();
             accepted.Close();
@@ -294,9 +288,9 @@ namespace BattleBotServer
                 {
                     Thread.Sleep(1);
                     timeSinceLastCommand++;
-                    if (timeSinceLastCommand > 150)
+                    if (timeSinceLastCommand > 151)
                     {
-                        Console.WriteLine("Didn't recieve a command for 0.100 seconds");
+                        Console.WriteLine("Didn't recieve a command for 0.151 seconds");
                         Helpers.motorCalcsTank(0, 0, 0);
                         timeSinceLastCommand = 0;}
                 }

@@ -131,41 +131,19 @@ namespace BattleBotClientWPF
                 {
                     if (VariableStorage.ipaddress != null)
                     {
-                        if (controllerMode == 0) controllerMode = 1;
-                        if (VariableStorage.ViewModel.MotorConfig == "Tank")
-                        {
-                            Controller = new ControllerHandler(OldPSButtons, freq, "Tank", controllerMode);
-                            var speed = Controller.GetSpeed();
-                            var wheelpos1 = Controller.GetWheelPos1();
-                            var wheelpos2 = Controller.GetWheelPos2();
-                            freq = Controller.GetFrequency();
-                            if (freq == 0) freq = 500;
-                            OldPSButtons = Controller.GetPsButtons();
-                            vars = Controller.GetVars();
-
-                            SendControllerData(speed, wheelpos1, Controller.GetServoX(), Controller.GetServoY(), freq, wheelpos2);
-                            VariableStorage.ViewModel.Gear = vars[1].ToString();
-                            VariableStorage.ViewModel.Speed = speed.ToString();
-                            VariableStorage.ViewModel.WheelSpeedLeft = wheelpos1.ToString();
-                            VariableStorage.ViewModel.WheelSpeedRight = wheelpos2.ToString();
-                        }
-                        else
-                        {
-                            Controller = new ControllerHandler(OldPSButtons, freq, "Normal", controllerMode);
-                            var speed = Controller.GetSpeed();
-                            var wheelpos = Controller.GetWheelPos();
-                            freq = Controller.GetFrequency();
-                            OldPSButtons = Controller.GetPsButtons();
-                            vars = Controller.GetVars();
-                            if (freq == 0) freq = 500;
-                            
-                            SendControllerData(speed, wheelpos, Controller.GetServoX(), Controller.GetServoY(), freq);
-                            VariableStorage.ViewModel.Gear = vars[1].ToString();
-                            VariableStorage.ViewModel.Speed = speed.ToString();
-                            VariableStorage.ViewModel.WheelSpeedLeft = wheelpos.ToString();
-                            VariableStorage.ViewModel.WheelSpeedRight = wheelpos.ToString();
-                        }
-                        
+                        Controller = new ControllerHandler(OldPSButtons, freq, "Tank", controllerMode);
+                        var speed = Controller.GetSpeed();
+                        var wheelpos1 = Controller.GetWheelPos1();
+                        var wheelpos2 = Controller.GetWheelPos2();
+                        freq = VariableStorage.ViewModel.Frequency;
+                        if (freq == 0) freq = 500;
+                        OldPSButtons = Controller.GetPsButtons();
+                        vars = Controller.GetVars();
+                        SendControllerData(speed, wheelpos1, wheelpos2, Controller.GetServoX(), Controller.GetServoY(), freq);
+                        VariableStorage.ViewModel.Gear = vars[1].ToString();
+                        VariableStorage.ViewModel.Speed = speed.ToString();
+                        VariableStorage.ViewModel.WheelSpeedLeft = wheelpos1.ToString();
+                        VariableStorage.ViewModel.WheelSpeedRight = wheelpos2.ToString();
                         Thread.Sleep(20); // We do not set a changeble time here for a realistic feeling of things that the "motor" does not respond well
                     }
                 }
@@ -183,14 +161,9 @@ namespace BattleBotClientWPF
             private volatile bool _shouldStop;
         }
 
-        public static void SendControllerData(int speed, int WheelPos, int PanTiltX, int PanTiltY, int freq, int WheelPos2 = 1000)
+        public static void SendControllerData(int speed, int WheelPos1, int WheelPos2, int PanTiltX, int PanTiltY, int freq)
         {
-            VariableStorage._socketHelper.SendToServer(WheelPos2 != 1000
-                ? $"MC:{speed},{WheelPos},{WheelPos2},{freq}"
-                : $"MC:{speed},{WheelPos},{freq}");
-
-            Thread.Sleep(10);
-            VariableStorage._socketHelper.SendToServer($"SC:{PanTiltX},{PanTiltY}");
+            VariableStorage._socketHelper.SendToServer($"DC:{speed},{WheelPos1},{WheelPos2},{freq}:{PanTiltX},{PanTiltY}");
         }
 
         public void ExitProgram()
@@ -234,6 +207,7 @@ namespace BattleBotClientWPF
             settings.ArmorColor = "#FF11144D";
             settings.MotorConfig = "Tank";
             settings.ControllerConfig = "XboxInput";
+            settings.Frequency = 500;
             settings.Save();
         }
     }

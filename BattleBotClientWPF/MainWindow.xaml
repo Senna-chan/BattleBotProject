@@ -6,7 +6,7 @@
         xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:viewModels1="clr-namespace:BattleBotClientWPF.ViewModels"
         mc:Ignorable="d"
-        Title="Battle Bot Client" Height="755" Width="1360" Top="0" Left="0" Closing="MainWindow_Closing" KeyUp="Window_KeyUp">
+        Title="Battle Bot Client" Height="742.333" Width="1360" Top="0" Left="0" Closing="MainWindow_Closing" KeyUp="Window_KeyUp">
     <Window.DataContext>
         <viewModels1:MainViewModel/>
     </Window.DataContext>
@@ -62,17 +62,17 @@
             <!-- This will contain the hud. -->
 
             <Image Source="Images/glass.png" Name="Image1" IsHitTestVisible="False" Visibility="{Binding isWebCrackVisible, Converter={StaticResource BooleanToVisibilityConverter} }" Margin="10,0,-10,0"/>
-
+            
             <Grid Name="HealthWrapperGrid" Margin="8,640,600,8" Visibility="{Binding isHealthVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
                 <Rectangle Fill="{Binding HealthColor}" Margin="20,14,23,33" />
-                <Image Source="Images/healthbar.png" Margin="0,-8,0,8" />
-                <TextBlock Margin="76,37,256,3">Health</TextBlock>
+                <Image Source="Images/healthbar.png" Margin="0,-20,0,20" />
+                <TextBlock Margin="76,27,256,13">Health</TextBlock>
             </Grid>
 
             <Grid Name="ArmorWrapperGrid" Margin="600,640,8,8" Visibility="{Binding isArmorVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
                 <Rectangle Fill="{Binding ArmorColor}" Margin="76,14,23,35"/>
-                <Image Source="Images/armorbar.png" Margin="0,-9,0,9"/>
-                <TextBlock Margin="273,37,62,3">Armor</TextBlock>
+                <Image Source="Images/armorbar.png" Margin="0,-20,0,20"/>
+                <TextBlock Margin="273,27,62,13">Armor</TextBlock>
             </Grid>
             <Grid Name="AmmoGrid" Margin="377,647,380,14" Visibility="{Binding isAmmoVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
                 <TextBlock Text="{Binding ClipSize}" Margin="54,7,144,-7" HorizontalAlignment="Center" FontSize="20" FlowDirection="RightToLeft"/>
@@ -108,7 +108,8 @@
                         <TextBlock Margin="10,170,0,0" FontWeight="Bold">Config</TextBlock>
 
                         <TextBlock Margin="10,190,0,0">Motor Config</TextBlock>
-
+                        <TextBlock Margin="10,210,0,0">Frequency</TextBlock>
+                        <TextBlock Margin="190,210,0,0" Text="{Binding Frequency}"/>
                         <TextBlock Margin="190,190,0,0" Name="MotorConfig" Text="{Binding MotorConfig}" />
                     </Grid>
                 </TabItem>
@@ -160,10 +161,11 @@
                 </TabItem>
             </TabControl>
             <Grid Background="Blue" Margin="0,334,0,0">
-                <Grid HorizontalAlignment="Center" Name="TankEngineView">
-                    <Slider x:Name="SliderLeftSpeed" HorizontalAlignment="Left" Margin="52,10,0,0" VerticalAlignment="Top" Width="38" Minimum="-255" Maximum="255" Orientation="Vertical" TickPlacement="BottomRight" Value="{Binding WheelSpeedSliderLeft}" Height="353"  TickFrequency="12.5" />
-                    <Slider x:Name="SliderRightSpeed" HorizontalAlignment="Left" Margin="31,10,0,0" VerticalAlignment="Top" Width="38" Minimum="-255" Maximum="255" Orientation="Vertical" TickPlacement="TopLeft" Value="{Binding WheelSpeedSliderRight}" Height="353" TickFrequency="12.5" />
+                <Grid HorizontalAlignment="Center" Name="TankEngineView" Margin="215,0,70,0">
+                    <Slider x:Name="SliderLeftSpeed" HorizontalAlignment="Left" Margin="52,10,0,0" VerticalAlignment="Top" Width="38" Minimum="-255" Maximum="255" Orientation="Vertical" TickPlacement="BottomRight" Value="{Binding WheelSpeedSliderLeft}" Height="348"  TickFrequency="12.5" />
+                    <Slider x:Name="SliderRightSpeed" HorizontalAlignment="Left" Margin="31,10,0,0" VerticalAlignment="Top" Width="38" Minimum="-255" Maximum="255" Orientation="Vertical" TickPlacement="TopLeft" Value="{Binding WheelSpeedSliderRight}" Height="348" TickFrequency="12.5" />
                 </Grid>
+                <Slider x:Name="slider" HorizontalAlignment="Left" Margin="93,10,0,0" VerticalAlignment="Top" Width="28" Orientation="Vertical" Height="348" Minimum="50" Maximum="2000" TickFrequency="100" TickPlacement="TopLeft" LargeChange="50" SmallChange="25" Value="{Binding Frequency}"/>
             </Grid>
 
         </Grid>
