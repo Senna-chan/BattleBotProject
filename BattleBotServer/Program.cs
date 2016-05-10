@@ -30,7 +30,7 @@ namespace BattleBotServer
         public static volatile int LeftMotorSpeed, RightMotorSpeed;
 
         public static string MotorConfig = "Tank";
-        public static SocketServerToClient ServerToClientObject;
+        public static SocketHelper socketHelper;
         public static CheckConnectionToClient CheckConnectionToClientObject;
         public static DamageModels Damage = new DamageModels();
         public static Random random = new Random();
@@ -39,30 +39,36 @@ namespace BattleBotServer
         private static byte[] Buffer { get; set; }
         public static ArduinoBridge ArduinoBridge;
         private static int timeSinceLastCommand;
+        private static int servoX, servoY;
         public static void Main(string[] args)
-        {
+        { 
             //Helpers.MotorTest();
             Console.CancelKeyPress += Console_CancelKeyPress;
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(new IPEndPoint(0, BattleBotServerPort));
             logWriter = LogWriter.Instance;
-            ServerToClientObject = new SocketServerToClient();
             CheckConnectionToClientObject = new CheckConnectionToClient();
             ArduinoBridge = new ArduinoBridge();
-            var arduinoBridgeThread = new Thread(ArduinoBridge.PrintAnalog);
-            var serverToClientThread = new Thread(ServerToClientObject.StartCom);
+//            var arduinoBridgeThread = new Thread(ArduinoBridge.PrintAnalog);
             var checkConnectionThread = new Thread(CheckConnectionToClientObject.CountTimeSinceLastCommand);
             //arduinoBridgeThread.Start();
+            if (args.Length != 0)
+            {
+                if (args[0] == "TestMotors")
+                {
+                    Helpers.TestMotors();
+                } 
+            }
             Console.WriteLine("Awaiting Data");
-            socket.Listen(100);
-            accepted = socket.Accept();
             while (true)
             {
+                socket.Listen(100);
+                accepted = socket.Accept();
                 if (clientIP == null)
                 {
                     var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
                     clientIP = clientIPEndPoint.Address;
-                    //serverToClientThread.Start();
+                    //socketHelper = new SocketHelper(clientIPEndPoint);
                     checkConnectionThread.Start();
                 }
                 Buffer = new byte[accepted.SendBufferSize];
@@ -91,15 +97,10 @@ namespace BattleBotServer
                         if (command == "disconnected")
                         {
                             CheckConnectionToClientObject.RequestStop();
-                            ServerToClientObject.RequestStop();
                         }
                         if (command == "connected")
                         {
                             CheckConnectionToClientObject.RequestStart();
-                            if (!parameters.Equals("psp"))
-                            {
-                                ServerToClientObject.RequestStart();
-                            }
                         }
                     }
                     if (commandtype == "DC") // We are dealing with drive commands. 
@@ -108,12 +109,11 @@ namespace BattleBotServer
                         {
                             var motorpart = command.Split(',');
                             var servopart = parameters.Split(',');
-                            if (motorpart.Length == 4)
+                            if (motorpart.Length == 3)
                             {
                                 speed = int.Parse(motorpart[0]);
                                 wheelPos1 = int.Parse(motorpart[1]);
                                 wheelPos2 = int.Parse(motorpart[2]);
-                                freq = int.Parse(motorpart[3]);   
                             }
                             else
                             {
@@ -121,14 +121,14 @@ namespace BattleBotServer
                             }
                             if (servopart.Length == 2)
                             {
-                                Thread.Sleep(2);
-                                Helpers.MovePanTilt(int.Parse(servopart[0]), int.Parse(servopart[1]));
+                                servoX = int.Parse(servopart[0]);
+                                servoY = int.Parse(servopart[1]);
                             }
                             else
                             {
                                 Console.WriteLine("Error, can't parse servo command \"" + parameters + "\"");
                             }
-                            Helpers.motorCalcsTank(speed, wheelPos1, wheelPos2, freq);
+                            Helpers.motorCalcsTank(speed, wheelPos1, wheelPos2, servoX, servoY);
                         }
                         else
                         {
@@ -246,18 +246,12 @@ namespace BattleBotServer
                 }
 
                 int[] motorSpeeds = {0, 0, 0};
-                if (timeSinceLastCommand < 80)
-                {
-                    
-                    CheckConnectionToClientObject.timeSinceLastCommand = 0;
-                }
-                else
-                {
-                    Console.WriteLine("No command recieved");
-                    motorSpeeds = Helpers.motorCalcsTank(0, 0, 0);
-                }
-                LeftMotorSpeed = motorSpeeds[1];
-                RightMotorSpeed = motorSpeeds[2];
+                CheckConnectionToClientObject.timeSinceLastCommand = 0;
+//                LeftMotorSpeed = motorSpeeds[1];
+//                RightMotorSpeed = motorSpeeds[2];
+//                var temperature = Helpers.GetPiTemp();
+//                var load = Helpers.GetPiLoad();
+//                socketHelper.SendToServer($"SYS:{temperature}|37%|{load}|{LeftMotorSpeed}|{RightMotorSpeed}");
             }
             socket.Close();
             accepted.Close();
@@ -291,41 +285,10 @@ namespace BattleBotServer
                     if (timeSinceLastCommand > 151)
                     {
                         Console.WriteLine("Didn't recieve a command for 0.151 seconds");
-                        Helpers.motorCalcsTank(0, 0, 0);
-                        timeSinceLastCommand = 0;}
-                }
-            }
-        }
-
-        public class SocketServerToClient
-        {
-            // Volatile is used as hint to the compiler that this data
-            // member will be accessed by multiple threads.
-            private volatile bool _shouldStop;
-
-            public void StartCom()
-            {
-                var socketHelper = new SocketHelper(clientIP);
-                while (true)
-                {
-                    while (!_shouldStop)
-                    {
-                        var temp = Helpers.GetPiTemp();
-                        var load = Helpers.GetPiLoad();
-                        socketHelper.SendToServer($"SYS:{temp}|37%|{load}|{LeftMotorSpeed}|{RightMotorSpeed}");
-                        Thread.Sleep(sleepTime);
+                        Helpers.motorCalcsTank(0, 0, 0,0,0);
+                        timeSinceLastCommand = 0;
                     }
                 }
-            }
-
-            public void RequestStop()
-            {
-                _shouldStop = true;
-            }
-
-            public void RequestStart()
-            {
-                _shouldStop = false;
             }
         }
     }

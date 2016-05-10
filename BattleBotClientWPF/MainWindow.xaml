@@ -64,17 +64,17 @@
             <Image Source="Images/glass.png" Name="Image1" IsHitTestVisible="False" Visibility="{Binding isWebCrackVisible, Converter={StaticResource BooleanToVisibilityConverter} }" Margin="10,0,-10,0"/>
             
             <Grid Name="HealthWrapperGrid" Margin="8,640,600,8" Visibility="{Binding isHealthVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
-                <Rectangle Fill="{Binding HealthColor}" Margin="20,14,23,33" />
+                <Rectangle Fill="{Binding HealthColor}" Margin="20,04,23,45" />
                 <Image Source="Images/healthbar.png" Margin="0,-20,0,20" />
                 <TextBlock Margin="76,27,256,13">Health</TextBlock>
             </Grid>
 
             <Grid Name="ArmorWrapperGrid" Margin="600,640,8,8" Visibility="{Binding isArmorVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
-                <Rectangle Fill="{Binding ArmorColor}" Margin="76,14,23,35"/>
+                <Rectangle Fill="{Binding ArmorColor}" Margin="73,4,24,45"/>
                 <Image Source="Images/armorbar.png" Margin="0,-20,0,20"/>
                 <TextBlock Margin="273,27,62,13">Armor</TextBlock>
             </Grid>
-            <Grid Name="AmmoGrid" Margin="377,647,380,14" Visibility="{Binding isAmmoVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
+            <Grid Name="AmmoGrid" Margin="377,636,380,25" Visibility="{Binding isAmmoVisible, Converter={StaticResource BooleanToVisibilityConverter} }">
                 <TextBlock Text="{Binding ClipSize}" Margin="54,7,144,-7" HorizontalAlignment="Center" FontSize="20" FlowDirection="RightToLeft"/>
                 <TextBlock Text="{Binding AmmoSize}" Margin="106,7,23,-7" FontSize="20"/>
             </Grid>

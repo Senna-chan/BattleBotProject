@@ -135,11 +135,9 @@ namespace BattleBotClientWPF
                         var speed = Controller.GetSpeed();
                         var wheelpos1 = Controller.GetWheelPos1();
                         var wheelpos2 = Controller.GetWheelPos2();
-                        freq = VariableStorage.ViewModel.Frequency;
-                        if (freq == 0) freq = 500;
                         OldPSButtons = Controller.GetPsButtons();
                         vars = Controller.GetVars();
-                        SendControllerData(speed, wheelpos1, wheelpos2, Controller.GetServoX(), Controller.GetServoY(), freq);
+                        SendControllerData(speed, wheelpos1, wheelpos2, Controller.GetServoX(), Controller.GetServoY());
                         VariableStorage.ViewModel.Gear = vars[1].ToString();
                         VariableStorage.ViewModel.Speed = speed.ToString();
                         VariableStorage.ViewModel.WheelSpeedLeft = wheelpos1.ToString();
@@ -161,9 +159,9 @@ namespace BattleBotClientWPF
             private volatile bool _shouldStop;
         }
 
-        public static void SendControllerData(int speed, int WheelPos1, int WheelPos2, int PanTiltX, int PanTiltY, int freq)
+        public static void SendControllerData(int speed, int WheelPos1, int WheelPos2, int PanTiltX, int PanTiltY)
         {
-            VariableStorage._socketHelper.SendToServer($"DC:{speed},{WheelPos1},{WheelPos2},{freq}:{PanTiltX},{PanTiltY}");
+            VariableStorage._socketHelper.SendToServer($"DC:{speed},{WheelPos1},{WheelPos2}:{PanTiltX},{PanTiltY}");
         }
 
         public void ExitProgram()

@@ -169,8 +169,8 @@ namespace BattleBotClientWPF.Helpers
                     #region pan_tilt
                     #region servoPosY
                     if (_yr > 5) servoPosY = _yr;
+
                     else if (_yr < 5 && servoPosY > 1) servoPosY = 0;
-                    // Forwards
                     if (_yr < -5) servoPosY = _yr;
                     else if (_yr > -5 && servoPosY < -1) servoPosY = 0;
                     if (_yr == 0)
@@ -179,13 +179,11 @@ namespace BattleBotClientWPF.Helpers
                     }
                     #endregion
                     #region servoPosX
-                    // Backwards
-                    if (_xr > 500) servoPosX = _xr * ConversionFactor * 100;
-                    else if (_xr < 500 && servoPosX > 1) servoPosX = 0;
-                    // Forwards
-                    if (_xr < -500 && _xr != 32510) servoPosX = _xr * ConversionFactor * 100;
-                    else if (_xr == 32510 && servoPosX > 1) servoPosX = -100;
-                    else if (_xr > -500 && servoPosX < -1) servoPosX = 0;
+                    if (_xr > 5) servoPosX = _xr;
+                    else if (_xr < 5 && servoPosX > 1) servoPosX = 0;
+                    
+                    if (_xr < -5) servoPosX = _xr;
+                    else if (_xr > -5 && servoPosX < -1) servoPosX = 0;
                     if (_xr == 0)
                     {
                         servoPosX = 0;

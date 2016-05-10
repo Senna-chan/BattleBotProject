@@ -56,10 +56,20 @@ namespace BattleBotClientWPF
             }
         }
 
-        public void Close()
-        {
-            _socket.Close();
-        }
+//        public void SendToServer(string dataToSend)
+//        {
+//            byte[] data = Encoding.ASCII.GetBytes(dataToSend);
+//            try
+//            {
+//                _socket.Send(data);
+//                Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
+//            }
+//            catch
+//            {
+//                Console.WriteLine("Error sending data to the server");
+//            }
+//            Thread.Sleep(App.sleepTime);
+//        }
 
         public bool Reconnect()
         {

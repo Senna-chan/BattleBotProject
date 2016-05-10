@@ -27,6 +27,7 @@ namespace SimpleSocketServer
                 {
                     var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
                     clientIP = clientIPEndPoint.Address;
+                    
                 }
                 Buffer = new byte[accepted.SendBufferSize];
                 var bytesRead = accepted.Receive(Buffer);
@@ -37,10 +38,15 @@ namespace SimpleSocketServer
                 }
                 var strData = Encoding.ASCII.GetString(formatted);
                 Console.WriteLine(strData);
+                Console.WriteLine(map(Convert.ToInt64(strData), -100, 100, 104, 521));
                 if (strData == "exit") break;
             }
             socket.Close();
             accepted.Close();
+        }
+        public static long map(long x, long in_min, long in_max, long out_min, long out_max)
+        {
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
     }
 }

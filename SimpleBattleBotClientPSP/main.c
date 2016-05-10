@@ -394,7 +394,7 @@ int main(int argc, char *argv[])
 			printf("\nSend failed");
 			sceDisplayWaitVblankStart();
 		}
-		delay(10);
+		delay(30);
 		//sceNetInetClose(socket_desc);
 		sceDisplayWaitVblankStart();
 		sceGuSwapBuffers();
