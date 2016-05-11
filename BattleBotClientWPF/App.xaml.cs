@@ -75,7 +75,7 @@ namespace BattleBotClientWPF
             public static ControllerHandler Controller;
             public static Dictionary<string, ButtonState> OldPSButtons;
             public static int freq;
-            public static byte[] vars = { 0, 0, 0 };
+            public static object[] vars = { 0, 0, 0 };
             public static byte controllerMode;
 
             public void StartArduinoSerialControllerHandling()
@@ -137,8 +137,8 @@ namespace BattleBotClientWPF
                         var wheelpos2 = Controller.GetWheelPos2();
                         OldPSButtons = Controller.GetPsButtons();
                         vars = Controller.GetVars();
+                        if(Convert.ToBoolean(vars[0]))  VariableStorage._socketHelper.SendToServer("c:resetmh");
                         SendControllerData(speed, wheelpos1, wheelpos2, Controller.GetServoX(), Controller.GetServoY());
-                        VariableStorage.ViewModel.Gear = vars[1].ToString();
                         VariableStorage.ViewModel.Speed = speed.ToString();
                         VariableStorage.ViewModel.WheelSpeedLeft = wheelpos1.ToString();
                         VariableStorage.ViewModel.WheelSpeedRight = wheelpos2.ToString();

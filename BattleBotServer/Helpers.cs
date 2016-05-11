@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
 using AdafruitPorts;
+using AdafruitPorts.MotorHat;
 using Raspberry.IO.Components.Controllers.Pca9685;
 using Raspberry.IO.GeneralPurpose;
 using Raspberry.IO.InterIntegratedCircuit;
@@ -12,7 +13,7 @@ namespace BattleBotServer
 {
     public class Helpers
     {
-        private static readonly I2cDriver driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
+        private static I2cDriver driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
         public static Motor_Hat mh = new Motor_Hat(driver, 0x60, 50);
         public static MotorHelper DC1Helper = new MotorHelper(mh.GetMotor(1)); 
         public static MotorHelper DC2Helper = new MotorHelper(mh.GetMotor(2));
@@ -173,7 +174,6 @@ namespace BattleBotServer
             var PanY = GetServoValue(PanTiltY);
             mh._pwm.SetPwm(15, 0, PanX);
             mh._pwm.SetPwm(14, 0, PanY);
-            Console.WriteLine($"PanX: {PanX}, PanY: {PanY}");
         }
 
         public static void ShutDown()
@@ -192,6 +192,23 @@ namespace BattleBotServer
             Console.WriteLine("If no error then outputs have been disabled");
             Console.WriteLine("Bye bye");
             Environment.Exit(1);
+        }
+
+        public static void ResetMotorHat()
+        {
+            DC1Helper = null;
+            DC2Helper = null;
+            DC3Helper = null;
+            DC4Helper = null;
+            mh = null;
+            driver = null;
+            driver = new I2cDriver(ConnectorPin.P1Pin3.ToProcessor(), ConnectorPin.P1Pin5.ToProcessor());
+            mh = new Motor_Hat(driver, 0x60, 50);
+            DC1Helper = new MotorHelper(mh.GetMotor(1));
+            DC2Helper = new MotorHelper(mh.GetMotor(2));
+            DC3Helper = new MotorHelper(mh.GetMotor(3));
+            DC4Helper = new MotorHelper(mh.GetMotor(4));
+            Console.WriteLine("Resetted Motor Hat");
         }
     }
 }

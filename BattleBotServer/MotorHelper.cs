@@ -1,4 +1,4 @@
-﻿using AdafruitPorts;
+﻿using AdafruitPorts.MotorHat;
 
 namespace BattleBotServer
 {

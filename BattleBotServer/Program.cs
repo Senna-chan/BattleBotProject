@@ -158,6 +158,10 @@ namespace BattleBotServer
                         {
                             Console.WriteLine("REEEEEEEEEEBOOT");
                         }
+                        if (command == "resetmh")
+                        {
+                            Helpers.ResetMotorHat();
+                        }
                         if (command == "exit")
                         {
                             break;

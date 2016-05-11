@@ -17,6 +17,7 @@ namespace BattleBotClientWPF.Helpers
         Dictionary<string, ButtonState> _psButtons = null;
         float _wheelPos1, _wheelPos2, servoPosX, servoPosY;
         int _freq;
+        private bool _resetmh = false;
 
         public ControllerHandler(Dictionary<string, ButtonState> oldPsButtons, int freq, string mode, byte controllmode = 0)
         {
@@ -202,48 +203,15 @@ namespace BattleBotClientWPF.Helpers
                     oldPsButtons.TryGetValue("r1", out r1Old);
                     oldPsButtons.TryGetValue("l1", out l3Old);
 
+                    
 
-                    if (_square == ButtonState.Released && squareOld == ButtonState.Pressed) _freq += 50;       // Freqency tuning in case its needed
-                    if (_triangle == ButtonState.Released && triangleOld == ButtonState.Pressed) _freq -= 50;   // Freqency tuning in case its needed
-
-                    if (_l1 == ButtonState.Released && l1Old == ButtonState.Pressed)
+                    if (_start == ButtonState.Released && startOld == ButtonState.Pressed)
                     {
-                        if (_gear != 1) _gear--;
-                    }
-                    if (_r1 == ButtonState.Released && r1Old == ButtonState.Pressed)
-                    {
-                        if (_gear != 3) _gear++;
-                    }
-
-                    if (_l3 == ButtonState.Released && l3Old == ButtonState.Pressed) // Softreset of the speed and wheelpos in case of a glitch in the controls
-                    {
+                        _resetmh = true;
                         _speed = 0;
-                        _wheelPos = 0;
+                        _wheelPos1 = 0;
+                        _wheelPos2 = 0;
                     }
-
-                    if (_selectB == ButtonState.Released && selectOld == ButtonState.Pressed)
-                    {
-                        if (_controllMode < 2) _controllMode += 1;
-                        else _controllMode = 1;
-
-                        _speed = 0;
-                        _wheelPos = 0;
-                    }
-
-                    //                    switch (gear)
-                    //                    {
-                    //                        case 1:
-                    //                            if (speed < 50 && speed > -50) speed = 0;
-                    //                            break;
-                    //                        case 2:
-                    //                            if (speed < 35 && speed > -35) speed = 0;
-                    //                            break;
-                    //                        case 3:
-                    //                            if (speed < 20 && speed > -20) speed = 0;
-                    //                            break;
-                    //                        default:
-                    //                            break;
-                    //                    }
 
                     #endregion
                 }
@@ -280,9 +248,9 @@ namespace BattleBotClientWPF.Helpers
             return _freq;
         }
 
-        public byte[] GetVars()
+        public object[] GetVars()
         {
-            return new[] { _controllMode, _gear, _speedgear };
+            return new object[] { _resetmh  };
         }
 
         public Dictionary<string, ButtonState> GetPsButtons()
