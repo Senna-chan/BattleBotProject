@@ -266,7 +266,8 @@ namespace BattleBotClientWPF.ViewModels
 
         public string WebAddress
         {
-            get { return "http://" + _webAddress + "/rcam/"; }
+            get { return "http://" + _webAddress; }
+            //get { return "http://" + _webAddress + "/rcam/"; }
             set
             {
                 if (_webAddress != value)

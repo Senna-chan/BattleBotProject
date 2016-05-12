@@ -6,8 +6,7 @@
     <ProjectGuid>6066e422-1d2e-40a2-86f1-29535109d327</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>BattleBotServerPython.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\PiPython\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>BattleBotServerPython</Name>
@@ -22,7 +21,20 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Adafruit_MotorHAT\Adafruit_I2C.py" />
+    <Compile Include="Adafruit_MotorHAT\Adafruit_MotorHAT.py" />
+    <Compile Include="Adafruit_MotorHAT\Adafruit_PWM_Servo_Driver.py" />
+    <Compile Include="Adafruit_MotorHAT\__init__.py" />
     <Compile Include="BattleBotServerPython.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Adafruit_MotorHAT\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Adafruit_MotorHAT\Adafruit_I2C.pyc" />
+    <Content Include="Adafruit_MotorHAT\Adafruit_MotorHAT.pyc" />
+    <Content Include="Adafruit_MotorHAT\Adafruit_PWM_Servo_Driver.pyc" />
+    <Content Include="Adafruit_MotorHAT\__init__.pyc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
