@@ -210,7 +210,7 @@ class Adafruit_DCMotor:
 			speed = 0
 		if (speed > 255):
 			speed = 255
-		self.MC._pwm.b(self.PWMpin, 0, speed*16)
+		self.MC._pwm.setPWM(self.PWMpin, 0, speed*16)
 
 class Adafruit_MotorHAT:
 	FORWARD = 1

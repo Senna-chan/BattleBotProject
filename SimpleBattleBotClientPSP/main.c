@@ -35,9 +35,18 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <netinet/in.h>
+#include <psputility.h>
+#include <psputility_netmodules.h>
+#include <psputility_htmlviewer.h>
+#include <pspnet.h>
+#include <pspnet_inet.h>
+#include <pspnet_apctl.h>
+#include <pspnet_resolver.h>
+#include <psphttp.h>
+#include <pspssl.h>
 
 
-PSP_MODULE_INFO("Net Dialog Sample", 0, 1, 1);
+PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
 
 #define printf pspDebugScreenPrintf
 
@@ -135,6 +144,56 @@ static void drawStuff(void)
 	val++;
 }
 
+#define BROWSER_MEMORY (10*1024*1024) 
+
+SceUID vpl;
+pspUtilityHtmlViewerParam params;
+
+void htmlViewerInit(char *url)
+{
+	int res;
+
+	vpl = sceKernelCreateVpl("BrowserVpl", PSP_MEMORY_PARTITION_USER, 0, BROWSER_MEMORY + 256, NULL);
+
+	if (vpl < 0)
+		throwError(6000, "Error 0x%08X creating vpl.\n", vpl);
+
+	memset(&params, 0, sizeof(pspUtilityHtmlViewerParam));
+
+	params.base.size = sizeof(pspUtilityHtmlViewerParam);
+
+	sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_LANGUAGE, &params.base.language);
+	sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_UNKNOWN, &params.base.buttonSwap);
+
+	params.base.graphicsThread = 17;
+	params.base.accessThread = 19;
+	params.base.fontThread = 18;
+	params.base.soundThread = 16;
+	params.memsize = BROWSER_MEMORY;
+	params.initialurl = url;
+	params.numtabs = 1;
+	params.cookiemode = PSP_UTILITY_HTMLVIEWER_COOKIEMODE_DEFAULT;
+	params.homeurl = url;
+	params.textsize = PSP_UTILITY_HTMLVIEWER_TEXTSIZE_NORMAL;
+	params.displaymode = PSP_UTILITY_HTMLVIEWER_DISPLAYMODE_FIT;
+	params.options = PSP_UTILITY_HTMLVIEWER_DISABLE_STARTUP_LIMITS;
+	params.interfacemode = PSP_UTILITY_HTMLVIEWER_INTERFACEMODE_NONE;
+	params.connectmode = PSP_UTILITY_HTMLVIEWER_CONNECTMODE_MANUAL_ALL;
+
+	// Note the lack of 'ms0:' on the paths	
+	params.dldirname = "/PSP/PHOTO";
+
+	res = sceKernelAllocateVpl(vpl, params.memsize, &params.memaddr, NULL);
+
+	if (res < 0)
+		throwError(6000, "Error 0x%08X allocating browser memory.\n", res);
+
+	res = sceUtilityHtmlViewerInitStart(&params);
+
+	if (res < 0)
+		throwError(6000, "Error 0x%08X initing browser.\n", res);
+}
+
 int netDialog()
 {
 	int done = 0;
@@ -192,31 +251,145 @@ int netDialog()
 	return 1;
 }
 
+void loadNetModules()
+{
+	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
+	sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
+	sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEURI);
+	sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEHTTP);
+	sceUtilityLoadNetModule(PSP_NET_MODULE_HTTP);
+	sceUtilityLoadNetModule(PSP_NET_MODULE_SSL);
+}
+
+void unloadNetModules()
+{
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_SSL);
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_HTTP);
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEHTTP);
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEURI);
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_INET);
+	sceUtilityUnloadNetModule(PSP_NET_MODULE_COMMON);
+}
+
+void netTerm()
+{
+	sceHttpSaveSystemCookie();
+	sceHttpsEnd();
+	sceHttpEnd();
+	sceSslEnd();
+	sceNetApctlTerm();
+	sceNetInetTerm();
+	sceNetTerm();
+
+	unloadNetModules();
+}
+
 void delay(int milliseconds) {
 	sceKernelDelayThread(1000 * milliseconds);
 }
 
-void netInit(void)
+void netInit()
 {
-	sceNetInit(128 * 1024, 42, 4 * 1024, 42, 4 * 1024);
+	int res;
 
-	sceNetInetInit();
+	loadNetModules();
 
-	sceNetApctlInit(0x8000, 48);
+	res = sceNetInit(0x20000, 0x2A, 0, 0x2A, 0);
+
+	if (res < 0)
+	{
+		throwError(6000, "Error 0x%08X in sceNetInit\n", res);
+	}
+
+	res = sceNetInetInit();
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceNetInetInit\n", res);
+	}
+
+	res = sceNetResolverInit();
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceNetResolverInit\n", res);
+	}
+
+	res = sceNetApctlInit(0x1800, 0x30);
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceNetApctlInit\n", res);
+	}
+
+	res = sceSslInit(0x28000);
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceSslInit\n", res);
+	}
+
+	res = sceHttpInit(0x25800);
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceHttpInit\n", res);
+	}
+
+	res = sceHttpsInit(0, 0, 0, 0);
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceHttpsInit\n", res);
+	}
+
+	res = sceHttpsLoadDefaultCert(0, 0);
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceHttpsLoadDefaultCert\n", res);
+	}
+
+	res = sceHttpLoadSystemCookie();
+
+	if (res < 0)
+	{
+		netTerm();
+		throwError(6000, "Error 0x%08X in sceHttpsLoadDefaultCert\n", res);
+	}
 }
 
-void netTerm(void)
-{
-	sceNetApctlTerm();
-
-	sceNetInetTerm();
-
-	sceNetTerm();
+void delay(int milliseconds) {
+	sceKernelDelayThread(1000 * milliseconds);
 }
+
+//void netInit(void)
+//{
+//	sceNetInit(128 * 1024, 42, 4 * 1024, 42, 4 * 1024);
+//
+//	sceNetInetInit();
+//
+//	sceNetApctlInit(0x8000, 48);
+//}
+
+//void netTerm(void)
+//{
+//	sceNetApctlTerm();
+//
+//	sceNetInetTerm();
+//
+//	sceNetTerm();
+//}
 
 int main(int argc, char *argv[])
 {
-	
+	char url[] = "http://192.168.43.251/rcam/index_simple.php";
 	SetupCallbacks();
 
 	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
@@ -229,6 +402,7 @@ int main(int argc, char *argv[])
 	setupGu();
 
 	netDialog();
+	htmlViewerInit(url);
 	pspDebugScreenInit();
 	pspDebugScreenSetXY(0, 0);
 	printf("init");
@@ -267,7 +441,7 @@ int main(int argc, char *argv[])
 		sceDisplayWaitVblankStart();
 	}
 	//Send some data
-	message = "client:connected:psp";
+	message = "client:psp:connected";
 	if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 	{
 		printf("Send failed\n");
@@ -282,9 +456,9 @@ int main(int argc, char *argv[])
 	int speed = 0;
 	int wheelpos1 = 0;
 	int wheelpos2 = 0;
-	int freq = 50;
 	int servoY = 0;
 	int servoX = 0;
+	int ButtonTriangle = 0;
 	SceCtrlData buttonInput;
 
 	sceCtrlSetSamplingCycle(0);
@@ -340,8 +514,35 @@ int main(int argc, char *argv[])
 			if (buttonInput.Buttons & PSP_CTRL_CROSS)		printf("Cross");
 			if (buttonInput.Buttons & PSP_CTRL_CIRCLE)		printf("Circle");
 			if (buttonInput.Buttons & PSP_CTRL_SQUARE)		printf("Square");
-			if (buttonInput.Buttons & PSP_CTRL_TRIANGLE)	printf("Triangle");
+			if (buttonInput.Buttons & PSP_CTRL_TRIANGLE) {
+				if(!ButtonTriangle){
+					ButtonTriangle = 1;
+					printf("Triangle");
 
+					message = "client:psp:disconnected";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+					sceNetInetClose(socket_desc);
+					printf("Socket closed");
+					delay(500);
+					if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
+					{
+						printf("Error connecting to socket\n");
+						printf("errno=$%x\n", sceNetInetGetErrno());
+						printf("Exiting client");
+						delay(1000);
+						running = 0;
+						break;
+					}
+					else {
+						printf("Connected\n");
+						sceDisplayWaitVblankStart();
+					}
+					message = "client:psp:connected";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+				}
+			}
+			else ButtonTriangle = 0;
+			
 			if (buttonInput.Buttons & PSP_CTRL_RTRIGGER)
 			{
 				rPressed = 1;
@@ -350,6 +551,9 @@ int main(int argc, char *argv[])
 			{
 				cruiseControll = 1;
 			}
+		}
+		else {
+			ButtonTriangle = 0;
 		}
 
 		if (cruiseControll)
@@ -385,7 +589,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		char dcmessage[30];
-		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, freq, servoX, servoY);
+		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
 		printf(dcmessage);
 		//socket_desc = sceNetInetSocket(1, 2, 0);
 		//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));

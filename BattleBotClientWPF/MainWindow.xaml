@@ -24,12 +24,7 @@
                     <MenuItem Header="Controller">
                         <MenuItem Header="XboxInput" Click="ChangeControllerConfig"></MenuItem>
                         <MenuItem Header="ArduinoSerial" Click="ChangeControllerConfig"></MenuItem>
-                        <MenuItem Header="ArduinoWiFi" Click="ChangeControllerConfig"></MenuItem>
                         <MenuItem Header="DIY Shitty kringloop controller" Click="ChangeControllerConfig"></MenuItem>
-                    </MenuItem>
-                    <MenuItem Header="_MotorConfig">
-                        <MenuItem Header="Tank" Click="ChangeMotorConfig"/>
-                        <MenuItem Header="Normal" Click="ChangeMotorConfig" />
                     </MenuItem>
                     <MenuItem Header="_Background"/>
                     <MenuItem Header="_Health">
@@ -52,6 +47,8 @@
                 </MenuItem>
                 <MenuItem Header="_Pi Controll">
                     <MenuItem Header="Battery Config"></MenuItem>
+                    <MenuItem Header="Reconnect to socket" Click="ReconnectToSocket" />
+                    <MenuItem Header="Close the server" Click="CloseBattleBotServer"/>
                 </MenuItem>
             </Menu>
             <StackPanel></StackPanel>

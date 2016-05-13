@@ -39,6 +39,11 @@ namespace BattleBotClientWPF
 
             setupSocketConnection();
             SetupFirstRun();
+
+            Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            Current.MainWindow = x;
+            VariableStorage.ViewModel.WebAddress = VariableStorage.ipaddress;
+            x.Show();
             Console.Beep();
 
             var controller = Settings.Default.ControllerConfig;
@@ -170,7 +175,7 @@ namespace BattleBotClientWPF
             Shutdown();
         }
 
-        public static void setupSocketConnection()
+        public static bool setupSocketConnection()
         {
             var dialog = new TextDialog("Enter IP Address", "Enter IP", Settings.Default.IPAddress);
             dialog.ShowDialog();
@@ -181,19 +186,15 @@ namespace BattleBotClientWPF
                 IPAddress.TryParse(hostName, out IP);
                 VariableStorage._socketHelper = new SocketHelper(IP);
                 VariableStorage.ipaddress = Settings.Default.IPAddress;
-                VariableStorage._socketHelper.SendToServer("CLIENT:CONNECTED");
-                var Mainwindow = new MainWindow();;
-                Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
-                Current.MainWindow = Mainwindow;
-                VariableStorage.ViewModel.WebAddress = VariableStorage.ipaddress;
-                Mainwindow.Show();
-                
+                VariableStorage._socketHelper.SendToServer("client:pc:connected");
+                return true;
             }
             else
             {
                 MessageBox.Show("Closing Program");
                 BattleBotClientWPF.MainWindow.CloseAppS(false);
             }
+            return false;
         }
 
         private static void SetupFirstRun()

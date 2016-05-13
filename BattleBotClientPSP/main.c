@@ -5,7 +5,7 @@
 #include <pspgu.h>
 #include <psputility.h>
 #include <psputility_netmodules.h>
-//#include <psputility_htmlviewer.h>
+#include <psputility_htmlviewer.h>
 #include <pspnet.h>
 #include <pspnet_inet.h>
 #include <pspnet_apctl.h>
@@ -59,6 +59,7 @@ void throwError(int milisecs, char *fmt, ...)
 static char list[0x10000] __attribute__((aligned(64)));
 
 int running = 0;
+int htmlInited = 0;
 
 void setupGu(void)
 {
@@ -131,6 +132,10 @@ void netTerm()
 	sceNetTerm();
 
 	unloadNetModules();
+}
+
+void delay(int milliseconds) {
+	sceKernelDelayThread(1000 * milliseconds);
 }
 
 void netInit()
@@ -209,6 +214,23 @@ void netInit()
 		throwError(6000, "Error 0x%08X in sceHttpsLoadDefaultCert\n", res);
 	}
 }
+
+static void drawStuff(void)
+{
+	static int val = 0;
+
+	sceGuStart(GU_DIRECT, list);
+
+	sceGuClearColor(0xff554433);
+	sceGuClearDepth(0);
+	sceGuClear(GU_COLOR_BUFFER_BIT | GU_DEPTH_BUFFER_BIT);
+
+
+	sceGuFinish();
+	sceGuSync(0, 0);
+
+	val++;
+} 
 
 #define BROWSER_MEMORY (10*1024*1024) 
 
@@ -291,61 +313,34 @@ int updateHtmlViewer()
 int main(int argc, char *argv[])
 {
 	setupExitCallback();
-	/*initGraphics();
-	danzeff_load();
-	pspDebugScreenInit();
-	
-	if(!danzeff_isinitialized())
-	{
-		while (1)
-		{
-			pspDebugScreenSetXY(0, 0);
-			printf("HIIIII!");
-		}
-		sceKernelExitGame();
-		return 0;
-	}
-
-	danzeff_moveTo(220, 100);
-	char val[]= "";
-	SceCtrlData buttonInput;*/
-
-	
-//	while(1)
-//	{
-//		sceCtrlPeekBufferPositive(&buttonInput, 1);
-//		danzeff_render();
-//		int cha = danzeff_readInput(buttonInput);
-//		if (cha != 0 && cha != 1 && cha != 2) {
-//			strcpy(val, (char)cha);
-//		}
-//		printf(val);
-//		danzeff_dirty();
-//	}
-
-
-
 	char url[] = "http://192.168.43.251/rcam/index_simple.php";
 	setupGu();
 	netInit();
 	htmlViewerInit(url);
 	pspDebugScreenInit();
-
+	pspDebugScreenSetXY(0, 0);
+	printf("init");
+	sceKernelDelayThread(1000);
+	printf("AfterKernelDelay");
 	int socket_desc;
 	struct sockaddr_in server;
 	char *message;
-
-	socket_desc = sceNetInetSocket(PF_INET, SOCK_STREAM, 0);
+	pspDebugScreenSetXY(0, 0);
+	socket_desc = sceNetInetSocket(2, 1, 0);
 	if (socket_desc == -1)
 	{
 		printf("Could not create socket\n");
 		printf("socket returned $%x\n", socket_desc);
 		printf("errno=$%x\n", sceNetInetGetErrno());
 		sceDisplayWaitVblankStart();
+		delay(500);
 	}
-
-	server.sin_addr.s_addr = inet_addr("192.168.043.251");
-	server.sin_family = AF_INET;
+	else {
+		printf("Socket Made\n");
+		sceDisplayWaitVblankStart();
+	}
+	server.sin_addr.s_addr = inet_addr("192.168.43.251");
+	server.sin_family = 2;
 	server.sin_port = htons(20010);
 
 	//Connect to remote server
@@ -354,49 +349,57 @@ int main(int argc, char *argv[])
 		printf("Error connecting to socket\n");
 		printf("errno=$%x\n", sceNetInetGetErrno());
 		sceDisplayWaitVblankStart();
+		delay(500);
 	}
-
-	printf("Connected\n");
-	sceDisplayWaitVblankStart();
-	//Send some data
-	message = "client:connected:psp";
-	if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-	{
-		printf("Send failed");
+	else {
+		printf("Connected\n");
 		sceDisplayWaitVblankStart();
 	}
-	printf("Data Send\n");
-	sceDisplayWaitVblankStart();
-
-	int running = isRunning();
+	//Send some data
+	message = "client:psp:connected";
+	if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+	{
+		printf("Send failed\n");
+		sceDisplayWaitVblankStart();
+		delay(500);
+	}
+	else {
+		printf("Data Send\n");
+		sceDisplayWaitVblankStart();
+	}
+	//sceNetInetClose(socket_desc);
+	delay(1000);
 	int speed = 0;
-	int wheelpos = 0;
 	int wheelpos1 = 0;
 	int wheelpos2 = 0;
-	int freq = 50;
 	int servoY = 0;
 	int servoX = 0;
+	int ButtonTriangle = 0;
 	SceCtrlData buttonInput;
 
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-	sceKernelDelayThread(1000000);
-
 	while (updateHtmlViewer() && running)
 	{
-		running = isRunning();
 		int cruiseControll = 0;
 		int rPressed = 0;
+		pspDebugScreenClear();
 		pspDebugScreenSetXY(0, 0);
 		int aX = buttonInput.Lx - 127;
 		int aY = (buttonInput.Ly - 127) * -1 + 1;
 		if (aX > 27)		aX -= 28;
 		else if (aX < -27)	aX += 27;
-		else				aX = 0;
+		else {
+			aX = 0;
+			wheelpos1 = 0;
+			wheelpos2 = 0;
+		}
 
 		if (aY > 27)		aY -= 28;
 		else if (aY < -27) 	aY += 27;
-		else				aY = 0;
+		else {
+			aY = 0;
+		}
 
 		printf("Analog X = %d ", aX);
 		printf("Analog Y = %d \n", aY);
@@ -407,6 +410,15 @@ int main(int argc, char *argv[])
 		{
 			if (buttonInput.Buttons & PSP_CTRL_START) {
 				printf("Start");
+				message = "client:disconnected:psp";
+				//socket_desc = sceNetInetSocket(1, 2, 0);
+				//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
+				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+				{
+					printf("\nSend failed");
+					sceDisplayWaitVblankStart();
+				}
+				sceNetInetClose(socket_desc);
 				running = 0;
 			}
 			if (buttonInput.Buttons & PSP_CTRL_SELECT)		printf("Select");
@@ -418,7 +430,34 @@ int main(int argc, char *argv[])
 			if (buttonInput.Buttons & PSP_CTRL_CROSS)		printf("Cross");
 			if (buttonInput.Buttons & PSP_CTRL_CIRCLE)		printf("Circle");
 			if (buttonInput.Buttons & PSP_CTRL_SQUARE)		printf("Square");
-			if (buttonInput.Buttons & PSP_CTRL_TRIANGLE)	printf("Triangle");
+			if (buttonInput.Buttons & PSP_CTRL_TRIANGLE) {
+				if (!ButtonTriangle) {
+					ButtonTriangle = 1;
+					printf("Triangle");
+
+					message = "client:psp:disconnected";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+					sceNetInetClose(socket_desc);
+					printf("Socket closed");
+					delay(500);
+					if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
+					{
+						printf("Error connecting to socket\n");
+						printf("errno=$%x\n", sceNetInetGetErrno());
+						printf("Exiting client");
+						delay(1000);
+						running = 0;
+						break;
+					}
+					else {
+						printf("Connected\n");
+						sceDisplayWaitVblankStart();
+					}
+					message = "client:psp:connected";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+				}
+			}
+			else ButtonTriangle = 0;
 
 			if (buttonInput.Buttons & PSP_CTRL_RTRIGGER)
 			{
@@ -428,6 +467,9 @@ int main(int argc, char *argv[])
 			{
 				cruiseControll = 1;
 			}
+		}
+		else {
+			ButtonTriangle = 0;
 		}
 
 		if (cruiseControll)
@@ -463,16 +505,17 @@ int main(int argc, char *argv[])
 			}
 		}
 		char dcmessage[30];
-		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, freq, servoX, servoY);
+		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
 		printf(dcmessage);
-		socket_desc = sceNetInetSocket(PF_INET, SOCK_STREAM, 0);
-		sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
+		//socket_desc = sceNetInetSocket(1, 2, 0);
+		//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
 		if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
 		{
-			printf("Send failed");
+			printf("\nSend failed");
 			sceDisplayWaitVblankStart();
 		}
-		sceNetInetClose(socket_desc);
+		delay(30);
+		//sceNetInetClose(socket_desc);
 		sceDisplayWaitVblankStart();
 		sceGuSwapBuffers();
 	}

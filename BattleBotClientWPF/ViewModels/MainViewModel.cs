@@ -39,24 +39,23 @@ namespace BattleBotClientWPF.ViewModels
         private volatile string _Accelerometer_Z = "0";
         private volatile string _Laser_Detector_1 = "0";
         private volatile string _Laser_Detector_2 = "0";
-        private volatile string _MotorConfig = Settings.Default.MotorConfig;
         private volatile string _ControllerConfig = Settings.Default.ControllerConfig;
-        private volatile int _Frequency = Settings.Default.Frequency;
 
 
-        public int Frequency
+
+        public string WebAddress
         {
-            get { return _Frequency; }
+//            get { return "http://" + _webAddress; }
+            get { return "http://" + _webAddress + "/rcam/"; }
             set
             {
-                if (_Frequency != value)
+                if (_webAddress != value)
                 {
-                    _Frequency = value;
-                    RaisePropertyChanged("Frequency");
+                    _webAddress = value;
+                    RaisePropertyChanged("WebAddress");
                 }
             }
         }
-
 
         public IWpfWebBrowser WebBrowser
         {
@@ -260,20 +259,6 @@ namespace BattleBotClientWPF.ViewModels
                 {
                     _Gear = value;
                     RaisePropertyChanged("Gear");
-                }
-            }
-        }
-
-        public string WebAddress
-        {
-            get { return "http://" + _webAddress; }
-            //get { return "http://" + _webAddress + "/rcam/"; }
-            set
-            {
-                if (_webAddress != value)
-                {
-                    _webAddress = value;
-                    RaisePropertyChanged("WebAddress");
                 }
             }
         }
@@ -576,22 +561,6 @@ namespace BattleBotClientWPF.ViewModels
                 {
                     _Laser_Detector_2 = value;
                     RaisePropertyChanged("Laser_Detector_2");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Get/Set MotorConfig
-        /// </summary>
-        public string MotorConfig
-        {
-            get { return _MotorConfig; }
-            set
-            {
-                if (_MotorConfig != value)
-                {
-                    _MotorConfig = value;
-                    RaisePropertyChanged("MotorConfig");
                 }
             }
         }

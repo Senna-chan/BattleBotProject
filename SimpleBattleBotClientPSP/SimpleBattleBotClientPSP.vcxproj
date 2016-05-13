@@ -89,6 +89,7 @@
     <ClInclude Include="common\framebuffer.h" />
     <ClInclude Include="common\graphics.h" />
     <ClInclude Include="danzeff\danzeff.h" />
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="danzeff\danzeff_readme.txt" />

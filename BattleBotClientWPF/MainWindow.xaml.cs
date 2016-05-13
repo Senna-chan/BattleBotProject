@@ -131,13 +131,6 @@ namespace BattleBotClientWPF
             }
         }
 
-        private void ChangeMotorConfig(object sender, RoutedEventArgs e)
-        {
-            string motorConfig = ((System.Windows.Controls.MenuItem)sender).Header.ToString();
-            VariableStorage.ViewModel.MotorConfig = motorConfig;
-            Settings.Default.MotorConfig = motorConfig;
-        }
-
         private void ChangeCrosshariColor(object sender, RoutedEventArgs e)
         {
             var dialog = new ColorPicker();
@@ -166,6 +159,16 @@ namespace BattleBotClientWPF
             VariableStorage.ViewModel.ControllerConfig = ControllerConfig;
             Settings.Default.ControllerConfig = ControllerConfig;
             App.changeControllerHandling();
+        }
+
+        private void ReconnectToSocket(object sender, RoutedEventArgs e)
+        {
+            App.setupSocketConnection();
+        }
+
+        private void CloseBattleBotServer(object sender, RoutedEventArgs e)
+        {
+            VariableStorage._socketHelper.SendToServer("C:exit");
         }
     }
 }
