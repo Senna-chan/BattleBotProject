@@ -466,16 +466,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
 	unsigned int delayTime;
 
 	switch (command) {
-	case STRING_DATA:
-		if()
-	case SYSEX_SEND_LCD_DATA:
-		Serial.print(START_SYSEX);
-		Serial.print(command);
-		for (byte i = 0; i<argc; i++) {
-			Serial.print(argv[i]);
-		}
-		Serial.println(END_SYSEX);
-		break;
 	case I2C_REQUEST:
 		mode = argv[1] & I2C_READ_WRITE_MODE_MASK;
 		if (argv[1] & I2C_10BIT_ADDRESS_MODE_MASK) {

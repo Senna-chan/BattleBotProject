@@ -1,5 +1,5 @@
 TARGET = BattleBotClient
-OBJS = main.o common/callback.o danzeff/danzeff.o common/graphics.o common/framebuffer.o
+OBJS = main.o common/callback.o
 
 INCDIR = 
 CFLAGS = -O2 -G0 -Wall

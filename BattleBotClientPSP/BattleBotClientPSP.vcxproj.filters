@@ -47,6 +47,9 @@
     <ClInclude Include="common\graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="danzeff\danzeff_readme.txt" />

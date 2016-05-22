@@ -1,5 +1,6 @@
 TARGET = SimpleBattleBotClientPSP
-OBJS = main.o
+#OBJS = main.o common/graphics.o common/framebuffer.o common/callback.o
+OBJS = main.o common/callback.o
 
 BUILD_PRX = 1
 
@@ -11,7 +12,7 @@ ASFLAGS = $(CFLAGS)
 
 LIBDIR =
 LDFLAGS =
-LIBS = -lpsputility -lpspgum -lpspgu -lpspnet -lm
+LIBS =  -lpsputility -lpsphttp -lpspssl -lpspgum -lpspgu -lpng -lz -lm
 
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = Simple Battle Bot Client

@@ -115,7 +115,7 @@ while True:
         if len(data) == 0: continue
         typcom = data.split(':')
         if(len(typcom) == 2 or len(typcom) == 3):
-            print("Recieved a normal command: %s",data)
+            print("Recieved a normal command: "+data)
             ctype = typcom[0]
             command = typcom[1]
             if(len(typcom) == 3):
@@ -164,6 +164,7 @@ while True:
 
         else:
             print "Command: "+data+" is not a valid command"
+            MotorCalc(0,0,0,servoX, servoY)
             #c.send("Command: "+data+" is not a valid command")
         if(not clientConnected): 
             print "Client has disconnected"

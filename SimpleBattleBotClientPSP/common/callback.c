@@ -1,5 +1,7 @@
 #include <pspkernel.h> 
-
+#include <pspnet.h>
+#include <pspnet_inet.h>
+#include <pspnet_apctl.h>
 static int exitRequest = 0;
 
 int isRunning()
@@ -9,6 +11,12 @@ int isRunning()
 
 int exitCallback(int arg1, int arg2, void *common)
 {
+
+	sceNetApctlTerm();
+
+	sceNetInetTerm();
+
+	sceNetTerm();
 	exitRequest = 1;
 	return 0;
 }
