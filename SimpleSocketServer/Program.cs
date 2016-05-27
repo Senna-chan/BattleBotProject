@@ -23,6 +23,7 @@ namespace SimpleSocketServer
             accepted = socket.Accept();
             while (true)
             {
+                Console.WriteLine("Client Connected");
                 if (clientIP == null)
                 {
                     var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
