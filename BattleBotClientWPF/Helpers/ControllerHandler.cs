@@ -22,8 +22,6 @@ namespace BattleBotClientWPF.Helpers
         public ControllerHandler(Dictionary<string, ButtonState> oldPsButtons, int freq, string mode, byte controllmode = 0)
         {
             _freq = freq;
-            if (controllmode != 0 && controllmode <= 2) _controllMode = controllmode;
-            else _controllMode = 1;
             
             JoystickState joyStick = Joystick.GetState(0);
             if (joyStick.IsConnected)

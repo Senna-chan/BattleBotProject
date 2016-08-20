@@ -10,11 +10,14 @@ namespace BattleBotClientWPF
 {
 	public class SocketHelper
     {
-        private Socket _socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private Socket _socket = new Socket (AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        //private UdpClient _socket = new UdpClient();
         private IPEndPoint _ipendpoint;
+	    private EndPoint _serverEndPoint;
         public SocketHelper(IPAddress ipaddress)
         {
             ConnectToSocket(new IPEndPoint(ipaddress, App.BattleBotServerPort));
+            _socket.Blocking = false;
         }
         private void ConnectToSocket(IPEndPoint ip)
         {
@@ -22,6 +25,7 @@ namespace BattleBotClientWPF
             try
             {
                 _socket.Connect(ip);
+                _serverEndPoint = _socket.RemoteEndPoint;
             }
             catch (Exception e)
             {
@@ -56,12 +60,12 @@ namespace BattleBotClientWPF
 //            }
 //        }
 
-        public void SendToServer(string dataToSend)
+        public string SendToServer(string dataToSend)
         {
             byte[] data = Encoding.ASCII.GetBytes(dataToSend);
             try
             {
-                _socket.Send(data);
+                _socket.SendTo(data, _ipendpoint);
                 Console.WriteLine("Data send! Data: \"" + dataToSend + "\"");
             }
             catch
@@ -69,22 +73,31 @@ namespace BattleBotClientWPF
                 Console.WriteLine("Error sending data to the server");
             }
             Thread.Sleep(App.sleepTime);
-        }
-
-        public bool Reconnect()
-        {
-            _socket.Close();
-            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            try {
-                _socket.Connect(_ipendpoint);
+            try
+            {
+                _socket.ReceiveFrom(data, 255, 0, ref _serverEndPoint);
+                return Encoding.ASCII.GetString(data);
             }
             catch
             {
-                Console.WriteLine("Error reconnecting to the socket");
-                return false;
+                return "";
             }
-            return true;
         }
+
+//        public bool Reconnect()
+//        {
+//            _socket.Close();
+//            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+//            try {
+//                _socket.Connect(_ipendpoint);
+//            }
+//            catch
+//            {
+//                Console.WriteLine("Error reconnecting to the socket");
+//                return false;
+//            }
+//            return true;
+//        }
 	}
 }
 

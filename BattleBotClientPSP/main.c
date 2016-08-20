@@ -1,218 +1,90 @@
-#include <pspsdk.h>
-#include <pspuser.h>
+/*
+* Licensing stuff from the original Net Dialog Sample for PSP
+* PSP Software Development Kit - http://www.pspdev.org
+* -----------------------------------------------------------------------
+* Licensed under the BSD license, see LICENSE in PSPSDK root for details.
+*
+* main.c - Net dialog sample for connecting to an access point
+*
+* For OE firmwares, this sample must be run under the 3.xx kernel.
+*
+* Copyright (c) 2007 David Perry (Insert_Witty_Name)
+*
+*
+*
+*/
+
+#include <pspkernel.h>
 #include <pspdisplay.h>
-#include <pspctrl.h>
-#include <pspgu.h>
+#include <string.h>
 #include <psputility.h>
-#include <psputility_netmodules.h>
-#include <psputility_htmlviewer.h>
+#include <pspgu.h>
+#include <pspgum.h>
+#include <pspsdk.h>
 #include <pspnet.h>
 #include <pspnet_inet.h>
 #include <pspnet_apctl.h>
-#include <pspnet_resolver.h>
-#include <psphttp.h>
-#include <pspssl.h>
+
 #include <pspctrl.h>
 #include <pspdebug.h>
-#include "danzeff/danzeff.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <psputility_netmodules.h>
 #include <stdarg.h>
-#include <sys/unistd.h>
-#include <sys/socket.h>
+#include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <stdio.h>
 #include <netinet/in.h>
-
+#include <sys/time.h> 
 #include "common/callback.h"
 #include "common/graphics.h"
+#include <psppower.h>
+
+PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
 
 #define printf pspDebugScreenPrintf
+#define RGB(r, g, b) ((r)|((g)<<8)|((b)<<16))
+#define true 1
+#define false 1
+int ColorRed = RGB(255, 0, 0); // Red
+int ColorBlue = RGB(0, 0, 255); // Blue
+int ColorGreen = RGB(0, 255, 0); // Green
+int ColorBlack = RGB(0, 0, 0); // Black
+int ColorWhite = RGB(255, 255, 255);
+static int running = 1;
 
-PSP_MODULE_INFO("HtmlViewer", PSP_MODULE_USER, 1, 1);
-PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
-
-void throwError(int milisecs, char *fmt, ...)
-{
-	va_list list;
-	char msg[256];
-
-	va_start(list, fmt);
-	vsprintf(msg, fmt, list);
-	va_end(list);
-
-	pspDebugScreenInit();
-	pspDebugScreenClear();
-	pspDebugScreenPrintf(msg);
-
-	sceKernelDelayThread(milisecs * 1000);
-	sceKernelExitGame();
-}
+/* Graphics stuff, based on cube sample */
+static unsigned int __attribute__((aligned(16))) list[262144];
 
 #define BUF_WIDTH (512)
 #define SCR_WIDTH (480)
 #define SCR_HEIGHT (272)
+#define PIXEL_SIZE (4)
+#define FRAME_SIZE (BUF_WIDTH * SCR_HEIGHT * PIXEL_SIZE)
+#define ZBUF_SIZE (BUF_WIDTH SCR_HEIGHT * 2)
 
-static char list[0x10000] __attribute__((aligned(64)));
-
-int running = 0;
-int htmlInited = 0;
-
-void setupGu(void)
+static void setupGu()
 {
 	sceGuInit();
 
 	sceGuStart(GU_DIRECT, list);
-	sceGuDrawBuffer(GU_PSM_8888, 0, BUF_WIDTH);
+	sceGuDrawBuffer(GU_PSM_8888, (void*)0, BUF_WIDTH);
 	sceGuDispBuffer(SCR_WIDTH, SCR_HEIGHT, (void*)0x88000, BUF_WIDTH);
 	sceGuDepthBuffer((void*)0x110000, BUF_WIDTH);
-
-	sceGuOffset(0, 0);
-
+	sceGuOffset(2048 - (SCR_WIDTH / 2), 2048 - (SCR_HEIGHT / 2));
+	sceGuViewport(2048, 2048, SCR_WIDTH, SCR_HEIGHT);
+	sceGuDepthRange(0xc350, 0x2710);
 	sceGuScissor(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	sceGuEnable(GU_SCISSOR_TEST);
-
-	sceGuBlendFunc(GU_ADD, GU_SRC_ALPHA, GU_ONE_MINUS_SRC_ALPHA, 0, 0);
-	sceGuEnable(GU_BLEND);
-
-	//sceGuTexFunc(GU_TFX_MODULATE, GU_TCC_RGBA);
-	//sceGuTexFilter(GU_LINEAR_MIPMAP_LINEAR, GU_NEAREST);
-	//sceGuTexWrap(GU_REPEAT, GU_REPEAT);
-
-	sceGuClearColor(0);
-	sceGuClearDepth(0);
-	sceGuClearStencil(0);
-
+	sceGuDepthFunc(GU_GEQUAL);
+	sceGuEnable(GU_DEPTH_TEST);
+	sceGuFrontFace(GU_CW);
+	sceGuShadeModel(GU_SMOOTH);
+	sceGuEnable(GU_CULL_FACE);
+	sceGuEnable(GU_CLIP_PLANES);
 	sceGuFinish();
 	sceGuSync(0, 0);
 
 	sceDisplayWaitVblankStart();
 	sceGuDisplay(GU_TRUE);
-}
-
-void draw()
-{
-	sceGuStart(GU_DIRECT, list);
-	sceGuClear(GU_COLOR_BUFFER_BIT | GU_STENCIL_BUFFER_BIT | GU_DEPTH_BUFFER_BIT);
-	sceGuFinish();
-	sceGuSync(0, 0);
-}
-
-void loadNetModules()
-{
-	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
-	sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
-	sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEURI);
-	sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEHTTP);
-	sceUtilityLoadNetModule(PSP_NET_MODULE_HTTP);
-	sceUtilityLoadNetModule(PSP_NET_MODULE_SSL);
-}
-
-void unloadNetModules()
-{
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_SSL);
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_HTTP);
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEHTTP);
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEURI);
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_INET);
-	sceUtilityUnloadNetModule(PSP_NET_MODULE_COMMON);
-}
-
-void netTerm()
-{
-	sceHttpSaveSystemCookie();
-	sceHttpsEnd();
-	sceHttpEnd();
-	sceSslEnd();
-	sceNetApctlTerm();
-	sceNetInetTerm();
-	sceNetTerm();
-
-	unloadNetModules();
-}
-
-void delay(int milliseconds) {
-	sceKernelDelayThread(1000 * milliseconds);
-}
-
-void netInit()
-{
-	int res;
-
-	loadNetModules();
-
-	res = sceNetInit(0x20000, 0x2A, 0, 0x2A, 0);
-
-	if (res < 0)
-	{
-		throwError(6000, "Error 0x%08X in sceNetInit\n", res);
-	}
-
-	res = sceNetInetInit();
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceNetInetInit\n", res);
-	}
-
-	res = sceNetResolverInit();
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceNetResolverInit\n", res);
-	}
-
-	res = sceNetApctlInit(0x1800, 0x30);
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceNetApctlInit\n", res);
-	}
-
-	res = sceSslInit(0x28000);
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceSslInit\n", res);
-	}
-
-	res = sceHttpInit(0x25800);
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceHttpInit\n", res);
-	}
-
-	res = sceHttpsInit(0, 0, 0, 0);
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceHttpsInit\n", res);
-	}
-
-	res = sceHttpsLoadDefaultCert(0, 0);
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceHttpsLoadDefaultCert\n", res);
-	}
-
-	res = sceHttpLoadSystemCookie();
-
-	if (res < 0)
-	{
-		netTerm();
-		throwError(6000, "Error 0x%08X in sceHttpsLoadDefaultCert\n", res);
-	}
 }
 
 static void drawStuff(void)
@@ -221,337 +93,686 @@ static void drawStuff(void)
 
 	sceGuStart(GU_DIRECT, list);
 
-	sceGuClearColor(0xff554433);
+	//sceGuClearColor(0xff554433);
+	sceGuClearColor(0x000000);
 	sceGuClearDepth(0);
 	sceGuClear(GU_COLOR_BUFFER_BIT | GU_DEPTH_BUFFER_BIT);
 
+	sceGumMatrixMode(GU_PROJECTION);
+	sceGumLoadIdentity();
+	sceGumPerspective(75.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
+
+	sceGumMatrixMode(GU_VIEW);
+	sceGumLoadIdentity();
+
+	sceGumMatrixMode(GU_MODEL);
+	sceGumLoadIdentity();
 
 	sceGuFinish();
 	sceGuSync(0, 0);
 
 	val++;
-} 
-
-#define BROWSER_MEMORY (10*1024*1024) 
-
-SceUID vpl;
-pspUtilityHtmlViewerParam params;
-
-void htmlViewerInit(char *url)
-{
-	int res;
-
-	vpl = sceKernelCreateVpl("BrowserVpl", PSP_MEMORY_PARTITION_USER, 0, BROWSER_MEMORY + 256, NULL);
-
-	if (vpl < 0)
-		throwError(6000, "Error 0x%08X creating vpl.\n", vpl);
-
-	memset(&params, 0, sizeof(pspUtilityHtmlViewerParam));
-
-	params.base.size = sizeof(pspUtilityHtmlViewerParam);
-
-	sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_LANGUAGE, &params.base.language);
-	sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_UNKNOWN, &params.base.buttonSwap);
-
-	params.base.graphicsThread = 17;
-	params.base.accessThread = 19;
-	params.base.fontThread = 18;
-	params.base.soundThread = 16;
-	params.memsize = BROWSER_MEMORY;
-	params.initialurl = url;
-	params.numtabs = 1;
-	params.cookiemode = PSP_UTILITY_HTMLVIEWER_COOKIEMODE_DEFAULT;
-	params.homeurl = url;
-	params.textsize = PSP_UTILITY_HTMLVIEWER_TEXTSIZE_NORMAL;
-	params.displaymode = PSP_UTILITY_HTMLVIEWER_DISPLAYMODE_FIT;
-	params.options = PSP_UTILITY_HTMLVIEWER_DISABLE_STARTUP_LIMITS;
-	params.interfacemode = PSP_UTILITY_HTMLVIEWER_INTERFACEMODE_NONE;
-	params.connectmode = PSP_UTILITY_HTMLVIEWER_CONNECTMODE_MANUAL_ALL;
-
-	// Note the lack of 'ms0:' on the paths	
-	params.dldirname = "/PSP/PHOTO";
-
-	res = sceKernelAllocateVpl(vpl, params.memsize, &params.memaddr, NULL);
-
-	if (res < 0)
-		throwError(6000, "Error 0x%08X allocating browser memory.\n", res);
-
-	res = sceUtilityHtmlViewerInitStart(&params);
-
-	if (res < 0)
-		throwError(6000, "Error 0x%08X initing browser.\n", res);
 }
 
-int updateHtmlViewer()
+void delay(int milliseconds) {
+	sceKernelDelayThread(1000 * milliseconds);
+}
+
+
+
+void netInit(void)
 {
-	draw();
+	sceNetInit(128 * 1024, 42, 4 * 1024, 42, 4 * 1024);
+	sceNetInetInit();
+	sceNetApctlInit(0x8000, 48);
+}
 
-	switch (sceUtilityHtmlViewerGetStatus())
+void netTerm(void)
+{
+	sceNetApctlTerm();
+	sceNetInetTerm();
+	sceNetTerm();
+}
+
+int netDialog()
+{
+	int done = 0;
+	running = isRunning();
+	pspUtilityNetconfData data;
+
+	memset(&data, 0, sizeof(data));
+	data.base.size = sizeof(data);
+	data.base.language = PSP_SYSTEMPARAM_LANGUAGE_ENGLISH;
+	data.base.buttonSwap = PSP_UTILITY_ACCEPT_CROSS;
+	data.base.graphicsThread = 17;
+	data.base.accessThread = 19;
+	data.base.fontThread = 18;
+	data.base.soundThread = 16;
+	data.action = PSP_NETCONF_ACTION_CONNECTAP;
+
+	struct pspUtilityNetconfAdhoc adhocparam;
+	memset(&adhocparam, 0, sizeof(adhocparam));
+	data.adhocparam = &adhocparam;
+
+	sceUtilityNetconfInitStart(&data);
+
+	while (running)
 	{
-	case PSP_UTILITY_DIALOG_VISIBLE:
-		sceUtilityHtmlViewerUpdate(1);
-		printf("PSP_UTILITY_DIALOG_VISIBLE");
-		break;
+		drawStuff();
 
-	case PSP_UTILITY_DIALOG_QUIT:
-		sceUtilityHtmlViewerShutdownStart();
-		running = 0;
-		break;
+		switch (sceUtilityNetconfGetStatus())
+		{
+		case PSP_UTILITY_DIALOG_NONE:
+			break;
 
-	case PSP_UTILITY_DIALOG_NONE:
-		running = 0;
-		return 0;
-		break;
+		case PSP_UTILITY_DIALOG_VISIBLE:
+			sceUtilityNetconfUpdate(1);
+			break;
 
-	default:
-		break;
+		case PSP_UTILITY_DIALOG_QUIT:
+			sceUtilityNetconfShutdownStart();
+			break;
+
+		case PSP_UTILITY_DIALOG_FINISHED:
+			done = 1;
+			break;
+
+		default:
+			break;
+		}
+
+		sceDisplayWaitVblankStart();
+		sceGuSwapBuffers();
+		if (done)
+			break;
 	}
 
 	return 1;
 }
 
+int map(int x, int in_min, int in_max, int out_min, int out_max)
+{
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
+void PrintText(int x, int y, int color, const char* format, ...) {
+	va_list fmtargs;
+	char buffer[1024];
 
+	va_start(fmtargs, format);
+	vsnprintf(buffer, sizeof(buffer) - 1, format, fmtargs);
+	va_end(fmtargs);
+	printTextScreen(x, y, buffer, color);
+}
+
+void PrintError(const char* format, ...) {
+	va_list fmtargs;
+	char buffer[1024];
+	
+	va_start(fmtargs, format);
+	vsnprintf(buffer, sizeof(buffer) - 1, format, fmtargs);
+	va_end(fmtargs);
+	printTextScreen(10, 230, "ERROR: ", ColorRed);
+	printTextScreen(50, 230, buffer, ColorRed);
+}
+
+int QuitScreen()
+{
+	SceCtrlData pad;
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	PrintText(200, 120, ColorWhite, "Do you want to quit?");
+	PrintText(200, 130, ColorRed, "X = Yes");
+	PrintText(260, 130, ColorWhite, "/");
+	PrintText(265, 130, ColorGreen, "O = No");
+	flipScreen();
+	while (true)
+	{
+		sceCtrlPeekBufferPositive(&pad, 1);
+
+		if (pad.Buttons != 0)
+		{
+			if(pad.Buttons & PSP_CTRL_CROSS)
+			{
+				clearScreen(ColorBlack);
+				PrintText(100, 220, ColorWhite, "Bye Bye");
+				flipScreen();
+				delay(250);
+				return 1;
+			}
+			if(pad.Buttons & PSP_CTRL_CIRCLE)
+			{
+				return 0;
+			}
+		}
+	}
+}
 
 int main(int argc, char *argv[])
 {
 	setupExitCallback();
+	scePowerSetClockFrequency(333, 333, 166);
+	int powerlock = 1;
+	scePowerLock(1);
+	scePowerTick(1);
 
-	running = isRunning();
-	const char *ip;
-	pspDebugScreenInit();
-	pspDebugScreenSetXY(0, 0);
-	printf("Select /\\ for 192.168.43.251\n");
-	printf("Select o for 192.168.1.132\n");
-	printf("Select x for 192.168.1.101\n");
-	sceDisplayWaitVblankStart();
-	SceCtrlData pad;
+	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
 
-	sceCtrlSetSamplingCycle(0);
-	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-	while (1) {
-		sceCtrlPeekBufferPositive(&pad, 1);
-		if (pad.Buttons && PSP_CTRL_CIRCLE) {
-			ip = "192.168.1.132";
-			break;
-		}
-		else if (pad.Buttons && PSP_CTRL_CROSS) {
-			ip = "192.168.1.101";
-			break;
-		}
-		else if (pad.Buttons && PSP_CTRL_TRIANGLE) {
-			ip = "192.168.43.251";
-			break;
-		}
-	}
-	pspDebugScreenClear();
+	sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
 
 	setupGu();
 	netInit();
 	netDialog();
-	char url[70];
-	snprintf(url, sizeof(url), "http://%s/rcam/index_simple.php",ip);
-	htmlViewerInit(url);
+	char *ip = "";
+	initGraphics();
+	pspDebugScreenInit();
+	pspDebugScreenSetXY(0, 0);
+
+	clearScreen(ColorBlack);
+	flipScreen();
+	int ipToChoose;
+	PrintText(10, 10, ColorWhite, "Select /\\ for 192.168.43.251");
+	PrintText(10, 20, ColorWhite, "Select o for 192.168.1.132");
+	PrintText(10, 30, ColorWhite, "Select x for 192.168.1.102");
+	PrintText(10, 40, ColorWhite, "Press [] for manual entering IP W.I.P.");
+	flipScreen();
+	sceDisplayWaitVblankStart();
+	SceCtrlData pad;
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	int ip1 = 192;
+	int ip2 = 168;
+	int ip3 = 000;
+	int ip4 = 000;
+
+	while (1) {
+		sceCtrlPeekBufferPositive(&pad, 1);
+
+		if (pad.Buttons != 0)
+		{
+			if (pad.Buttons & PSP_CTRL_CROSS) {
+				ipToChoose = 1;
+				//ip = "192.168.1.101";
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_CIRCLE) {
+				ipToChoose = 2;
+				//ip = "192.168.1.132";
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_TRIANGLE) {
+				ipToChoose = 3;
+				//ip = "192.168.43.251";
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_START) {
+				QuitScreen();
+			}
+			if (pad.Buttons & PSP_CTRL_SQUARE) {
+				ipToChoose = 4;
+				break;
+			}
+		}
+	}
+	switch (ipToChoose)
+	{
+	case 1:
+		ip = "192.168.1.102";
+		break;
+	case 2:
+		ip = "192.168.1.132";
+		break;
+	case 3:
+		ip = "192.168.43.251";
+		break;
+	case 4:;
+		int oldButton = 0;
+		int index = 1;
+		flipScreen();
+		while (1) {
+			sceCtrlPeekBufferPositive(&pad, 1);
+			if (pad.Buttons != 0)
+			{
+				if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
+					switch (index) {
+					case 1:
+						if (ip1 < 255) ip1++;
+						break;
+					case 2:
+						if (ip2 < 255) ip2++;
+						break;
+					case 3:
+						if (ip3 < 255) ip3++;
+						break;
+					case 4:
+						if (ip4 < 255) ip4++;
+						break;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_RTRIGGER && pad.Buttons != oldButton)
+				{
+					switch (index) {
+					case 1:
+						if (ip1 < 245) ip1 += 10;
+						break;
+					case 2:
+						if (ip2 < 245) ip2 += 10;
+						break;
+					case 3:
+						if (ip3 < 245) ip3 += 10;
+						break;
+					case 4:
+						if (ip4 < 245) ip4 += 10;
+						break;
+					}
+				}
+
+				if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
+					switch (index) {
+					case 1:
+						if (ip1 > 0) ip1--;
+						break;
+					case 2:
+						if (ip2 > 0) ip2--;
+						break;
+					case 3:
+						if (ip3 > 0) ip3--;
+						break;
+					case 4:
+						if (ip4 > 0) ip4--;
+						break;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_LTRIGGER && pad.Buttons != oldButton)
+				{
+					switch (index) {
+					case 1:
+						if (ip1 > 10) ip1 -= 10;
+						break;
+					case 2:
+						if (ip2 > 10) ip2 -= 10;
+						break;
+					case 3:
+						if (ip3 > 10) ip3 -= 10;
+						break;
+					case 4:
+						if (ip4 > 10) ip4 -= 10;
+						break;
+					}
+				}
+
+
+				if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton)
+				{
+					if (index != 4) index++;
+				}
+				if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton)
+				{
+					if (index != 1) index--;
+				}
+
+				if (pad.Buttons & PSP_CTRL_CROSS)
+				{
+					break;
+				}
+				if(pad.Buttons & PSP_CTRL_START)
+				{
+					if(QuitScreen())
+					{
+						netTerm();
+						sceKernelExitGame();
+						return 0;
+					}
+				}
+				PrintText(10, 10, ColorWhite, "Enter a ip address here:");
+				if (index == 1) PrintText(50, 50, ColorBlue, "%i", ip1);
+				else			PrintText(50, 50, ColorWhite, "%i", ip1);
+				PrintText(74, 50, ColorWhite, ".");
+				if (index == 2) PrintText(80, 50, ColorBlue, "%i", ip2);
+				else			PrintText(80, 50, ColorWhite, "%i", ip2);
+				PrintText(104, 50, ColorWhite, ".");
+				if (index == 3) PrintText(110, 50, ColorBlue, "%i", ip3);
+				else			PrintText(110, 50, ColorWhite, "%i", ip3);
+				PrintText(132, 50, ColorWhite, ".");
+				if (index == 4) PrintText(138, 50, ColorBlue, "%i", ip4);
+				else			PrintText(138, 50, ColorWhite, "%i", ip4);
+
+				PrintText(10, 230, ColorWhite, "Controls: Left=goto left, Right=goto right, Up=+1, Down=-1");
+				PrintText(10, 240, ColorWhite, "R=+10, L=-10, Start=quit, X=confirm");
+				flipScreen();
+				clearScreen(ColorBlack);
+			}
+			oldButton = pad.Buttons;
+		}
+		snprintf(ip, 20, "%i.%i.%i.%i", ip1, ip2, ip3, ip4);
+		break;
+	default:
+		break;
+	}
+	PrintText(100, 100, ColorRed,"IP: %s",ip);
+	flipScreen();
+	delay(1000);
+	pspDebugScreenClear();
 	int socket_desc;
 	struct sockaddr_in server;
 	char *message;
 	pspDebugScreenSetXY(0, 0);
-	socket_desc = sceNetInetSocket(2, 1, 0);
+	socket_desc = sceNetInetSocket(AF_INET, SOCK_DGRAM, 0);
 	if (socket_desc == -1)
 	{
-		printf("Could not create socket\n");
-		printf("socket returned $%x\n", socket_desc);
-		printf("errno=$%x\n", sceNetInetGetErrno());
+		PrintError("Could not create socket. errno=$%x", sceNetInetGetErrno());
+		flipScreen();
 		sceDisplayWaitVblankStart();
-		delay(500);
+		delay(1000);
+		netTerm();
+		sceKernelExitGame();
 	}
-	else {
-		printf("Socket Made\n");
-		sceDisplayWaitVblankStart();
-	}
+
 	server.sin_addr.s_addr = inet_addr(ip);
-	server.sin_family = 2;
+	server.sin_family = AF_INET;
 	server.sin_port = htons(20010);
 
 	//Connect to remote server
 	if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
 	{
-		printf("Error connecting to socket\n");
-		printf("errno=$%x\n", sceNetInetGetErrno());
+		PrintError("Error connecting to socket. errno=$%x", sceNetInetGetErrno());
+		flipScreen();
 		sceDisplayWaitVblankStart();
-		delay(500);
+		delay(1000);
+		netTerm();
+		sceKernelExitGame();
 	}
-	else {
-		printf("Connected\n");
-		sceDisplayWaitVblankStart();
+	int timeout = 20000; // in microseconds
+	int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
+	if (err != 0) {
+		PrintError("set SO_RCVTIMEO failed");
+		flipScreen();
 	}
 	//Send some data
 	message = "client:psp:connected";
 	if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 	{
-		printf("Send failed\n");
+		PrintError("Send failed");
+		flipScreen();
 		sceDisplayWaitVblankStart();
 		delay(500);
+		PrintError("Trying to send handshake again");
+		if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+		{
+			PrintError("Send failed. Shutting down");
+			flipScreen();
+			sceDisplayWaitVblankStart();
+			delay(500);
+			netTerm();
+			sceKernelExitGame();
+		}
 	}
-	else {
-		printf("Data Send\n");
-		sceDisplayWaitVblankStart();
-	}
-	//sceNetInetClose(socket_desc);
-	delay(500);
 	int speed = 0;
 	int wheelpos1 = 0;
 	int wheelpos2 = 0;
 	int servoY = 0;
 	int servoX = 0;
-	int ButtonTriangle = 0;
-	while (running) {
-		while (updateHtmlViewer())
+	int mapMax = 100;
+	int mapMin = -100;
+	int gear = 4;
+	char buf[255];
+	char *sensorData[9];
+	int oldButton = 0;
+	socklen_t server_addr_len = 0;
+
+	scePowerLock(1);
+	while (running)
+	{
+		sceCtrlPeekBufferPositive(&pad, 1);
+		int cruiseControll = 0;
+		int rPressed = 0;
+		int onHold = 0;
+		running = isRunning();
+		pspDebugScreenSetXY(0, 0);
+		clearScreen(ColorBlack);
+		flipScreen();
+		PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
+		int aX = pad.Lx - 127;
+		int aY = (pad.Ly - 127) * -1 + 1;
+		if (aX > 27)		aX -= 28;
+		else if (aX < -27)	aX += 27;
+		else {
+			aX = 0;
+			wheelpos1 = 0;
+			wheelpos2 = 0;
+		}
+
+		if (aY > 27)		aY -= 28;
+		else if (aY < -27) 	aY += 27;
+		else {
+			aY = 0;
+		}
+
+		//		printf("Analog X = %d ", aX);
+		//		printf("Analog Y = %d \n", aY);
+		PrintText(60, 220, ColorWhite, "Analog Y = %d", aY);
+		PrintText(220, 220, ColorWhite, "Analog X = %d", aX);
+		sceCtrlPeekBufferPositive(&pad, 1);
+		if (pad.Buttons != 0)
 		{
-			running = isRunning();
-			int cruiseControll = 0;
-			int rPressed = 0;
-			pspDebugScreenClear();
-			pspDebugScreenSetXY(0, 0);
-			int aX = pad.Lx - 127;
-			int aY = (pad.Ly - 127) * -1 + 1;
-			if (aX > 27)		aX -= 28;
-			else if (aX < -27)	aX += 27;
-			else {
-				aX = 0;
-				wheelpos1 = 0;
-				wheelpos2 = 0;
-			}
-
-			if (aY > 27)		aY -= 28;
-			else if (aY < -27) 	aY += 27;
-			else {
-				aY = 0;
-			}
-
-			printf("Analog X = %d ", aX);
-			printf("Analog Y = %d \n", aY);
-
-			sceCtrlPeekBufferPositive(&pad, 1);
-
-			if (pad.Buttons != 0)
-			{
-				if (pad.Buttons & PSP_CTRL_START) {
-					printf("Start");
-					message = "client:disconnected:psp";
-					//socket_desc = sceNetInetSocket(1, 2, 0);
-					//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
-					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-					{
-						printf("\nSend failed");
-						sceDisplayWaitVblankStart();
+			if (pad.Buttons & PSP_CTRL_START) {
+				if(QuitScreen()){
+					message = "DC:0,0,0:0,0";
+					for (;;) {
+						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+						{
+							printf("\nSend failed");
+							sceDisplayWaitVblankStart();
+							delay(50);
+							continue;
+						}
+						break;
+					}
+					message = "client:psp:disconnected";
+					for (;;) {
+						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+						{
+							printf("\nSend failed");
+							sceDisplayWaitVblankStart();
+							delay(50);
+							continue;
+						}
+						break;
 					}
 					sceNetInetClose(socket_desc);
 					running = 0;
 					break;
 				}
-				if (pad.Buttons & PSP_CTRL_SELECT)		printf("Select");
-				if (pad.Buttons & PSP_CTRL_UP)			printf("Up");
-				if (pad.Buttons & PSP_CTRL_DOWN)		printf("Down");
-				if (pad.Buttons & PSP_CTRL_RIGHT)		printf("Right");
-				if (pad.Buttons & PSP_CTRL_LEFT)		printf("Left");
-
-				if (pad.Buttons & PSP_CTRL_CROSS)		printf("Cross");
-				if (pad.Buttons & PSP_CTRL_CIRCLE)		printf("Circle");
-				if (pad.Buttons & PSP_CTRL_SQUARE)		printf("Square");
-				if (pad.Buttons & PSP_CTRL_TRIANGLE) {
-					if (!ButtonTriangle) {
-						ButtonTriangle = 1;
-						printf("Triangle");
-
-						message = "client:psp:disconnected";
-						sceNetInetSend(socket_desc, message, strlen(message), 0);
-						sceNetInetClose(socket_desc);
-						printf("Socket closed");
-						delay(500);
-						if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
-						{
-							printf("Error connecting to socket\n");
-							printf("errno=$%x\n", sceNetInetGetErrno());
-							printf("Exiting client");
-							delay(1000);
+			}
+			if (pad.Buttons & PSP_CTRL_SELECT && pad.Buttons != oldButton)
+			{
+				PrintText(10, 10, ColorBlue, "Help page");
+				PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
+				PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
+				PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
+				PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
+				PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
+				PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
+				PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
+				PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
+				PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. Moving continues in this mode. WATCH OUT FOR THAT");
+				PrintText(10, 160, ColorWhite, "Press SELECT to display help");
+				PrintText(10, 170, ColorWhite, "Press START to quit the client");
+				PrintText(10, 200, ColorRed, "Press O to close this help screen");
+				flipScreen();
+				sceDisplayWaitVblankStart();
+				while(1)
+				{
+					sceCtrlPeekBufferPositive(&pad, 1);
+					if (pad.Buttons != 0)
+					{
+						if (pad.Buttons & PSP_CTRL_CIRCLE) {
+							break;
+						}
+						if (pad.Buttons & PSP_CTRL_START) {
+							message = "client:disconnected:psp";
+							//socket_desc = sceNetInetSocket(1, 2, 0);
+							//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
+							if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+							{
+								printf("\nSend failed");
+								sceDisplayWaitVblankStart();
+							}
+							sceNetInetClose(socket_desc);
 							running = 0;
 							break;
 						}
-						else {
-							printf("Connected\n");
-							sceDisplayWaitVblankStart();
-						}
-						message = "client:psp:connected";
-						sceNetInetSend(socket_desc, message, strlen(message), 0);
 					}
 				}
-				else ButtonTriangle = 0;
-
-				if (pad.Buttons & PSP_CTRL_RTRIGGER)
-				{
-					rPressed = 1;
-				}
-				if (pad.Buttons & PSP_CTRL_LTRIGGER)
-				{
-					cruiseControll = 1;
-				}
 			}
-			else {
-				ButtonTriangle = 0;
+			if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
+				//if (!ButtonUp) {
+				//ButtonUp = 1;
+				printf("Up");
+				if (gear != 4) {
+					gear++;
+					mapMax += 25;
+					mapMin -= 25;
+				}
+				//}
 			}
+			//else ButtonUp = 0;
+			if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
+				//if (!ButtonDown) {
+				//ButtonDown = 1;
+				printf("Down");
+				if (gear != 1) {
+					gear--;
+					mapMax -= 25;
+					mapMin += 25;
+				}
+				//}
 
-			if (cruiseControll)
+			}
+			//else ButtonDown = 0;
+			if (pad.Buttons & PSP_CTRL_RIGHT)		printf("Right");
+			if (pad.Buttons & PSP_CTRL_LEFT)		printf("Left");
+
+
+			if (pad.Buttons & PSP_CTRL_CROSS && pad.Buttons != oldButton){
+				message = "c:shoot";
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				PrintText(60, 230, ColorRed, "PEW PEW PEW");
+			}
+			if (pad.Buttons & PSP_CTRL_CIRCLE && pad.Buttons != oldButton)
 			{
-				speed = speed;
+				message = "c:reset10dof";
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+			}
+			if (pad.Buttons & PSP_CTRL_SQUARE && pad.Buttons != oldButton)
+			{
+				if (powerlock == 0) {
+					if (scePowerLock(0) == 0)
+						powerlock = 1;
+				}
+				else {
+					if (scePowerUnlock(0) == 0)
+						powerlock = 0;
+				}
+			}
+			if (pad.Buttons & PSP_CTRL_TRIANGLE && pad.Buttons != oldButton) {
+				
+			}
+			if (pad.Buttons & PSP_CTRL_RTRIGGER)
+			{
+				rPressed = 1;
+			}
+			if (pad.Buttons & PSP_CTRL_LTRIGGER)
+			{
+				cruiseControll = 1;
+			}
+
+
+			if (pad.Buttons & PSP_CTRL_HOLD)
+			{
+				onHold = 1;
+			}
+
+			oldButton = pad.Buttons;
+		}
+		oldButton = pad.Buttons;
+
+
+		if (cruiseControll)
+		{
+			speed = speed;
+			if (aX > 0) {
+				wheelpos1 = aX;
+				wheelpos2 = 0;
+			}
+			else if (aX < 0) {
+				wheelpos1 = 0;
+				wheelpos2 = aX * -1;
+			}
+			PrintText(100, 10, ColorWhite, "Cruise");
+		}
+		else {
+			if (rPressed)// Servo
+			{
+				servoX = aX;
+				servoY = aY;
+				PrintText(100, 10, ColorWhite, "No cruise and servo");
+			}
+			else if (!rPressed)// Motor
+			{
+				speed = aY;
 				if (aX > 0) {
 					wheelpos1 = aX;
-					wheelpos2 = 0;
 				}
 				else if (aX < 0) {
-					wheelpos1 = 0;
 					wheelpos2 = aX * -1;
 				}
-				printf("Cruise\n");
+				speed = map(speed, -100, 100, mapMin, mapMax);
 			}
-			else {
-				if (rPressed)// Servo
-				{
-					servoX = aX;
-					servoY = aY;
-					printf("No cruise and servo\n");
-				}
-				else if (!rPressed)// Motor
-				{
-					speed = aY;
-					if (aX > 0) {
-						wheelpos1 = aX;
-					}
-					else if (aX < 0) {
-						wheelpos2 = aX * -1;
-					}
-					printf("No cruise and driving\n");
-				}
-			}
-			char dcmessage[30];
-			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
-			printf(dcmessage);
-			//socket_desc = sceNetInetSocket(1, 2, 0);
-			//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
-			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
-			{
-				printf("\nSend failed");
-				sceDisplayWaitVblankStart();
-			}
-			delay(30);
-			//sceNetInetClose(socket_desc);
-			sceDisplayWaitVblankStart();
-			sceGuSwapBuffers();
 		}
+		if(onHold)
+		{
+			speed = 0;
+			wheelpos1 = 0;
+			wheelpos2 = 0;
+			servoX = 0;
+			servoY = 0;
+		}
+		PrintText(110, 10, ColorWhite, "Gear: %i\n", gear);
+		char dcmessage[30];
+		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
+		if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
+		{
+			printf("Send failed");
+			continue;
+		}
+		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+		if (buf != NULL) {
+			PrintText(10, 10, ColorWhite, "We recieved some data.");
+			char *p = strtok(buf, ",:");
+			int i = 0;
+			while (p != NULL)
+			{
+				sensorData[i] = p;
+				p = strtok(NULL, ",:");
+				i++;
+			}
+		}
+		PrintText(10, 80,  ColorBlue, "Temp:    %s", sensorData[1]);
+		PrintText(10, 100, ColorBlue, "Alt:     %s", sensorData[2]);
+		PrintText(10, 120, ColorBlue, "Roll:    %s", sensorData[3]);
+		PrintText(10, 140, ColorBlue, "Pitch:   %s", sensorData[4]);
+		PrintText(10, 160, ColorBlue, "Heading: %s", sensorData[5]);
+		flipScreen();
+		sceDisplayWaitVblankStart();
+		delay(40);
+		flipScreen();
+		clearScreen(ColorBlack);
+		sceDisplayWaitVblankStart();
+		//printf(sensorDataRaw);
+		//printf("\n");
 	}
 	netTerm();
-	sceKernelFreeVpl(vpl, params.memaddr);
-	sceKernelDeleteVpl(vpl);
 	sceKernelExitGame();
 
 	return 0;

@@ -21,9 +21,6 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="danzeff\danzeff.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="common\framebuffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,9 +35,6 @@
     <ClInclude Include="common\callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="danzeff\danzeff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\framebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,8 +44,5 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="danzeff\danzeff_readme.txt" />
   </ItemGroup>
 </Project>

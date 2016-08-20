@@ -142,7 +142,6 @@ namespace BattleBotClientWPF
                         var wheelpos2 = Controller.GetWheelPos2();
                         OldPSButtons = Controller.GetPsButtons();
                         vars = Controller.GetVars();
-                        if(Convert.ToBoolean(vars[0]))  VariableStorage._socketHelper.SendToServer("c:resetmh");
                         SendControllerData(speed, wheelpos1, wheelpos2, Controller.GetServoX(), Controller.GetServoY());
                         VariableStorage.ViewModel.Speed = speed.ToString();
                         VariableStorage.ViewModel.WheelSpeedLeft = wheelpos1.ToString();
@@ -166,7 +165,7 @@ namespace BattleBotClientWPF
 
         public static void SendControllerData(int speed, int WheelPos1, int WheelPos2, int PanTiltX, int PanTiltY)
         {
-            VariableStorage._socketHelper.SendToServer($"DC:{speed},{WheelPos1},{WheelPos2}:{PanTiltX},{PanTiltY}");
+            Console.WriteLine(VariableStorage._socketHelper.SendToServer($"DC:{speed},{WheelPos1},{WheelPos2}:{PanTiltX},{PanTiltY}"));
         }
 
         public void ExitProgram()

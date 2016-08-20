@@ -16,7 +16,7 @@ namespace SimpleSocketServer
 
         public static void Main(string[] args)
         {
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             socket.Bind(new IPEndPoint(0, BattleBotServerPort));
             Console.WriteLine("Awaiting Data");
             socket.Listen(1000);
@@ -39,7 +39,6 @@ namespace SimpleSocketServer
                 }
                 var strData = Encoding.ASCII.GetString(formatted);
                 Console.WriteLine(strData);
-                Console.WriteLine(map(Convert.ToInt64(strData), -100, 100, 104, 521));
                 if (strData == "exit") break;
             }
             socket.Close();

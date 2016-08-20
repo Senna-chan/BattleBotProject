@@ -1,0 +1,4 @@
+Sleeve: GROUND
+Ring 2: RIGHT AUDIO
+Ring 1: LEFT AUDIO
+Tip: Video
