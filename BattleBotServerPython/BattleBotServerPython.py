@@ -1,6 +1,5 @@
 #!/usr/bin/python
-import socket, atexit, math, threading, sys
-from datetime import datetime # Needed to see performance
+import socket, atexit, math, threading, sys, os, time
 from MotorHelper import MotorHelper
 import math
 import i2clcd
@@ -164,6 +163,7 @@ atexit.register(cleanup)
 
 
 s.bind(('', 20010))
+os.system("clear")
 ip = ni.ifaddresses('wlan0')[2][0]['addr']
 print "Battlebot server ip: "+ip
 print "Starting Battlebot Server"
@@ -194,8 +194,11 @@ print "Calibrated"
 
 print "Awaiting senpai"
 while True:
+    start = time.time()
     data, addr = s.recvfrom(30)
-    tenDOF.Get10DOFValues()
+    print ""
+    print time.time()-start
+    #tenDOF.Get10DOFValues()
     data = data.lower()
     data = data.replace("\r","")
     data = data.replace("\n","")
@@ -232,6 +235,7 @@ while True:
 
 
         if(ctype.startswith("dc") and len(typcom) == 3):
+            print time.time()-start
             checkHandshake()
             motorcommands = command.split(',')
             servocommands = parameters.split(',')
@@ -244,6 +248,7 @@ while True:
                 print("The recieved data is not a valid drive command. Length doesn't match")
                 continue
             MotorCalc(speed, wheelpos1, wheelpos2, servoX, servoY)
+            print time.time()-start
         if(ctype.startswith("c")):
             if(command == "calibrate"):
                if(len(typcom)==3):
@@ -262,6 +267,7 @@ while True:
                 cleanup()
         data = tenDOF.returnAHRS()
         s.sendto(data, addr)
+        print time.time()-start
     else:
         print "Command: "+data+" is not a valid command"
         MotorCalc(0,0,0,servoX, servoY)
