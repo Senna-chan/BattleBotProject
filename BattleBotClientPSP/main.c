@@ -556,18 +556,18 @@ int main(int argc, char *argv[])
 		if (pad.Buttons != 0)
 		{
 			if (pad.Buttons & PSP_CTRL_START) {
-				if(QuitScreen()){
-					message = "DC:0,0,0:0,0";
-					for (;;) {
-						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-						{
-							printf("\nSend failed");
-							sceDisplayWaitVblankStart();
-							delay(50);
-							continue;
-						}
-						break;
+				message = "DC:0,0,0:0,0";
+				for (;;) {
+					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+					{
+						printf("\nSend failed");
+						sceDisplayWaitVblankStart();
+						delay(50);
+						continue;
 					}
+					break;
+				}
+				if(QuitScreen()){
 					message = "client:psp:disconnected";
 					for (;;) {
 						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
