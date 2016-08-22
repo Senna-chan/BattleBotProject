@@ -154,3 +154,8 @@ class tenDOFclass(object):
 
     def returnAHRS(self):
         return "AHRS:{0:0.2f},{1:0.2f},{2:0.2f},{3:0.2f},{4:0.2f}".format(self.temp,self.alt,self.roll,self.pitch,self.heading)
+    def returnAHRSGD(self):
+        self.getOrientation();
+        self.temp =  self.BMP085Sensor.read_temperature()   + self.temp0
+        self.alt =   self.BMP085Sensor.read_altitude()      + self.alt0
+        return "AHRS:{0:0.2f},{1:0.2f},{2:0.2f},{3:0.2f},{4:0.2f}".format(self.temp,self.alt,self.roll,self.pitch,self.heading)

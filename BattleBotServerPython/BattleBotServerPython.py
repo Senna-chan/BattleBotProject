@@ -265,7 +265,7 @@ while True:
                 clientConnected = False;
                 running = False;
                 cleanup()
-        data = tenDOF.returnAHRS()
+        data = tenDOF.returnAHRSGD()
         s.sendto(data, addr)
         print time.time()-start
     else:
