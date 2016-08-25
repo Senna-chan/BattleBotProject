@@ -253,8 +253,6 @@ int main(int argc, char *argv[])
 	setupExitCallback();
 	scePowerSetClockFrequency(333, 333, 166);
 	int powerlock = 1;
-	scePowerLock(1);
-	scePowerTick(1);
 
 	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
 
@@ -512,15 +510,22 @@ int main(int argc, char *argv[])
 	int wheelpos2 = 0;
 	int servoY = 0;
 	int servoX = 0;
+
+	// Turn speed vars
+	int turngear = 4;
+	int turnmapMax = 100;
+	// Normal speed vars
 	int mapMax = 100;
 	int mapMin = -100;
 	int gear = 4;
+
 	char buf[255];
 	char *sensorData[9];
 	int oldButton = 0;
 	socklen_t server_addr_len = 0;
 
-	scePowerLock(1);
+	scePowerLock(0); // Forbids user to turn of the device
+	scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 	while (running)
 	{
 		sceCtrlPeekBufferPositive(&pad, 1);
@@ -531,7 +536,43 @@ int main(int argc, char *argv[])
 		pspDebugScreenSetXY(0, 0);
 		clearScreen(ColorBlack);
 		flipScreen();
+		if (scePowerGetBatteryLifePercent() < 10)
+		{
+			PrintError("BATTERY TO LOW");
+			PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
+			message = "DC:0,0,0:0,0";
+			for (;;) {
+				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+				{
+					PrintError("Send failed");
+					flipScreen();
+					sceDisplayWaitVblankStart();
+					delay(50);
+					continue;
+				}
+				break;
+			}
+			message = "client:psp:disconnected";
+			for (;;) {
+				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+				{
+					PrintError("\nSend failed");
+					flipScreen();
+					sceDisplayWaitVblankStart();
+					delay(50);
+					continue;
+				}
+				break;
+			}
+			delay(2000);
+			sceNetInetClose(socket_desc);
+			running = 0;
+			break;
+		}
 		PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
+		if (scePowerIsLowBattery()) {
+			PrintError("BATTERY IS LOW");
+		}
 		int aX = pad.Lx - 127;
 		int aY = (pad.Ly - 127) * -1 + 1;
 		if (aX > 27)		aX -= 28;
@@ -547,9 +588,6 @@ int main(int argc, char *argv[])
 		else {
 			aY = 0;
 		}
-
-		//		printf("Analog X = %d ", aX);
-		//		printf("Analog Y = %d \n", aY);
 		PrintText(60, 220, ColorWhite, "Analog Y = %d", aY);
 		PrintText(220, 220, ColorWhite, "Analog X = %d", aX);
 		sceCtrlPeekBufferPositive(&pad, 1);
@@ -626,32 +664,33 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
-				//if (!ButtonUp) {
-				//ButtonUp = 1;
-				printf("Up");
 				if (gear != 4) {
 					gear++;
 					mapMax += 25;
 					mapMin -= 25;
 				}
-				//}
 			}
-			//else ButtonUp = 0;
 			if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
-				//if (!ButtonDown) {
-				//ButtonDown = 1;
 				printf("Down");
 				if (gear != 1) {
 					gear--;
 					mapMax -= 25;
 					mapMin += 25;
 				}
-				//}
-
 			}
-			//else ButtonDown = 0;
-			if (pad.Buttons & PSP_CTRL_RIGHT)		printf("Right");
-			if (pad.Buttons & PSP_CTRL_LEFT)		printf("Left");
+			if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton) {
+				if (turngear != 4) {
+					turngear++;
+					turnmapMax += 25;
+				}
+			}
+			if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton) {
+				printf("Down");
+				if (turngear != 1) {
+					turngear--;
+					turnmapMax -= 25;
+				}
+			}
 
 
 			if (pad.Buttons & PSP_CTRL_CROSS && pad.Buttons != oldButton){
@@ -692,8 +731,6 @@ int main(int argc, char *argv[])
 			{
 				onHold = 1;
 			}
-
-			oldButton = pad.Buttons;
 		}
 		oldButton = pad.Buttons;
 
@@ -727,6 +764,8 @@ int main(int argc, char *argv[])
 				else if (aX < 0) {
 					wheelpos2 = aX * -1;
 				}
+				wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
+				wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
 				speed = map(speed, -100, 100, mapMin, mapMax);
 			}
 		}
@@ -735,8 +774,6 @@ int main(int argc, char *argv[])
 			speed = 0;
 			wheelpos1 = 0;
 			wheelpos2 = 0;
-			servoX = 0;
-			servoY = 0;
 		}
 		PrintText(110, 10, ColorWhite, "Gear: %i\n", gear);
 		char dcmessage[30];
@@ -746,6 +783,25 @@ int main(int argc, char *argv[])
 			printf("Send failed");
 			continue;
 		}
+		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+		if (buf != NULL) {
+			char *p = strtok(buf, ",:");
+			int i = 0;
+			while (p != NULL)
+			{
+				sensorData[i] = p;
+				p = strtok(NULL, ",:");
+				i++;
+			}
+			PrintText(10, 90, ColorBlack, "New Data");
+		}
+		PrintText(10, 90, ColorBlack, "Old Data");
+		PrintText(10, 100,  ColorBlue,"Temp:    %s", sensorData[1]);
+		PrintText(10, 110, ColorBlue, "Alt:     %s", sensorData[2]);
+		PrintText(10, 120, ColorBlue, "Roll:    %s", sensorData[3]);
+		PrintText(10, 130, ColorBlue, "Pitch:   %s", sensorData[4]);
+		PrintText(10, 140, ColorBlue, "Heading: %s", sensorData[5]);
+
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
 		if (buf != NULL) {
 			PrintText(10, 10, ColorWhite, "We recieved some data.");
@@ -758,11 +814,7 @@ int main(int argc, char *argv[])
 				i++;
 			}
 		}
-		PrintText(10, 80,  ColorBlue, "Temp:    %s", sensorData[1]);
-		PrintText(10, 100, ColorBlue, "Alt:     %s", sensorData[2]);
-		PrintText(10, 120, ColorBlue, "Roll:    %s", sensorData[3]);
-		PrintText(10, 140, ColorBlue, "Pitch:   %s", sensorData[4]);
-		PrintText(10, 160, ColorBlue, "Heading: %s", sensorData[5]);
+		memset(buf, 0, 255);
 		flipScreen();
 		sceDisplayWaitVblankStart();
 		delay(40);
