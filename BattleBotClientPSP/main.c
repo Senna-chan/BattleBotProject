@@ -48,7 +48,8 @@ int ColorRed = RGB(255, 0, 0); // Red
 int ColorBlue = RGB(0, 0, 255); // Blue
 int ColorGreen = RGB(0, 255, 0); // Green
 int ColorBlack = RGB(0, 0, 0); // Black
-int ColorWhite = RGB(255, 255, 255);
+int ColorWhite = RGB(255, 255, 255); // Black
+int ColorGray = RGB(126, 137, 126); // Gray-ish
 static int running = 1;
 
 /* Graphics stuff, based on cube sample */
@@ -221,10 +222,10 @@ int QuitScreen()
 	SceCtrlData pad;
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-	PrintText(200, 120, ColorWhite, "Do you want to quit?");
-	PrintText(200, 130, ColorRed, "X = Yes");
-	PrintText(260, 130, ColorWhite, "/");
-	PrintText(265, 130, ColorGreen, "O = No");
+	PrintText(150, 120, ColorWhite, "Do you want to quit?");
+	PrintText(150, 130, ColorRed, "X = Yes");
+	PrintText(210, 130, ColorWhite, "/");
+	PrintText(225, 130, ColorGreen, "O = No");
 	flipScreen();
 	while (true)
 	{
@@ -235,7 +236,7 @@ int QuitScreen()
 			if(pad.Buttons & PSP_CTRL_CROSS)
 			{
 				clearScreen(ColorBlack);
-				PrintText(100, 220, ColorWhite, "Bye Bye");
+				PrintText(170, 125, ColorWhite, "Bye Bye");
 				flipScreen();
 				delay(250);
 				return 1;
@@ -385,16 +386,16 @@ int main(int argc, char *argv[])
 				{
 					switch (index) {
 					case 1:
-						if (ip1 > 10) ip1 -= 10;
+						if (ip1 >= 10) ip1 -= 10;
 						break;
 					case 2:
-						if (ip2 > 10) ip2 -= 10;
+						if (ip2 >= 10 ) ip2 -= 10;
 						break;
 					case 3:
-						if (ip3 > 10) ip3 -= 10;
+						if (ip3 >= 10) ip3 -= 10;
 						break;
 					case 4:
-						if (ip4 > 10) ip4 -= 10;
+						if (ip4 >= 10) ip4 -= 10;
 						break;
 					}
 				}
@@ -493,8 +494,8 @@ int main(int argc, char *argv[])
 		PrintError("Send failed");
 		flipScreen();
 		sceDisplayWaitVblankStart();
-		delay(500);
 		PrintError("Trying to send handshake again");
+		delay(500);
 		if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 		{
 			PrintError("Send failed. Shutting down");
@@ -544,7 +545,7 @@ int main(int argc, char *argv[])
 			for (;;) {
 				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 				{
-					PrintError("Send failed");
+					PrintError("Motor stop message failed sending");
 					flipScreen();
 					sceDisplayWaitVblankStart();
 					delay(50);
@@ -556,7 +557,7 @@ int main(int argc, char *argv[])
 			for (;;) {
 				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 				{
-					PrintError("\nSend failed");
+					PrintError("Disconenct message failed sending");
 					flipScreen();
 					sceDisplayWaitVblankStart();
 					delay(50);
@@ -598,7 +599,8 @@ int main(int argc, char *argv[])
 				for (;;) {
 					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 					{
-						printf("\nSend failed");
+						PrintError("\nSend failed");
+						flipScreen();
 						sceDisplayWaitVblankStart();
 						delay(50);
 						continue;
@@ -610,7 +612,8 @@ int main(int argc, char *argv[])
 					for (;;) {
 						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 						{
-							printf("\nSend failed");
+							PrintError("\nSend failed");
+							flipScreen();
 							sceDisplayWaitVblankStart();
 							delay(50);
 							continue;
@@ -653,7 +656,8 @@ int main(int argc, char *argv[])
 							//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
 							if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 							{
-								printf("\nSend failed");
+								PrintError("\nSend failed");
+								flipScreen();
 								sceDisplayWaitVblankStart();
 							}
 							sceNetInetClose(socket_desc);
@@ -671,7 +675,6 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
-				printf("Down");
 				if (gear != 1) {
 					gear--;
 					mapMax -= 25;
@@ -685,7 +688,6 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton) {
-				printf("Down");
 				if (turngear != 1) {
 					turngear--;
 					turnmapMax -= 25;
@@ -775,16 +777,19 @@ int main(int argc, char *argv[])
 			wheelpos1 = 0;
 			wheelpos2 = 0;
 		}
-		PrintText(110, 10, ColorWhite, "Gear: %i\n", gear);
+		PrintText(10, 10, ColorGray, "PSP Data");
+		PrintText(10, 20, ColorWhite, "Speed gear:     %i", gear);
+		PrintText(10, 30, ColorWhite, "Steering gear:  %i", turngear);
 		char dcmessage[30];
 		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
 		if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
 		{
-			printf("Send failed");
+			PrintError("Send failed");
 			continue;
 		}
+		buf[0] = '\0';
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-		if (buf != NULL) {
+		if (buf[0] != '\0') {
 			char *p = strtok(buf, ",:");
 			int i = 0;
 			while (p != NULL)
@@ -793,28 +798,36 @@ int main(int argc, char *argv[])
 				p = strtok(NULL, ",:");
 				i++;
 			}
-			PrintText(10, 90, ColorBlack, "New Data");
+			PrintText(10, 70, ColorGray, "New 10DOF Data");
 		}
-		PrintText(10, 90, ColorBlack, "Old Data");
-		PrintText(10, 100,  ColorBlue,"Temp:    %s", sensorData[1]);
-		PrintText(10, 110, ColorBlue, "Alt:     %s", sensorData[2]);
-		PrintText(10, 120, ColorBlue, "Roll:    %s", sensorData[3]);
-		PrintText(10, 130, ColorBlue, "Pitch:   %s", sensorData[4]);
-		PrintText(10, 140, ColorBlue, "Heading: %s", sensorData[5]);
+		else
+		{
+			PrintText(10, 70, ColorGray, "Old 10DOF Data");
+		}
+		PrintText(10, 80,  ColorBlue, "Temp:            %s", sensorData[1]);
+		PrintText(10, 90, ColorBlue,  "Altitude:        %s", sensorData[2]);
+		PrintText(10, 100, ColorBlue, "Roll:            %s", sensorData[3]);
+		PrintText(10, 110, ColorBlue, "Pitch:           %s", sensorData[4]);
+		PrintText(10, 120, ColorBlue, "Heading:         %s", sensorData[5]);
 
-		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-		if (buf != NULL) {
-			PrintText(10, 10, ColorWhite, "We recieved some data.");
-			char *p = strtok(buf, ",:");
-			int i = 0;
-			while (p != NULL)
-			{
-				sensorData[i] = p;
-				p = strtok(NULL, ",:");
-				i++;
-			}
-		}
-		memset(buf, 0, 255);
+//		memset(buf, 0, 255);
+//		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+//		if (buf != NULL) {
+//			char *p = strtok(buf, ",:");
+//			int i = 0;
+//			while (p != NULL)
+//			{
+//				sensorData[i] = p;
+//				p = strtok(NULL, ",:");
+//				i++;
+//			}
+//		}
+
+		PrintText(10, 140, ColorGray, "GPS Data");
+		PrintText(10, 150, ColorBlue, "Longitude:       %s", "NULL");
+		PrintText(10, 160, ColorBlue, "Latitude:        %s", "NULL");
+		PrintText(10, 170, ColorBlue, "Altitude:        %s", "NULL");
+		PrintText(10, 180, ColorBlue, "Heading:	        %s", "NULL");
 		flipScreen();
 		sceDisplayWaitVblankStart();
 		delay(40);
