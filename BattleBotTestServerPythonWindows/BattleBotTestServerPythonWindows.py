@@ -1,12 +1,16 @@
 #!/usr/bin/python
-import socket, atexit, math, threading, sys, os, time
+import socket, atexit, math, threading, sys, os, time, random
 from MotorHelper import MotorHelper
 import math
 import netifaces as ni
 from time import sleep
 import threading
 
+import win32api,win32process,win32con
 
+pid = win32api.GetCurrentProcessId()
+handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
+win32process.SetPriorityClass(handle, win32process.REALTIME_PRIORITY_CLASS) 
 
 isStepping = False;
 DC1Helper = MotorHelper(1)
@@ -156,8 +160,8 @@ while True:
             if(clientaction == "connected"):
                 clientSendedHandshake = True;
                 clientConnected = True;
-                print "Senpai noticed me from: "+str(addr[0])
                 s.sendto("YouConnected", addr)
+                print "Senpai noticed me from: "+str(addr[0])
 
             if(clientaction == "disconnected"):
                 StopMotors()
@@ -173,7 +177,6 @@ while True:
                 elif(clientaction == "disconnected"):
                     print "PSP just disconnected"
                     clientConnected = False;
-
 
         if(ctype.startswith("dc") and len(typcom) == 3):
             print time.time()-start
@@ -206,9 +209,11 @@ while True:
                 clientConnected = False;
                 running = False;
                 cleanup()
-        data = "AHRS:21.10,2.42,160.65,42.34,-16.92"
+        
+        data = "AHRS:{0:0.2f},{1:0.2f},{2:0.2f},{3:0.2f},{4:0.2f}".format(random.uniform(20, 30),random.uniform(0, 20),random.uniform(-180, 180),random.uniform(-180, 180),random.uniform(-180, 180))
         s.sendto(data, addr)
-        data = "GPS:5.927234234234,63.871243876,2.83,-16.92"
+        time.sleep(0.005)
+        data = "gps:{0:0.15f},{1:0.15f},{2:0.2f},{3:0.2f},{4:0.2f}".format(random.uniform(5, 5.5),random.uniform(40, 40.5),random.uniform(0, 30),random.uniform(0,20),random.uniform(-180, 180))
         s.sendto(data, addr)
         print time.time()-start
     else:

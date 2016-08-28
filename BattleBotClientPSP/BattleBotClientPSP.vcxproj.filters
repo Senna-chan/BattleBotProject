@@ -27,6 +27,9 @@
     <ClCompile Include="common\graphics.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="common\ini.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

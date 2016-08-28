@@ -11,6 +11,8 @@ from time import sleep
 from tenDOFclass import *
 import threading
 
+
+os.nice(20) # High priority for better performance
 servo = Adafruit_PCA9685.PCA9685(address=0x40)
 motor = Adafruit_PCA9685.PCA9685(address=0x60)
 motor.set_pwm_freq(1000)
@@ -217,6 +219,7 @@ while True:
             if(clientaction == "connected"):
                 clientSendedHandshake = True;
                 clientConnected = True;
+                s.sendto("YouConnected", addr) # Super crude handshaking but it works (kinda)
                 print "Senpai noticed me from: "+str(addr[0])
             if(clientaction == "disconnected"):
                 StopMotors()

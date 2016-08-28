@@ -37,6 +37,8 @@
 #include "common/callback.h"
 #include "common/graphics.h"
 #include <psppower.h>
+#include <stdlib.h>
+#include "common/ini.h"
 
 PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
 
@@ -250,6 +252,52 @@ int QuitScreen()
 		}
 	}
 }
+void PrintToScreen(Color color)
+{
+	flipScreen();
+	clearScreen(color);
+}
+
+int StringStartsWith(const char *pre, const char *str)
+{
+	return strncmp(pre, str, strlen(pre)) == 0;
+}
+void remove_all_chars(char* str, char c) {
+	char *pr = str, *pw = str;
+	while (*pr) {
+		*pw = *pr++;
+		pw += (*pw != c);
+	}
+	*pw = '\0';
+}
+// Config file stuff
+typedef struct
+{
+	char *ip1;
+	char *ip2;
+	char *ip3;
+} configuration;
+static int handler(void* user, const char* section, const char* name,
+	const char* value)
+{
+	configuration* pconfig = (configuration*)user;
+
+#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+	if (MATCH("IP", "ip1")) {
+		pconfig->ip1 = strdup(value);
+	}
+	else if (MATCH("IP", "ip2")) {
+		pconfig->ip2 = strdup(value);
+	}
+	else if (MATCH("IP", "ip3")) {
+		pconfig->ip3 = strdup(value);
+	}
+	else {
+		return 0;  /* unknown section/name, error */
+	}
+	return 1;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -272,27 +320,41 @@ int main(int argc, char *argv[])
 	clearScreen(ColorBlack);
 	flipScreen();
 	int ipToChoose;
+
+
+	int ip1 = 192;
+	int ip2 = 168;
+	int ip3 = 000;
+	int ip4 = 001;
+
+	configuration config;
+
+	if (ini_parse("config.ini", handler, &config) < 0) {
+		PrintError("Can't load config.ini");
+		PrintText(50, 100, ColorRed, "Please make sure that the config.ini file is present");
+		PrintToScreen(ColorBlack);
+		delay(1000);
+		return 0;
+	}
+	
+
 	while (isRunning()) {
-		PrintText(10, 10, ColorWhite, "Select /\\ for 192.168.43.251");
-		PrintText(10, 20, ColorWhite, "Select o for 192.168.1.132");
-		PrintText(10, 30, ColorWhite, "Select x for 192.168.1.102");
-		PrintText(10, 40, ColorWhite, "Press [] for manual entering IP W.I.P.");
+		PrintText(10, 10, ColorWhite, "Select /\\ for %s", config.ip1);
+		PrintText(10, 20, ColorWhite, "Select o for  %s", config.ip2);
+		PrintText(10, 30, ColorWhite, "Select x for  %s", config.ip3);
+		PrintText(10, 40, ColorWhite, "Select [] for manual entering IP W.I.P.");
 		flipScreen();
 		sceDisplayWaitVblankStart();
 		SceCtrlData pad;
 		sceCtrlSetSamplingCycle(0);
 		sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-		int ip1 = 192;
-		int ip2 = 168;
-		int ip3 = 000;
-		int ip4 = 001;
-
 		while (1) {
 			sceCtrlPeekBufferPositive(&pad, 1);
 
 			if (pad.Buttons != 0)
 			{
-				if (pad.Buttons & PSP_CTRL_CROSS) {
+
+				if (pad.Buttons & PSP_CTRL_TRIANGLE) {
 					ipToChoose = 1;
 					break;
 				}
@@ -300,7 +362,7 @@ int main(int argc, char *argv[])
 					ipToChoose = 2;
 					break;
 				}
-				if (pad.Buttons & PSP_CTRL_TRIANGLE) {
+				if (pad.Buttons & PSP_CTRL_CROSS) {
 					ipToChoose = 3;
 					break;
 				}
@@ -321,13 +383,13 @@ int main(int argc, char *argv[])
 		switch (ipToChoose)
 		{
 		case 1:
-			ip = "192.168.1.102";
+			ip = config.ip1;
 			break;
 		case 2:
-			ip = "192.168.1.132";
+			ip = config.ip2;
 			break;
 		case 3:
-			ip = "192.168.43.251";
+			ip = config.ip3;
 			break;
 		case 4:;
 			int oldButton = 0;
@@ -453,7 +515,7 @@ int main(int argc, char *argv[])
 		default:
 			break;
 		}
-		PrintText(100, 100, ColorRed, "IP: %s", ip);
+		PrintText(100, 80, ColorRed, "IP: %s", ip);
 		flipScreen();
 		delay(1000);
 		pspDebugScreenClear();
@@ -481,8 +543,7 @@ int main(int argc, char *argv[])
 		if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
 		{
 			PrintError("Error connecting to socket. errno=$%x", sceNetInetGetErrno());
-			flipScreen();
-			sceDisplayWaitVblankStart();
+			PrintToScreen(ColorBlack);
 			delay(1000);
 			netTerm();
 			sceKernelExitGame();
@@ -491,22 +552,23 @@ int main(int argc, char *argv[])
 		int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 		if (err != 0) {
 			PrintError("set SO_RCVTIMEO failed");
-			flipScreen();
+			PrintToScreen(ColorBlack);
+			delay(1000);
 		}
 		//Send some data
 		message = "client:psp:connected";
 		if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 		{
 			PrintError("Send failed");
-			flipScreen();
-			sceDisplayWaitVblankStart();
+			PrintToScreen(ColorBlack);
+			delay(5000);
 			PrintError("Trying to send handshake again");
+			PrintToScreen(ColorBlack);
 			delay(500);
 			if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 			{
 				PrintError("Send failed. Shutting down");
-				flipScreen();
-				sceDisplayWaitVblankStart();
+				PrintToScreen(ColorBlack);
 				delay(500);
 				netTerm();
 				sceKernelExitGame();
@@ -528,16 +590,20 @@ int main(int argc, char *argv[])
 
 		char buf[255];
 		buf[0] = '\0';
+		char dofbuf[255];
+		dofbuf[0] = '\0';
+		char gpsbuf[255];
+		gpsbuf[0] = '\0';
 		char *sensorData[9];
 		char *gpsData[9];
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
 
 
-
+		buf[0] = '\0';
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-		delay(20);
-		if (buf != NULL)
+		delay(30);
+		if (buf[0] != '\0')
 		{
 			clearScreen(ColorBlack);
 			flipScreen();
@@ -783,14 +849,14 @@ int main(int argc, char *argv[])
 					wheelpos1 = 0;
 					wheelpos2 = aX * -1;
 				}
-				PrintText(100, 10, ColorWhite, "Cruise");
+				PrintText(10, 20, ColorWhite, "Drive mode:     %s" , "Cruise controlled");
 			}
 			else {
 				if (rPressed)// Servo
 				{
 					servoX = aX;
 					servoY = aY;
-					PrintText(100, 10, ColorWhite, "No cruise and servo");
+					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Servo moving");
 				}
 				else if (!rPressed)// Motor
 				{
@@ -804,6 +870,7 @@ int main(int argc, char *argv[])
 					wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
 					wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
 					speed = map(speed, -100, 100, mapMin, mapMax);
+					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
 				}
 			}
 			if (onHold)
@@ -813,10 +880,12 @@ int main(int argc, char *argv[])
 				wheelpos2 = 0;
 			}
 			PrintText(10, 10, ColorGray, "PSP Data");
-			PrintText(10, 20, ColorWhite, "Speed gear:     %i", gear);
-			PrintText(10, 30, ColorWhite, "Steering gear:  %i", turngear);
-			PrintText(10, 40, ColorWhite, "Analog Y:       %d", aY);
-			PrintText(10, 50, ColorWhite, "Analog X:       %d", aX);
+			//PrintText(10, 20, ColorBlack, ""); I already printed something here
+			PrintText(10, 30, ColorWhite, "Speed gear:     %i", gear);
+			PrintText(10, 40, ColorWhite, "Steering gear:  %i", turngear);
+			PrintText(10, 50, ColorWhite, "Analog Y:       %d", aY);
+			PrintText(10, 60, ColorWhite, "Analog X:       %d", aX);
+			
 			char dcmessage[30];
 			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
 			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
@@ -824,10 +893,10 @@ int main(int argc, char *argv[])
 				PrintError("Send failed");
 				continue;
 			}
-			buf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (buf[0] != '\0') {
-				char *p = strtok(buf, ",:");
+			dofbuf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, dofbuf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (dofbuf[0] != '\0') {
+				char *p = strtok(dofbuf, ",:");
 				int i = 0;
 				while (p != NULL)
 				{
@@ -835,22 +904,22 @@ int main(int argc, char *argv[])
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				PrintText(10, 70, ColorGray, "New 10DOF Data");
+				PrintText(10, 80, ColorGray, "New 10DOF Data");
 			}
 			else
 			{
-				PrintText(10, 70, ColorGray, "Old 10DOF Data");
+				PrintText(10, 80, ColorGray, "Old 10DOF Data");
 			}
-			PrintText(10, 80, ColorBlue, "Temp:            %s", sensorData[1]);
-			PrintText(10, 90, ColorBlue, "Altitude:        %s", sensorData[2]);
-			PrintText(10, 100, ColorBlue, "Roll:            %s", sensorData[3]);
-			PrintText(10, 110, ColorBlue, "Pitch:           %s", sensorData[4]);
-			PrintText(10, 120, ColorBlue, "Heading:         %s", sensorData[5]);
+			PrintText(10, 90, ColorBlue, "Temp:            %s", sensorData[1]);
+			PrintText(10, 100, ColorBlue, "Altitude:        %s", sensorData[2]);
+			PrintText(10, 110, ColorBlue, "Roll:            %s", sensorData[3]);
+			PrintText(10, 120, ColorBlue, "Pitch:           %s", sensorData[4]);
+			PrintText(10, 130, ColorBlue, "Heading:         %s", sensorData[5]);
 			delay(10);
-			buf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (buf[0] != '\0') {
-				char *p = strtok(buf, ",:");
+			gpsbuf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, gpsbuf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (gpsbuf[0] != '\0') {
+				char *p = strtok(gpsbuf, ",:");
 				int i = 0;
 				while (p != NULL)
 				{
@@ -858,16 +927,16 @@ int main(int argc, char *argv[])
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				PrintText(10, 140, ColorGray, "New GPS Data");
+				PrintText(10, 150, ColorGray, "New GPS Data");
 			}
 			else
 			{
-				PrintText(10, 140, ColorGray, "Old GPS Data");
+				PrintText(10, 150, ColorGray, "Old GPS Data");
 			}
-			PrintText(10, 150, ColorBlue, "Longitude:       %s", gpsData[1]);
-			PrintText(10, 160, ColorBlue, "Latitude:        %s", gpsData[2]);
-			PrintText(10, 170, ColorBlue, "Altitude:        %s", gpsData[3]);
-			PrintText(10, 180, ColorBlue, "Heading:         %s", gpsData[4]);
+			PrintText(10, 160, ColorBlue, "Longitude:       %s", gpsData[1]);
+			PrintText(10, 170, ColorBlue, "Latitude:        %s", gpsData[2]);
+			PrintText(10, 180, ColorBlue, "Altitude:        %s", gpsData[3]);
+			PrintText(10, 190, ColorBlue, "Heading:         %s", gpsData[4]);
 			flipScreen();
 			delay(30);
 		}
