@@ -222,6 +222,7 @@ int QuitScreen()
 	SceCtrlData pad;
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	clearScreen(ColorBlack);
 	PrintText(150, 120, ColorWhite, "Do you want to quit?");
 	PrintText(150, 130, ColorRed, "X = Yes");
 	PrintText(210, 130, ColorWhite, "/");
@@ -239,6 +240,7 @@ int QuitScreen()
 				PrintText(170, 125, ColorWhite, "Bye Bye");
 				flipScreen();
 				delay(250);
+				scePowerUnlock(0);
 				return 1;
 			}
 			if(pad.Buttons & PSP_CTRL_CIRCLE)
@@ -270,336 +272,329 @@ int main(int argc, char *argv[])
 	clearScreen(ColorBlack);
 	flipScreen();
 	int ipToChoose;
-	PrintText(10, 10, ColorWhite, "Select /\\ for 192.168.43.251");
-	PrintText(10, 20, ColorWhite, "Select o for 192.168.1.132");
-	PrintText(10, 30, ColorWhite, "Select x for 192.168.1.102");
-	PrintText(10, 40, ColorWhite, "Press [] for manual entering IP W.I.P.");
-	flipScreen();
-	sceDisplayWaitVblankStart();
-	SceCtrlData pad;
-	sceCtrlSetSamplingCycle(0);
-	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-	int ip1 = 192;
-	int ip2 = 168;
-	int ip3 = 000;
-	int ip4 = 000;
-
-	while (1) {
-		sceCtrlPeekBufferPositive(&pad, 1);
-
-		if (pad.Buttons != 0)
-		{
-			if (pad.Buttons & PSP_CTRL_CROSS) {
-				ipToChoose = 1;
-				//ip = "192.168.1.101";
-				break;
-			}
-			if (pad.Buttons & PSP_CTRL_CIRCLE) {
-				ipToChoose = 2;
-				//ip = "192.168.1.132";
-				break;
-			}
-			if (pad.Buttons & PSP_CTRL_TRIANGLE) {
-				ipToChoose = 3;
-				//ip = "192.168.43.251";
-				break;
-			}
-			if (pad.Buttons & PSP_CTRL_START) {
-				QuitScreen();
-			}
-			if (pad.Buttons & PSP_CTRL_SQUARE) {
-				ipToChoose = 4;
-				break;
-			}
-		}
-	}
-	switch (ipToChoose)
-	{
-	case 1:
-		ip = "192.168.1.102";
-		break;
-	case 2:
-		ip = "192.168.1.132";
-		break;
-	case 3:
-		ip = "192.168.43.251";
-		break;
-	case 4:;
-		int oldButton = 0;
-		int index = 1;
+	while (isRunning()) {
+		PrintText(10, 10, ColorWhite, "Select /\\ for 192.168.43.251");
+		PrintText(10, 20, ColorWhite, "Select o for 192.168.1.132");
+		PrintText(10, 30, ColorWhite, "Select x for 192.168.1.102");
+		PrintText(10, 40, ColorWhite, "Press [] for manual entering IP W.I.P.");
 		flipScreen();
+		sceDisplayWaitVblankStart();
+		SceCtrlData pad;
+		sceCtrlSetSamplingCycle(0);
+		sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+		int ip1 = 192;
+		int ip2 = 168;
+		int ip3 = 000;
+		int ip4 = 001;
+
 		while (1) {
 			sceCtrlPeekBufferPositive(&pad, 1);
+
 			if (pad.Buttons != 0)
 			{
-				if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
-					switch (index) {
-					case 1:
-						if (ip1 < 255) ip1++;
-						break;
-					case 2:
-						if (ip2 < 255) ip2++;
-						break;
-					case 3:
-						if (ip3 < 255) ip3++;
-						break;
-					case 4:
-						if (ip4 < 255) ip4++;
-						break;
-					}
-				}
-				if (pad.Buttons & PSP_CTRL_RTRIGGER && pad.Buttons != oldButton)
-				{
-					switch (index) {
-					case 1:
-						if (ip1 < 245) ip1 += 10;
-						break;
-					case 2:
-						if (ip2 < 245) ip2 += 10;
-						break;
-					case 3:
-						if (ip3 < 245) ip3 += 10;
-						break;
-					case 4:
-						if (ip4 < 245) ip4 += 10;
-						break;
-					}
-				}
-
-				if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
-					switch (index) {
-					case 1:
-						if (ip1 > 0) ip1--;
-						break;
-					case 2:
-						if (ip2 > 0) ip2--;
-						break;
-					case 3:
-						if (ip3 > 0) ip3--;
-						break;
-					case 4:
-						if (ip4 > 0) ip4--;
-						break;
-					}
-				}
-				if (pad.Buttons & PSP_CTRL_LTRIGGER && pad.Buttons != oldButton)
-				{
-					switch (index) {
-					case 1:
-						if (ip1 >= 10) ip1 -= 10;
-						break;
-					case 2:
-						if (ip2 >= 10 ) ip2 -= 10;
-						break;
-					case 3:
-						if (ip3 >= 10) ip3 -= 10;
-						break;
-					case 4:
-						if (ip4 >= 10) ip4 -= 10;
-						break;
-					}
-				}
-
-
-				if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton)
-				{
-					if (index != 4) index++;
-				}
-				if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton)
-				{
-					if (index != 1) index--;
-				}
-
-				if (pad.Buttons & PSP_CTRL_CROSS)
-				{
+				if (pad.Buttons & PSP_CTRL_CROSS) {
+					ipToChoose = 1;
 					break;
 				}
-				if(pad.Buttons & PSP_CTRL_START)
-				{
-					if(QuitScreen())
+				if (pad.Buttons & PSP_CTRL_CIRCLE) {
+					ipToChoose = 2;
+					break;
+				}
+				if (pad.Buttons & PSP_CTRL_TRIANGLE) {
+					ipToChoose = 3;
+					break;
+				}
+				if (pad.Buttons & PSP_CTRL_START) {
+					if (QuitScreen())
 					{
 						netTerm();
 						sceKernelExitGame();
 						return 0;
 					}
 				}
-				PrintText(10, 10, ColorWhite, "Enter a ip address here:");
-				if (index == 1) PrintText(50, 50, ColorBlue, "%i", ip1);
-				else			PrintText(50, 50, ColorWhite, "%i", ip1);
-				PrintText(74, 50, ColorWhite, ".");
-				if (index == 2) PrintText(80, 50, ColorBlue, "%i", ip2);
-				else			PrintText(80, 50, ColorWhite, "%i", ip2);
-				PrintText(104, 50, ColorWhite, ".");
-				if (index == 3) PrintText(110, 50, ColorBlue, "%i", ip3);
-				else			PrintText(110, 50, ColorWhite, "%i", ip3);
-				PrintText(132, 50, ColorWhite, ".");
-				if (index == 4) PrintText(138, 50, ColorBlue, "%i", ip4);
-				else			PrintText(138, 50, ColorWhite, "%i", ip4);
-
-				PrintText(10, 230, ColorWhite, "Controls: Left=goto left, Right=goto right, Up=+1, Down=-1");
-				PrintText(10, 240, ColorWhite, "R=+10, L=-10, Start=quit, X=confirm");
-				flipScreen();
-				clearScreen(ColorBlack);
+				if (pad.Buttons & PSP_CTRL_SQUARE) {
+					ipToChoose = 4;
+					break;
+				}
 			}
-			oldButton = pad.Buttons;
 		}
-		snprintf(ip, 20, "%i.%i.%i.%i", ip1, ip2, ip3, ip4);
-		break;
-	default:
-		break;
-	}
-	PrintText(100, 100, ColorRed,"IP: %s",ip);
-	flipScreen();
-	delay(1000);
-	pspDebugScreenClear();
-	int socket_desc;
-	struct sockaddr_in server;
-	char *message;
-	pspDebugScreenSetXY(0, 0);
-	socket_desc = sceNetInetSocket(AF_INET, SOCK_DGRAM, 0);
-	if (socket_desc == -1)
-	{
-		PrintError("Could not create socket. errno=$%x", sceNetInetGetErrno());
-		flipScreen();
-		sceDisplayWaitVblankStart();
-		delay(1000);
-		netTerm();
-		sceKernelExitGame();
-	}
-
-	server.sin_addr.s_addr = inet_addr(ip);
-	server.sin_family = AF_INET;
-	server.sin_port = htons(20010);
-
-	//Connect to remote server
-	if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
-	{
-		PrintError("Error connecting to socket. errno=$%x", sceNetInetGetErrno());
-		flipScreen();
-		sceDisplayWaitVblankStart();
-		delay(1000);
-		netTerm();
-		sceKernelExitGame();
-	}
-	int timeout = 20000; // in microseconds
-	int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
-	if (err != 0) {
-		PrintError("set SO_RCVTIMEO failed");
-		flipScreen();
-	}
-	//Send some data
-	message = "client:psp:connected";
-	if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-	{
-		PrintError("Send failed");
-		flipScreen();
-		sceDisplayWaitVblankStart();
-		PrintError("Trying to send handshake again");
-		delay(500);
-		if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+		switch (ipToChoose)
 		{
-			PrintError("Send failed. Shutting down");
+		case 1:
+			ip = "192.168.1.102";
+			break;
+		case 2:
+			ip = "192.168.1.132";
+			break;
+		case 3:
+			ip = "192.168.43.251";
+			break;
+		case 4:;
+			int oldButton = 0;
+			int index = 1;
+			flipScreen();
+			while (1) {
+				sceCtrlPeekBufferPositive(&pad, 1);
+				if (pad.Buttons != 0)
+				{
+					if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
+						switch (index) {
+						case 1:
+							if (ip1 < 255) ip1++;
+							break;
+						case 2:
+							if (ip2 < 255) ip2++;
+							break;
+						case 3:
+							if (ip3 < 255) ip3++;
+							break;
+						case 4:
+							if (ip4 < 254) ip4++;
+							break;
+						}
+					}
+					if (pad.Buttons & PSP_CTRL_RTRIGGER && pad.Buttons != oldButton)
+					{
+						switch (index) {
+						case 1:
+							if (ip1 < 245) ip1 += 10;
+							break;
+						case 2:
+							if (ip2 < 245) ip2 += 10;
+							break;
+						case 3:
+							if (ip3 < 245) ip3 += 10;
+							break;
+						case 4:
+							if (ip4 < 244) ip4 += 10;
+							break;
+						}
+					}
+
+					if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
+						switch (index) {
+						case 1:
+							if (ip1 > 0) ip1--;
+							break;
+						case 2:
+							if (ip2 > 0) ip2--;
+							break;
+						case 3:
+							if (ip3 > 0) ip3--;
+							break;
+						case 4:
+							if (ip4 > 1) ip4--;
+							break;
+						}
+					}
+					if (pad.Buttons & PSP_CTRL_LTRIGGER && pad.Buttons != oldButton)
+					{
+						switch (index) {
+						case 1:
+							if (ip1 >= 10) ip1 -= 10;
+							break;
+						case 2:
+							if (ip2 >= 10) ip2 -= 10;
+							break;
+						case 3:
+							if (ip3 >= 10) ip3 -= 10;
+							break;
+						case 4:
+							if (ip4 >= 11) ip4 -= 10;
+							break;
+						}
+					}
+
+
+					if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton)
+					{
+						if (index != 4) index++;
+					}
+					if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton)
+					{
+						if (index != 1) index--;
+					}
+
+					if (pad.Buttons & PSP_CTRL_CROSS)
+					{
+						break;
+					}
+					if (pad.Buttons & PSP_CTRL_START)
+					{
+						if (QuitScreen())
+						{
+							netTerm();
+							sceKernelExitGame();
+							return 0;
+						}
+					}
+					PrintText(10, 10, ColorWhite, "Enter a ip address here:");
+					if (index == 1) PrintText(50, 50, ColorBlue, "%i", ip1);
+					else			PrintText(50, 50, ColorWhite, "%i", ip1);
+					PrintText(74, 50, ColorWhite, ".");
+					if (index == 2) PrintText(80, 50, ColorBlue, "%i", ip2);
+					else			PrintText(80, 50, ColorWhite, "%i", ip2);
+					PrintText(104, 50, ColorWhite, ".");
+					if (index == 3) PrintText(110, 50, ColorBlue, "%i", ip3);
+					else			PrintText(110, 50, ColorWhite, "%i", ip3);
+					PrintText(132, 50, ColorWhite, ".");
+					if (index == 4) PrintText(138, 50, ColorBlue, "%i", ip4);
+					else			PrintText(138, 50, ColorWhite, "%i", ip4);
+
+					PrintText(10, 230, ColorWhite, "Controls: Left=goto left, Right=goto right, Up=+1, Down=-1");
+					PrintText(10, 240, ColorWhite, "R=+10, L=-10, Start=quit, X=confirm");
+					flipScreen();
+					clearScreen(ColorBlack);
+				}
+				oldButton = pad.Buttons;
+			}
+			snprintf(ip, 20, "%i.%i.%i.%i", ip1, ip2, ip3, ip4);
+			break;
+		default:
+			break;
+		}
+		PrintText(100, 100, ColorRed, "IP: %s", ip);
+		flipScreen();
+		delay(1000);
+		pspDebugScreenClear();
+		int socket_desc;
+		struct sockaddr_in server;
+		char *message;
+		pspDebugScreenSetXY(0, 0);
+		socket_desc = sceNetInetSocket(AF_INET, SOCK_DGRAM, 0);
+		if (socket_desc == -1)
+		{
+			PrintError("Could not create socket. errno=$%x", sceNetInetGetErrno());
 			flipScreen();
 			sceDisplayWaitVblankStart();
-			delay(500);
+			delay(1000);
+			netTerm();
+			sceKernelExitGame();
+			return 0;
+		}
+
+		server.sin_addr.s_addr = inet_addr(ip);
+		server.sin_family = AF_INET;
+		server.sin_port = htons(20010);
+
+		//Connect to remote server
+		if (sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server)) < 0)
+		{
+			PrintError("Error connecting to socket. errno=$%x", sceNetInetGetErrno());
+			flipScreen();
+			sceDisplayWaitVblankStart();
+			delay(1000);
 			netTerm();
 			sceKernelExitGame();
 		}
-	}
-	int speed = 0;
-	int wheelpos1 = 0;
-	int wheelpos2 = 0;
-	int servoY = 0;
-	int servoX = 0;
+		int timeout = 20000; // in microseconds
+		int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
+		if (err != 0) {
+			PrintError("set SO_RCVTIMEO failed");
+			flipScreen();
+		}
+		//Send some data
+		message = "client:psp:connected";
+		if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+		{
+			PrintError("Send failed");
+			flipScreen();
+			sceDisplayWaitVblankStart();
+			PrintError("Trying to send handshake again");
+			delay(500);
+			if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+			{
+				PrintError("Send failed. Shutting down");
+				flipScreen();
+				sceDisplayWaitVblankStart();
+				delay(500);
+				netTerm();
+				sceKernelExitGame();
+			}
+		}
+		int speed = 0;
+		int wheelpos1 = 0;
+		int wheelpos2 = 0;
+		int servoY = 0;
+		int servoX = 0;
 
-	// Turn speed vars
-	int turngear = 4;
-	int turnmapMax = 100;
-	// Normal speed vars
-	int mapMax = 100;
-	int mapMin = -100;
-	int gear = 4;
+		// Turn speed vars
+		int turngear = 4;
+		int turnmapMax = 100;
+		// Normal speed vars
+		int mapMax = 100;
+		int mapMin = -100;
+		int gear = 4;
 
-	char buf[255];
-	char *sensorData[9];
-	int oldButton = 0;
-	socklen_t server_addr_len = 0;
+		char buf[255];
+		buf[0] = '\0';
+		char *sensorData[9];
+		char *gpsData[9];
+		int oldButton = 0;
+		socklen_t server_addr_len = 0;
 
-	scePowerLock(0); // Forbids user to turn of the device
-	scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
-	while (running)
-	{
-		sceCtrlPeekBufferPositive(&pad, 1);
-		int cruiseControll = 0;
-		int rPressed = 0;
-		int onHold = 0;
-		running = isRunning();
-		pspDebugScreenSetXY(0, 0);
+
+
+		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+		delay(20);
+		if (buf != NULL)
+		{
+			clearScreen(ColorBlack);
+			flipScreen();
+			clearScreen(ColorBlack);
+			PrintText(150, 100, ColorGreen, "Connection made");
+			flipScreen();
+			delay(1000);
+		}
+		else
+		{
+			clearScreen(ColorBlack);
+			flipScreen();
+			clearScreen(ColorBlack);
+			PrintText(150, 100, ColorRed, "No connection could be made");
+			PrintText(150, 110, ColorWhite, "Restarting in 2 seconds");
+			flipScreen();
+			delay(1000);
+			continue;
+		}
+
+		scePowerLock(0); // Forbids user to turn of the device
+		scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
+		// Making sure both buffers of the screen are clear
 		clearScreen(ColorBlack);
 		flipScreen();
-		if (scePowerGetBatteryLifePercent() < 10)
+		clearScreen(ColorBlack);
+		flipScreen();
+		// Beginning loop
+		while (running)
 		{
-			PrintError("BATTERY TO LOW");
-			PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
-			message = "DC:0,0,0:0,0";
-			for (;;) {
-				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-				{
-					PrintError("Motor stop message failed sending");
-					flipScreen();
-					sceDisplayWaitVblankStart();
-					delay(50);
-					continue;
-				}
-				break;
-			}
-			message = "client:psp:disconnected";
-			for (;;) {
-				if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-				{
-					PrintError("Disconenct message failed sending");
-					flipScreen();
-					sceDisplayWaitVblankStart();
-					delay(50);
-					continue;
-				}
-				break;
-			}
-			delay(2000);
-			sceNetInetClose(socket_desc);
-			running = 0;
-			break;
-		}
-		PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
-		if (scePowerIsLowBattery()) {
-			PrintError("BATTERY IS LOW");
-		}
-		int aX = pad.Lx - 127;
-		int aY = (pad.Ly - 127) * -1 + 1;
-		if (aX > 27)		aX -= 28;
-		else if (aX < -27)	aX += 27;
-		else {
-			aX = 0;
-			wheelpos1 = 0;
-			wheelpos2 = 0;
-		}
-
-		if (aY > 27)		aY -= 28;
-		else if (aY < -27) 	aY += 27;
-		else {
-			aY = 0;
-		}
-		PrintText(60, 220, ColorWhite, "Analog Y = %d", aY);
-		PrintText(220, 220, ColorWhite, "Analog X = %d", aX);
-		sceCtrlPeekBufferPositive(&pad, 1);
-		if (pad.Buttons != 0)
-		{
-			if (pad.Buttons & PSP_CTRL_START) {
+			sceCtrlPeekBufferPositive(&pad, 1);
+			int cruiseControll = 0;
+			int rPressed = 0;
+			int onHold = 0;
+			running = isRunning();
+			pspDebugScreenSetXY(0, 0);
+			clearScreen(ColorBlack);
+			if (scePowerGetBatteryLifePercent() < 10)
+			{
+				PrintError("BATTERY TO LOW");
+				PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
 				message = "DC:0,0,0:0,0";
 				for (;;) {
 					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 					{
-						PrintError("\nSend failed");
+						PrintError("Motor stop message failed sending");
+						flipScreen();
+						delay(1000);
+						continue;
+					}
+					break;
+				}
+				message = "client:psp:disconnected";
+				for (;;) {
+					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+					{
+						PrintError("Disconenct message failed sending");
 						flipScreen();
 						sceDisplayWaitVblankStart();
 						delay(50);
@@ -607,8 +602,35 @@ int main(int argc, char *argv[])
 					}
 					break;
 				}
-				if(QuitScreen()){
-					message = "client:psp:disconnected";
+				delay(2000);
+				sceNetInetClose(socket_desc);
+				running = 0;
+				break;
+			}
+			PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
+			if (scePowerIsLowBattery()) {
+				PrintError("BATTERY IS LOW");
+			}
+			int aX = pad.Lx - 127;
+			int aY = (pad.Ly - 127) * -1 + 1;
+			if (aX > 27)		aX -= 28;
+			else if (aX < -27)	aX += 27;
+			else {
+				aX = 0;
+				wheelpos1 = 0;
+				wheelpos2 = 0;
+			}
+
+			if (aY > 27)		aY -= 28;
+			else if (aY < -27) 	aY += 27;
+			else {
+				aY = 0;
+			}
+			sceCtrlPeekBufferPositive(&pad, 1);
+			if (pad.Buttons != 0)
+			{
+				if (pad.Buttons & PSP_CTRL_START) {
+					message = "DC:0,0,0:0,0";
 					for (;;) {
 						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 						{
@@ -620,223 +642,241 @@ int main(int argc, char *argv[])
 						}
 						break;
 					}
-					sceNetInetClose(socket_desc);
-					running = 0;
-					break;
-				}
-			}
-			if (pad.Buttons & PSP_CTRL_SELECT && pad.Buttons != oldButton)
-			{
-				PrintText(10, 10, ColorBlue, "Help page");
-				PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
-				PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
-				PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
-				PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
-				PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
-				PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
-				PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
-				PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
-				PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. Moving continues in this mode. WATCH OUT FOR THAT");
-				PrintText(10, 160, ColorWhite, "Press SELECT to display help");
-				PrintText(10, 170, ColorWhite, "Press START to quit the client");
-				PrintText(10, 200, ColorRed, "Press O to close this help screen");
-				flipScreen();
-				sceDisplayWaitVblankStart();
-				while(1)
-				{
-					sceCtrlPeekBufferPositive(&pad, 1);
-					if (pad.Buttons != 0)
-					{
-						if (pad.Buttons & PSP_CTRL_CIRCLE) {
-							break;
-						}
-						if (pad.Buttons & PSP_CTRL_START) {
-							message = "client:disconnected:psp";
-							//socket_desc = sceNetInetSocket(1, 2, 0);
-							//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
+					if (QuitScreen()) {
+						message = "client:psp:disconnected";
+						for (;;) {
 							if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 							{
 								PrintError("\nSend failed");
 								flipScreen();
 								sceDisplayWaitVblankStart();
+								delay(50);
+								continue;
 							}
-							sceNetInetClose(socket_desc);
-							running = 0;
 							break;
+						}
+						sceNetInetClose(socket_desc);
+						running = 0;
+						break;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_SELECT && pad.Buttons != oldButton)
+				{
+					PrintText(10, 10, ColorBlue, "Help page");
+					PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
+					PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
+					PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
+					PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
+					PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
+					PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
+					PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
+					PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
+					PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. Moving continues in this mode. WATCH OUT FOR THAT");
+					PrintText(10, 160, ColorWhite, "Press SELECT to display help");
+					PrintText(10, 170, ColorWhite, "Press START to quit the client");
+					PrintText(10, 200, ColorRed, "Press O to close this help screen");
+					flipScreen();
+					sceDisplayWaitVblankStart();
+					while (1)
+					{
+						sceCtrlPeekBufferPositive(&pad, 1);
+						if (pad.Buttons != 0)
+						{
+							if (pad.Buttons & PSP_CTRL_CIRCLE) {
+								break;
+							}
+							if (pad.Buttons & PSP_CTRL_START) {
+								message = "client:disconnected:psp";
+								//socket_desc = sceNetInetSocket(1, 2, 0);
+								//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
+								if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+								{
+									PrintError("\nSend failed");
+									flipScreen();
+									sceDisplayWaitVblankStart();
+								}
+								sceNetInetClose(socket_desc);
+								running = 0;
+								break;
+							}
 						}
 					}
 				}
-			}
-			if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
-				if (gear != 4) {
-					gear++;
-					mapMax += 25;
-					mapMin -= 25;
+				if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
+					if (gear != 4) {
+						gear++;
+						mapMax += 25;
+						mapMin -= 25;
+					}
 				}
-			}
-			if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
-				if (gear != 1) {
-					gear--;
-					mapMax -= 25;
-					mapMin += 25;
+				if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
+					if (gear != 1) {
+						gear--;
+						mapMax -= 25;
+						mapMin += 25;
+					}
 				}
-			}
-			if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton) {
-				if (turngear != 4) {
-					turngear++;
-					turnmapMax += 25;
+				if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton) {
+					if (turngear != 4) {
+						turngear++;
+						turnmapMax += 25;
+					}
 				}
-			}
-			if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton) {
-				if (turngear != 1) {
-					turngear--;
-					turnmapMax -= 25;
+				if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton) {
+					if (turngear != 1) {
+						turngear--;
+						turnmapMax -= 25;
+					}
 				}
-			}
 
 
-			if (pad.Buttons & PSP_CTRL_CROSS && pad.Buttons != oldButton){
-				message = "c:shoot";
-				sceNetInetSend(socket_desc, message, strlen(message), 0);
-				PrintText(60, 230, ColorRed, "PEW PEW PEW");
-			}
-			if (pad.Buttons & PSP_CTRL_CIRCLE && pad.Buttons != oldButton)
-			{
-				message = "c:reset10dof";
-				sceNetInetSend(socket_desc, message, strlen(message), 0);
-			}
-			if (pad.Buttons & PSP_CTRL_SQUARE && pad.Buttons != oldButton)
-			{
-				if (powerlock == 0) {
-					if (scePowerLock(0) == 0)
-						powerlock = 1;
+				if (pad.Buttons & PSP_CTRL_CROSS && pad.Buttons != oldButton) {
+					message = "c:shoot";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+					PrintText(60, 230, ColorRed, "PEW PEW PEW");
 				}
-				else {
-					if (scePowerUnlock(0) == 0)
-						powerlock = 0;
+				if (pad.Buttons & PSP_CTRL_CIRCLE && pad.Buttons != oldButton)
+				{
+					message = "c:reset10dof";
+					sceNetInetSend(socket_desc, message, strlen(message), 0);
+				}
+				if (pad.Buttons & PSP_CTRL_SQUARE && pad.Buttons != oldButton)
+				{
+					if (powerlock == 0) {
+						if (scePowerLock(0) == 0)
+							powerlock = 1;
+					}
+					else {
+						if (scePowerUnlock(0) == 0)
+							powerlock = 0;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_TRIANGLE && pad.Buttons != oldButton) {
+
+				}
+				if (pad.Buttons & PSP_CTRL_RTRIGGER)
+				{
+					rPressed = 1;
+				}
+				if (pad.Buttons & PSP_CTRL_LTRIGGER)
+				{
+					cruiseControll = 1;
+				}
+
+
+				if (pad.Buttons & PSP_CTRL_HOLD)
+				{
+					onHold = 1;
 				}
 			}
-			if (pad.Buttons & PSP_CTRL_TRIANGLE && pad.Buttons != oldButton) {
-				
-			}
-			if (pad.Buttons & PSP_CTRL_RTRIGGER)
-			{
-				rPressed = 1;
-			}
-			if (pad.Buttons & PSP_CTRL_LTRIGGER)
-			{
-				cruiseControll = 1;
-			}
+			oldButton = pad.Buttons;
 
 
-			if (pad.Buttons & PSP_CTRL_HOLD)
+			if (cruiseControll)
 			{
-				onHold = 1;
-			}
-		}
-		oldButton = pad.Buttons;
-
-
-		if (cruiseControll)
-		{
-			speed = speed;
-			if (aX > 0) {
-				wheelpos1 = aX;
-				wheelpos2 = 0;
-			}
-			else if (aX < 0) {
-				wheelpos1 = 0;
-				wheelpos2 = aX * -1;
-			}
-			PrintText(100, 10, ColorWhite, "Cruise");
-		}
-		else {
-			if (rPressed)// Servo
-			{
-				servoX = aX;
-				servoY = aY;
-				PrintText(100, 10, ColorWhite, "No cruise and servo");
-			}
-			else if (!rPressed)// Motor
-			{
-				speed = aY;
+				speed = speed;
 				if (aX > 0) {
 					wheelpos1 = aX;
+					wheelpos2 = 0;
 				}
 				else if (aX < 0) {
+					wheelpos1 = 0;
 					wheelpos2 = aX * -1;
 				}
-				wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
-				wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
-				speed = map(speed, -100, 100, mapMin, mapMax);
+				PrintText(100, 10, ColorWhite, "Cruise");
 			}
-		}
-		if(onHold)
-		{
-			speed = 0;
-			wheelpos1 = 0;
-			wheelpos2 = 0;
-		}
-		PrintText(10, 10, ColorGray, "PSP Data");
-		PrintText(10, 20, ColorWhite, "Speed gear:     %i", gear);
-		PrintText(10, 30, ColorWhite, "Steering gear:  %i", turngear);
-		char dcmessage[30];
-		snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
-		if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
-		{
-			PrintError("Send failed");
-			continue;
-		}
-		buf[0] = '\0';
-		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-		if (buf[0] != '\0') {
-			char *p = strtok(buf, ",:");
-			int i = 0;
-			while (p != NULL)
+			else {
+				if (rPressed)// Servo
+				{
+					servoX = aX;
+					servoY = aY;
+					PrintText(100, 10, ColorWhite, "No cruise and servo");
+				}
+				else if (!rPressed)// Motor
+				{
+					speed = aY;
+					if (aX > 0) {
+						wheelpos1 = aX;
+					}
+					else if (aX < 0) {
+						wheelpos2 = aX * -1;
+					}
+					wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
+					wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
+					speed = map(speed, -100, 100, mapMin, mapMax);
+				}
+			}
+			if (onHold)
 			{
-				sensorData[i] = p;
-				p = strtok(NULL, ",:");
-				i++;
+				speed = 0;
+				wheelpos1 = 0;
+				wheelpos2 = 0;
 			}
-			PrintText(10, 70, ColorGray, "New 10DOF Data");
+			PrintText(10, 10, ColorGray, "PSP Data");
+			PrintText(10, 20, ColorWhite, "Speed gear:     %i", gear);
+			PrintText(10, 30, ColorWhite, "Steering gear:  %i", turngear);
+			PrintText(10, 40, ColorWhite, "Analog Y:       %d", aY);
+			PrintText(10, 50, ColorWhite, "Analog X:       %d", aX);
+			char dcmessage[30];
+			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
+			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
+			{
+				PrintError("Send failed");
+				continue;
+			}
+			buf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (buf[0] != '\0') {
+				char *p = strtok(buf, ",:");
+				int i = 0;
+				while (p != NULL)
+				{
+					sensorData[i] = p;
+					p = strtok(NULL, ",:");
+					i++;
+				}
+				PrintText(10, 70, ColorGray, "New 10DOF Data");
+			}
+			else
+			{
+				PrintText(10, 70, ColorGray, "Old 10DOF Data");
+			}
+			PrintText(10, 80, ColorBlue, "Temp:            %s", sensorData[1]);
+			PrintText(10, 90, ColorBlue, "Altitude:        %s", sensorData[2]);
+			PrintText(10, 100, ColorBlue, "Roll:            %s", sensorData[3]);
+			PrintText(10, 110, ColorBlue, "Pitch:           %s", sensorData[4]);
+			PrintText(10, 120, ColorBlue, "Heading:         %s", sensorData[5]);
+			delay(10);
+			buf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (buf[0] != '\0') {
+				char *p = strtok(buf, ",:");
+				int i = 0;
+				while (p != NULL)
+				{
+					gpsData[i] = p;
+					p = strtok(NULL, ",:");
+					i++;
+				}
+				PrintText(10, 140, ColorGray, "New GPS Data");
+			}
+			else
+			{
+				PrintText(10, 140, ColorGray, "Old GPS Data");
+			}
+			PrintText(10, 150, ColorBlue, "Longitude:       %s", gpsData[1]);
+			PrintText(10, 160, ColorBlue, "Latitude:        %s", gpsData[2]);
+			PrintText(10, 170, ColorBlue, "Altitude:        %s", gpsData[3]);
+			PrintText(10, 180, ColorBlue, "Heading:         %s", gpsData[4]);
+			flipScreen();
+			delay(30);
 		}
-		else
-		{
-			PrintText(10, 70, ColorGray, "Old 10DOF Data");
-		}
-		PrintText(10, 80,  ColorBlue, "Temp:            %s", sensorData[1]);
-		PrintText(10, 90, ColorBlue,  "Altitude:        %s", sensorData[2]);
-		PrintText(10, 100, ColorBlue, "Roll:            %s", sensorData[3]);
-		PrintText(10, 110, ColorBlue, "Pitch:           %s", sensorData[4]);
-		PrintText(10, 120, ColorBlue, "Heading:         %s", sensorData[5]);
+		netTerm();
+		sceKernelExitGame();
 
-//		memset(buf, 0, 255);
-//		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-//		if (buf != NULL) {
-//			char *p = strtok(buf, ",:");
-//			int i = 0;
-//			while (p != NULL)
-//			{
-//				sensorData[i] = p;
-//				p = strtok(NULL, ",:");
-//				i++;
-//			}
-//		}
-
-		PrintText(10, 140, ColorGray, "GPS Data");
-		PrintText(10, 150, ColorBlue, "Longitude:       %s", "NULL");
-		PrintText(10, 160, ColorBlue, "Latitude:        %s", "NULL");
-		PrintText(10, 170, ColorBlue, "Altitude:        %s", "NULL");
-		PrintText(10, 180, ColorBlue, "Heading:	        %s", "NULL");
-		flipScreen();
-		sceDisplayWaitVblankStart();
-		delay(40);
-		flipScreen();
-		clearScreen(ColorBlack);
-		sceDisplayWaitVblankStart();
-		//printf(sensorDataRaw);
-		//printf("\n");
+		return 0;
 	}
+
 	netTerm();
 	sceKernelExitGame();
 
