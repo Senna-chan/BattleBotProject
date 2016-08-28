@@ -1,5 +1,5 @@
 TARGET = SimpleBattleBotClientPSP
-OBJS = main.o common/graphics.o common/framebuffer.o common/callback.o
+OBJS = main.o common/graphics.o common/framebuffer.o common/callback.o common/ini.o
 #OBJS = main.o common/callback.o
 
 BUILD_PRX = 1

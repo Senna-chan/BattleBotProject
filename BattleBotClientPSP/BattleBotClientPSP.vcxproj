@@ -78,6 +78,7 @@
     <ClCompile Include="common\callback.c" />
     <ClCompile Include="common\framebuffer.c" />
     <ClCompile Include="common\graphics.c" />
+    <ClCompile Include="common\ini.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +88,7 @@
     <ClInclude Include="common\callback.h" />
     <ClInclude Include="common\framebuffer.h" />
     <ClInclude Include="common\graphics.h" />
+    <ClInclude Include="common\ini.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
