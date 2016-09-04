@@ -82,6 +82,7 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="config.ini" />
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +90,6 @@
     <ClInclude Include="common\framebuffer.h" />
     <ClInclude Include="common\graphics.h" />
     <ClInclude Include="common\ini.h" />
-    <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

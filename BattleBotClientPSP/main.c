@@ -276,6 +276,11 @@ typedef struct
 	char *ip1;
 	char *ip2;
 	char *ip3;
+	int ipp1;
+	int ipp2;
+	int ipp3;
+	int ipp4;
+	int waittime;
 } configuration;
 static int handler(void* user, const char* section, const char* name,
 	const char* value)
@@ -292,6 +297,26 @@ static int handler(void* user, const char* section, const char* name,
 	else if (MATCH("IP", "ip3")) {
 		pconfig->ip3 = strdup(value);
 	}
+//	else if(MATCH("CIP", "ipp1"))
+//	{
+//		pconfig->ipp1 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp2"))
+//	{
+//		pconfig->ipp2 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp3"))
+//	{
+//		pconfig->ipp3 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp4"))
+//	{
+//		pconfig->ipp4 = atoi(value);
+//	}
+//	else if(MATCH("MISC", "waittime"))
+//	{
+//		pconfig->waittime = atoi(value);
+//	}
 	else {
 		return 0;  /* unknown section/name, error */
 	}
@@ -590,15 +615,14 @@ int main(int argc, char *argv[])
 
 		char buf[255];
 		buf[0] = '\0';
-		char dofbuf[255];
+		char *dofbuf[255];
 		dofbuf[0] = '\0';
-		char gpsbuf[255];
+		char *gpsbuf[255];
 		gpsbuf[0] = '\0';
-		char *sensorData[9];
-		char *gpsData[9];
+		char *parsedbuf[9];
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
-
+		int waittime = 40;
 
 		buf[0] = '\0';
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
@@ -614,18 +638,15 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			clearScreen(ColorBlack);
-			flipScreen();
-			clearScreen(ColorBlack);
 			PrintText(150, 100, ColorRed, "No connection could be made");
 			PrintText(150, 110, ColorWhite, "Restarting in 2 seconds");
 			flipScreen();
 			delay(1000);
+			clearScreen(ColorBlack);
 			continue;
 		}
 
 		scePowerLock(0); // Forbids user to turn of the device
-		scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 		// Making sure both buffers of the screen are clear
 		clearScreen(ColorBlack);
 		flipScreen();
@@ -634,6 +655,11 @@ int main(int argc, char *argv[])
 		// Beginning loop
 		while (running)
 		{
+			if(GetPowerStatus() > 1)
+			{
+				main();
+			}
+			scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 			sceCtrlPeekBufferPositive(&pad, 1);
 			int cruiseControll = 0;
 			int rPressed = 0;
@@ -700,7 +726,7 @@ int main(int argc, char *argv[])
 					for (;;) {
 						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 						{
-							PrintError("\nSend failed");
+							PrintError("Send failed");
 							flipScreen();
 							sceDisplayWaitVblankStart();
 							delay(50);
@@ -713,7 +739,7 @@ int main(int argc, char *argv[])
 						for (;;) {
 							if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 							{
-								PrintError("\nSend failed");
+								PrintError("Send failed");
 								flipScreen();
 								sceDisplayWaitVblankStart();
 								delay(50);
@@ -731,16 +757,19 @@ int main(int argc, char *argv[])
 					PrintText(10, 10, ColorBlue, "Help page");
 					PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
 					PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
-					PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
+					PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and");
+					PrintText(10, 70, ColorWhite,"the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
 					PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
 					PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
 					PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
 					PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
 					PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
-					PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. Moving continues in this mode. WATCH OUT FOR THAT");
+					PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. ");
+					PrintText(10, 150, ColorWhite, "Moving continues in this mode. WATCH OUT FOR THAT");
 					PrintText(10, 160, ColorWhite, "Press SELECT to display help");
 					PrintText(10, 170, ColorWhite, "Press START to quit the client");
 					PrintText(10, 200, ColorRed, "Press O to close this help screen");
+					PrintText(10, 220, ColorWhite, "Press R now to go to Settings page and L to go back to this page");
 					flipScreen();
 					sceDisplayWaitVblankStart();
 					while (1)
@@ -751,19 +780,60 @@ int main(int argc, char *argv[])
 							if (pad.Buttons & PSP_CTRL_CIRCLE) {
 								break;
 							}
-							if (pad.Buttons & PSP_CTRL_START) {
-								message = "client:disconnected:psp";
-								//socket_desc = sceNetInetSocket(1, 2, 0);
-								//sceNetInetConnect(socket_desc, (struct sockaddr *)&server, sizeof(server));
-								if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+							if(pad.Buttons & PSP_CTRL_RTRIGGER)
+							{
+								int index = 0;
+								while (true)
 								{
-									PrintError("\nSend failed");
-									flipScreen();
-									sceDisplayWaitVblankStart();
+									sceCtrlPeekBufferPositive(&pad, 1);
+									if (pad.Buttons != 0) {
+										switch (index) {
+											case 0:
+												PrintText(10, 10, ColorBlue, "==>");
+
+												if (pad.Buttons & PSP_CTRL_LEFT && !oldButton)
+												{
+													if (waittime > 40)
+														waittime--;
+												}
+												if (pad.Buttons & PSP_CTRL_RIGHT && !oldButton)
+												{
+													if (waittime < 100)
+														waittime++;
+												}
+												break;
+											}
+										if(pad.Buttons & PSP_CTRL_LTRIGGER || pad.Buttons & PSP_CTRL_CIRCLE)
+										{
+											break;
+										}
+										if(pad.Buttons & PSP_CTRL_START)
+										{
+											if (QuitScreen()) {
+												message = "client:psp:disconnected";
+												for (;;) {
+													if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
+													{
+														PrintError("\nSend failed");
+														flipScreen();
+														sceDisplayWaitVblankStart();
+														delay(50);
+														continue;
+													}
+													break;
+												}
+												sceNetInetClose(socket_desc);
+												netTerm();
+												sceKernelExitGame();
+												return 0;
+											}
+										}
+										PrintText(30, 10, ColorWhite, "Time between transmitting data     (%i)", waittime);
+										PrintText(30, 20, ColorWhite, "You might want to change this if the RC does not respond well");
+										PrintToScreen(ColorBlack);
+									}
+									oldButton = pad.Buttons;
 								}
-								sceNetInetClose(socket_desc);
-								running = 0;
-								break;
 							}
 						}
 					}
@@ -854,8 +924,8 @@ int main(int argc, char *argv[])
 			else {
 				if (rPressed)// Servo
 				{
-					servoX = aX;
-					servoY = aY;
+					servoX = aX * -1;
+					servoY = aY * -1;
 					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Servo moving");
 				}
 				else if (!rPressed)// Motor
@@ -867,9 +937,6 @@ int main(int argc, char *argv[])
 					else if (aX < 0) {
 						wheelpos2 = aX * -1;
 					}
-					wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
-					wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
-					speed = map(speed, -100, 100, mapMin, mapMax);
 					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
 				}
 			}
@@ -885,7 +952,12 @@ int main(int argc, char *argv[])
 			PrintText(10, 40, ColorWhite, "Steering gear:  %i", turngear);
 			PrintText(10, 50, ColorWhite, "Analog Y:       %d", aY);
 			PrintText(10, 60, ColorWhite, "Analog X:       %d", aX);
-			
+			PrintText(10, 70, ColorWhite, "PowerStatus:    %i", GetPowerStatus());
+
+			wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
+			wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
+			speed = map(speed, -100, 100, mapMin, mapMax);
+
 			char dcmessage[30];
 			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
 			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
@@ -893,14 +965,14 @@ int main(int argc, char *argv[])
 				PrintError("Send failed");
 				continue;
 			}
-			dofbuf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, dofbuf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (dofbuf[0] != '\0') {
-				char *p = strtok(dofbuf, ",:");
+			buf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (buf[0] != '\0') {
+				char *p = strtok(buf, ",:");
 				int i = 0;
 				while (p != NULL)
 				{
-					sensorData[i] = p;
+					parsedbuf[i] = p;
 					p = strtok(NULL, ",:");
 					i++;
 				}
@@ -910,20 +982,20 @@ int main(int argc, char *argv[])
 			{
 				PrintText(10, 80, ColorGray, "Old 10DOF Data");
 			}
-			PrintText(10, 90, ColorBlue, "Temp:            %s", sensorData[1]);
-			PrintText(10, 100, ColorBlue, "Altitude:        %s", sensorData[2]);
-			PrintText(10, 110, ColorBlue, "Roll:            %s", sensorData[3]);
-			PrintText(10, 120, ColorBlue, "Pitch:           %s", sensorData[4]);
-			PrintText(10, 130, ColorBlue, "Heading:         %s", sensorData[5]);
+			PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbuf[1]);
+			PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbuf[2]);
+			PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbuf[3]);
+			PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbuf[4]);
+			PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbuf[5]);
 			delay(10);
-			gpsbuf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, gpsbuf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (gpsbuf[0] != '\0') {
-				char *p = strtok(gpsbuf, ",:");
+			buf[0] = '\0';
+			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			if (buf[0] != '\0') {
+				char *p = strtok(buf, ",:");
 				int i = 0;
 				while (p != NULL)
 				{
-					gpsData[i] = p;
+					parsedbuf[i] = p;
 					p = strtok(NULL, ",:");
 					i++;
 				}
@@ -933,12 +1005,12 @@ int main(int argc, char *argv[])
 			{
 				PrintText(10, 150, ColorGray, "Old GPS Data");
 			}
-			PrintText(10, 160, ColorBlue, "Longitude:       %s", gpsData[1]);
-			PrintText(10, 170, ColorBlue, "Latitude:        %s", gpsData[2]);
-			PrintText(10, 180, ColorBlue, "Altitude:        %s", gpsData[3]);
-			PrintText(10, 190, ColorBlue, "Heading:         %s", gpsData[4]);
+			PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbuf[1]);
+			PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbuf[2]);
+			PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbuf[3]);
+			PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbuf[4]);
 			flipScreen();
-			delay(30);
+			delay(waittime - 10);
 		}
 		netTerm();
 		sceKernelExitGame();

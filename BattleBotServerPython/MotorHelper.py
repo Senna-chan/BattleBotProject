@@ -37,4 +37,4 @@ class MotorHelper:
         self.pwm.set_pwm(self.pwmchannel, 0, 0)
 
     def mapp(self,inputt):
-        return int(math.floor(inputt * 4096 / 100));
+        return int(math.floor(inputt * 4095 / 100));

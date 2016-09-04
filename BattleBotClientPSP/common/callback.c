@@ -7,7 +7,7 @@
 static int powerStatus = 0;
 static int exitRequest = 0;
 #define printf  pspDebugScreenPrintf
-int getPowerStatus()
+int GetPowerStatus()
 {
 	return powerStatus;
 }
@@ -36,8 +36,6 @@ int power_callback(int unknown, int pwrflags, void *common)
 {
 	/* check for power switch and suspending as one is manual and the other automatic */
 	if (pwrflags & PSP_POWER_CB_POWER_SWITCH || pwrflags & PSP_POWER_CB_SUSPENDING) {
-		printf(
-			"first arg: 0x%08X, flags: 0x%08X: suspending\n", unknown, pwrflags);
 		powerStatus = 1;
 	}
 	else if (pwrflags & PSP_POWER_CB_RESUMING) {

@@ -3,5 +3,5 @@
 
 int isRunning();
 int setupExitCallback();
-
+int GetPowerStatus();
 #endif

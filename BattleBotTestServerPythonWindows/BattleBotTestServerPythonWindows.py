@@ -12,6 +12,8 @@ pid = win32api.GetCurrentProcessId()
 handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
 win32process.SetPriorityClass(handle, win32process.REALTIME_PRIORITY_CLASS) 
 
+current_milli_time = lambda: int(round(time.time() * 1000))
+
 isStepping = False;
 DC1Helper = MotorHelper(1)
 DC2Helper = MotorHelper(2)
@@ -137,10 +139,10 @@ os.system("clear")
 print "Starting Battlebot Server"
 print "Awaiting senpai"
 while True:
-    start = time.time()
+    
     data, addr = s.recvfrom(30)
     print ""
-    print time.time()-start
+    start = time.time()
     #tenDOF.Get10DOFValues()
     data = data.lower()
     data = data.replace("\r","")
@@ -179,7 +181,7 @@ while True:
                     clientConnected = False;
 
         if(ctype.startswith("dc") and len(typcom) == 3):
-            print time.time()-start
+            print (time.time()-start) * 1000
             checkHandshake()
             motorcommands = command.split(',')
             servocommands = parameters.split(',')
@@ -192,7 +194,7 @@ while True:
                 print("The recieved data is not a valid drive command. Length doesn't match")
                 continue
             MotorCalc(speed, wheelpos1, wheelpos2, servoX, servoY)
-            print time.time()-start
+            print (time.time()-start) * 1000
         if(ctype.startswith("c")):
             if(command == "calibrate"):
                if(len(typcom)==3):
@@ -215,7 +217,7 @@ while True:
         time.sleep(0.005)
         data = "gps:{0:0.15f},{1:0.15f},{2:0.2f},{3:0.2f},{4:0.2f}".format(random.uniform(5, 5.5),random.uniform(40, 40.5),random.uniform(0, 30),random.uniform(0,20),random.uniform(-180, 180))
         s.sendto(data, addr)
-        print time.time()-start
+        print (time.time()-start) * 1000
     else:
         print "Command: "+data+" is not a valid command"
         MotorCalc(0,0,0,servoX, servoY)

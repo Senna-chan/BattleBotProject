@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import socket, atexit, math, threading, sys, os, time
+import socket, atexit, math, threading, sys, os, time, subprocess
 from MotorHelper import MotorHelper
 import math
 import i2clcd
@@ -17,11 +17,13 @@ servo = Adafruit_PCA9685.PCA9685(address=0x40)
 motor = Adafruit_PCA9685.PCA9685(address=0x60)
 motor.set_pwm_freq(1000)
 servo.set_pwm_freq(60)
-DC1Helper = MotorHelper(motor, 0, 17, 18)
+DC1Helper = MotorHelper(motor, 0, 16, 19)
 DC2Helper = MotorHelper(motor, 1, 20, 21)
 tenDOF = tenDOFclass();
+WiFiStrength = 0
 
 isStepping = False;
+isGettingWiFiStrength = False;
 # Stepper Motor part
 ControllPin = [22,23,24,25]
 shootled = 6
@@ -45,11 +47,12 @@ def DoSteps(amount = 4096, shoot = False):
     global isStepping
     if(not isStepping):
         isStepping = True;
-        thread = threading.Thread(target=run, args=([amount, shoot]))
+        thread = threading.Thread(target=runStepper, args=([amount, shoot]))
         thread.start()                                  # Start the execution
     else:
         print "Can't do that. Stepper Motor is busy"
-def run(amount = 4096, shoot = False):
+        
+def runStepper(amount = 4096, shoot = False):
     global isStepping
     times = 0
     if(shoot):
@@ -69,6 +72,24 @@ def run(amount = 4096, shoot = False):
             sleep(0.001)
 
 
+def get_wifi_strength():
+    global isGettingWiFiStrength
+    if(not isGettingWiFiStrength):
+        isGettingWiFiStrength = True;
+        thread = threading.Thread(target=runGetWiFiStrength)
+        thread.start()                                  # Start the execution
+        
+def runGetWiFiStrength():
+    global WiFiStrength, isGettingWiFiStrength
+    cmd = subprocess.Popen('iwconfig wlan0', shell=True, stdout=subprocess.PIPE)
+    for line in cmd.stdout:
+        if 'Link Quality' in line:
+            line = line.lstrip(' ')
+            line = line[13:18]
+            quality = line.split('/')
+            isGettingWiFiStrength = False
+            WiFiStrength = str(int(round(float(quality[0]) / float(quality[1]) * 100)))
+
 def MotorCalc(speed, wheelPos1, wheelPos2, servoX, servoY):
     speed = int(speed);
     wheelPos1 = int(wheelPos1)
@@ -85,11 +106,11 @@ def MotorCalc(speed, wheelPos1, wheelPos2, servoX, servoY):
         DC2motorSpeed = speed + wheelPos2
     if (speed == 0): 
         if (wheelPos1 > 0):
-            DC1motorSpeed = wheelPos1 * -1 + 1
+            DC1motorSpeed = wheelPos1 * -1
             DC2motorSpeed = wheelPos1
         if (wheelPos2 > 0):
             DC1motorSpeed = wheelPos2
-            DC2motorSpeed = wheelPos2 * -1 + 1
+            DC2motorSpeed = wheelPos2 * -1
            
 
     if (DC1motorSpeed < 0): DC1Helper.Backward(DC1motorSpeed);
@@ -107,8 +128,8 @@ def MotorCalc(speed, wheelPos1, wheelPos2, servoX, servoY):
 def MovePanTilt(PanTiltX, PanTiltY):
     PanX = GetServoValue(PanTiltX);
     PanY = GetServoValue(PanTiltY);
-    servo.set_pwm(8, 0, PanX);
-    servo.set_pwm(9, 0, PanY);
+    servo.set_pwm(14, 0, PanX);
+    servo.set_pwm(15, 0, PanY);
 
 
 def GetServoValue(inputt):
@@ -197,6 +218,8 @@ print "Calibrated"
 print "Awaiting senpai"
 while True:
     start = time.time()
+    get_wifi_strength()
+    print WiFiStrength
     data, addr = s.recvfrom(30)
     print ""
     print time.time()-start
@@ -238,20 +261,26 @@ while True:
 
 
         if(ctype.startswith("dc") and len(typcom) == 3):
-            print time.time()-start
-            checkHandshake()
-            motorcommands = command.split(',')
-            servocommands = parameters.split(',')
-            speed = motorcommands[0]
-            wheelpos1 = motorcommands[1]
-            wheelpos2 = motorcommands[2]
-            servoX = servocommands[0]
-            servoY = servocommands[1]
-            if(len(motorcommands) != 3 or len(servocommands) != 2):
-                print("The recieved data is not a valid drive command. Length doesn't match")
-                continue
-            MotorCalc(speed, wheelpos1, wheelpos2, servoX, servoY)
-            print time.time()-start
+            if(WiFiStrength >= 90):
+                print time.time()-start
+                checkHandshake()
+                motorcommands = command.split(',')
+                servocommands = parameters.split(',')
+                speed = motorcommands[0]
+                wheelpos1 = motorcommands[1]
+                wheelpos2 = motorcommands[2]
+                servoX = servocommands[0]
+                servoY = servocommands[1]
+                if(len(motorcommands) != 3 or len(servocommands) != 2):
+                    print("The recieved data is not a valid drive command. Length doesn't match")
+                    continue
+                MotorCalc(speed, wheelpos1, wheelpos2, servoX, servoY)
+                print time.time()-start
+            elif(WiFiStrength < 90):
+                print "low wifi"
+                data="E:1" # Error code 1. Low signal strength
+                s.sendto(data, addr)
+                
         if(ctype.startswith("c")):
             if(command == "calibrate"):
                if(len(typcom)==3):
@@ -269,6 +298,12 @@ while True:
                 running = False;
                 cleanup()
         data = tenDOF.returnAHRSGD()
+        s.sendto(data, addr)
+        time.sleep(0.005)
+        data = "GPS:lat,long,alt,heading"
+        s.sendto(data, addr)
+        time.sleep(0.005)
+        data = "MISC:c1,c2,c3,{}".format(WiFiStrength)
         s.sendto(data, addr)
         print time.time()-start
     else:
