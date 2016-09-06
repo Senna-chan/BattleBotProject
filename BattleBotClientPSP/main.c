@@ -615,11 +615,14 @@ int main(int argc, char *argv[])
 
 		char buf[255];
 		buf[0] = '\0';
+		char temp[10];
+		temp[0] = '\0';
 		char *dofbuf[255];
 		dofbuf[0] = '\0';
 		char *gpsbuf[255];
 		gpsbuf[0] = '\0';
-		char *parsedbuf[9];
+		char *parsedbufA[9];
+		char *parsedbufB[9];
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
 		int waittime = 40;
@@ -657,7 +660,7 @@ int main(int argc, char *argv[])
 		{
 			if(GetPowerStatus() > 1)
 			{
-				main();
+
 			}
 			scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 			sceCtrlPeekBufferPositive(&pad, 1);
@@ -972,21 +975,31 @@ int main(int argc, char *argv[])
 				int i = 0;
 				while (p != NULL)
 				{
-					parsedbuf[i] = p;
+					parsedbufA[i] = p;
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				PrintText(10, 80, ColorGray, "New 10DOF Data");
+				if(parsedbufA[0] == "AHRS")
+				{
+					strcpy(temp,"AHRS");
+				}
+				else if(parsedbufA[0] == "GPS")
+				{
+					strcpy(temp, "GPS");
+				}
+				PrintText(10, 80, ColorGray, "New %s Data", temp);
 			}
 			else
 			{
-				PrintText(10, 80, ColorGray, "Old 10DOF Data");
+				PrintText(10, 80, ColorGray, "Old %s Data", temp);
 			}
-			PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbuf[1]);
-			PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbuf[2]);
-			PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbuf[3]);
-			PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbuf[4]);
-			PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbuf[5]);
+			if (temp == "AHRS") {
+				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
+				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
+				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
+				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
+				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
+			}
 			delay(10);
 			buf[0] = '\0';
 			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
@@ -995,7 +1008,7 @@ int main(int argc, char *argv[])
 				int i = 0;
 				while (p != NULL)
 				{
-					parsedbuf[i] = p;
+					parsedbufB[i] = p;
 					p = strtok(NULL, ",:");
 					i++;
 				}
@@ -1005,10 +1018,10 @@ int main(int argc, char *argv[])
 			{
 				PrintText(10, 150, ColorGray, "Old GPS Data");
 			}
-			PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbuf[1]);
-			PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbuf[2]);
-			PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbuf[3]);
-			PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbuf[4]);
+			PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufB[1]);
+			PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufB[2]);
+			PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufB[3]);
+			PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufB[4]);
 			flipScreen();
 			delay(waittime - 10);
 		}
