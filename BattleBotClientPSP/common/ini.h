@@ -48,6 +48,14 @@ int ini_parse_file(FILE* file, ini_handler handler, void* user);
 int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                      void* user);
 
+
+int ini_save(const char* filename, ini_handler handler, void* user);
+int ini_save_file(FILE* file, ini_handler handler, void* user);
+int ini_save_stream(ini_reader reader, void* stream, ini_handler handler,
+	void* user);
+
+
+
 /* Nonzero to allow multi-line value parsing, in the style of Python's
    configparser. If allowed, ini_parse() will call the handler with the same
    name for each subsequent line parsed. */

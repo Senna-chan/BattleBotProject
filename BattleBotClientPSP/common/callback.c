@@ -35,10 +35,7 @@ void delayy(int milliseconds) {
 int power_callback(int unknown, int pwrflags, void *common)
 {
 	/* check for power switch and suspending as one is manual and the other automatic */
-	if (pwrflags & PSP_POWER_CB_POWER_SWITCH || pwrflags & PSP_POWER_CB_SUSPENDING) {
-		powerStatus = 1;
-	}
-	else if (pwrflags & PSP_POWER_CB_RESUMING) {
+	if (pwrflags & PSP_POWER_CB_RESUMING) {
 		printf(
 			"first arg: 0x%08X, flags: 0x%08X: resuming from suspend mode\n",
 			unknown, pwrflags);

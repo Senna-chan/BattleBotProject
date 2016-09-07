@@ -192,3 +192,126 @@ int ini_parse(const char* filename, ini_handler handler, void* user)
     fclose(file);
     return error;
 }
+
+int ini_save_stream(ini_reader reader, void* stream, ini_handler handler,
+	void* user)
+{
+	/* Uses a fair bit of stack (use heap instead if you need to) */
+#if INI_USE_STACK
+	char line[INI_MAX_LINE];
+#else
+	char* line;
+#endif
+	char section[MAX_SECTION] = "";
+	char prev_name[MAX_NAME] = "";
+
+	char* start;
+	char* end;
+	char* name;
+	char* value;
+	int lineno = 0;
+	int error = 0;
+
+#if !INI_USE_STACK
+	line = (char*)malloc(INI_MAX_LINE);
+	if (!line) {
+		return -2;
+	}
+#endif
+
+	/* Scan through stream line by line */
+	while (reader(line, INI_MAX_LINE, stream) != NULL) {
+		lineno++;
+
+		start = line;
+#if INI_ALLOW_BOM
+		if (lineno == 1 && (unsigned char)start[0] == 0xEF &&
+			(unsigned char)start[1] == 0xBB &&
+			(unsigned char)start[2] == 0xBF) {
+			start += 3;
+		}
+#endif
+		start = lskip(rstrip(start));
+
+		if (*start == ';' || *start == '#') {
+			/* Per Python configparser, allow both ; and # comments at the
+			start of a line */
+		}
+#if INI_ALLOW_MULTILINE
+		else if (*prev_name && *start && start > line) {
+			/* Non-blank line with leading whitespace, treat as continuation
+			of previous name's value (as per Python configparser). */
+			if (!handler(user, section, prev_name, start) && !error)
+				error = lineno;
+		}
+#endif
+		else if (*start == '[') {
+			/* A "[section]" line */
+			end = find_chars_or_comment(start + 1, "]");
+			if (*end == ']') {
+				*end = '\0';
+				strncpy0(section, start + 1, sizeof(section));
+				*prev_name = '\0';
+			}
+			else if (!error) {
+				/* No ']' found on section line */
+				error = lineno;
+			}
+		}
+		else if (*start) {
+			/* Not a comment, must be a name[=:]value pair */
+			end = find_chars_or_comment(start, "=:");
+			if (*end == '=' || *end == ':') {
+				*end = '\0';
+				name = rstrip(start);
+				value = lskip(end + 1);
+#if INI_ALLOW_INLINE_COMMENTS
+				end = find_chars_or_comment(value, NULL);
+				if (*end)
+					*end = '\0';
+#endif
+				rstrip(value);
+
+				/* Valid name[=:]value pair found, call handler */
+				strncpy0(prev_name, name, sizeof(prev_name));
+				if (!handler(user, section, name, value) && !error)
+					error = lineno;
+			}
+			else if (!error) {
+				/* No '=' or ':' found on name[=:]value line */
+				error = lineno;
+			}
+		}
+
+#if INI_STOP_ON_FIRST_ERROR
+		if (error)
+			break;
+#endif
+	}
+
+#if !INI_USE_STACK
+	free(line);
+#endif
+
+	return error;
+}
+
+/* See documentation in header file. */
+int ini_save_file(FILE* file, ini_handler handler, void* user)
+{
+	return ini_parse_stream((ini_reader)fgets, file, handler, user);
+}
+
+/* See documentation in header file. */
+int ini_save(const char* filename, ini_handler handler, void* user)
+{
+	FILE* file;
+	int error;
+
+	file = fopen(filename, "r");
+	if (!file)
+		return -1;
+	error = ini_parse_file(file, handler, user);
+	fclose(file);
+	return error;
+}

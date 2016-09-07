@@ -216,7 +216,7 @@ void PrintError(const char* format, ...) {
 	vsnprintf(buffer, sizeof(buffer) - 1, format, fmtargs);
 	va_end(fmtargs);
 	printTextScreen(10, 230, "ERROR: ", ColorRed);
-	printTextScreen(50, 230, buffer, ColorRed);
+	printTextScreen(70, 230, buffer, ColorRed);
 }
 
 int QuitScreen()
@@ -327,11 +327,10 @@ static int handler(void* user, const char* section, const char* name,
 int main(int argc, char *argv[])
 {
 	setupExitCallback();
-	scePowerSetClockFrequency(333, 333, 166);
+	scePowerSetClockFrequency(333, 333, 166); // Maximum power for the client(Its gonna need it)
 	int powerlock = 1;
-
+	int resumedfromsuspend = 0;
 	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
-
 	sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
 
 	setupGu();
@@ -362,8 +361,16 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	
-
-	while (isRunning()) {
+	
+	while (isRunning()) { // The main loop to initialize everything
+		if(resumedfromsuspend == true)// Lets hope this works
+		{
+			netTerm();
+			sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
+			sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
+			netInit();
+			netDialog();
+		}
 		PrintText(10, 10, ColorWhite, "Select /\\ for %s", config.ip1);
 		PrintText(10, 20, ColorWhite, "Select o for  %s", config.ip2);
 		PrintText(10, 30, ColorWhite, "Select x for  %s", config.ip3);
@@ -592,7 +599,7 @@ int main(int argc, char *argv[])
 			delay(500);
 			if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
 			{
-				PrintError("Send failed. Shutting down");
+				PrintError("Send failed again. Shutting down");
 				PrintToScreen(ColorBlack);
 				delay(500);
 				netTerm();
@@ -628,39 +635,36 @@ int main(int argc, char *argv[])
 		int waittime = 40;
 
 		buf[0] = '\0';
+		delay(10);
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-		delay(30);
 		if (buf[0] != '\0')
 		{
-			clearScreen(ColorBlack);
-			flipScreen();
-			clearScreen(ColorBlack);
 			PrintText(150, 100, ColorGreen, "Connection made");
-			flipScreen();
+			PrintToScreen(ColorBlack);
 			delay(1000);
 		}
 		else
 		{
 			PrintText(150, 100, ColorRed, "No connection could be made");
 			PrintText(150, 110, ColorWhite, "Restarting in 2 seconds");
-			flipScreen();
-			delay(1000);
-			clearScreen(ColorBlack);
+			PrintToScreen(ColorBlack);
+			delay(2000);
 			continue;
 		}
 
-		scePowerLock(0); // Forbids user to turn of the device
+		scePowerLock(0); // Forbids user to turn the device in standby. Todo: make it so that when the device is resuming from standby that the wifi is initialized again
 		// Making sure both buffers of the screen are clear
 		clearScreen(ColorBlack);
 		flipScreen();
 		clearScreen(ColorBlack);
 		flipScreen();
 		// Beginning loop
-		while (running)
+		while (running) // This is the main loop that sends the controller data
 		{
 			if(GetPowerStatus() > 1)
 			{
-
+				resumedfromsuspend = 1;
+				break;
 			}
 			scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 			sceCtrlPeekBufferPositive(&pad, 1);
@@ -1000,6 +1004,14 @@ int main(int argc, char *argv[])
 				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
 				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
 			}
+			else if (temp == "GPS")
+			{
+				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
+				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
+				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
+				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
+			}
+
 			delay(10);
 			buf[0] = '\0';
 			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
@@ -1012,25 +1024,46 @@ int main(int argc, char *argv[])
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				PrintText(10, 150, ColorGray, "New GPS Data");
+				if (parsedbufB[0] == "AHRS")
+				{
+					strcpy(temp, "AHRS");
+				}
+				else if (parsedbufB[0] == "GPS")
+				{
+					strcpy(temp, "GPS");
+				}
+				PrintText(10, 80, ColorGray, "New %s Data", temp);
 			}
 			else
 			{
-				PrintText(10, 150, ColorGray, "Old GPS Data");
+				PrintText(10, 80, ColorGray, "Old %s Data", temp);
 			}
-			PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufB[1]);
-			PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufB[2]);
-			PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufB[3]);
-			PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufB[4]);
+			if (temp == "AHRS") {
+				PrintText(10, 90, ColorBlue,  "Temp:            %s", parsedbufB[1]);
+				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufB[2]);
+				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufB[3]);
+				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufB[4]);
+				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufB[5]);
+			}
+			else if (temp == "GPS")
+			{
+				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufB[1]);
+				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufB[2]);
+				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufB[3]);
+				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufB[4]);
+			}
 			flipScreen();
 			delay(waittime - 10);
+		}
+		if(resumedfromsuspend == 1)
+		{
+			continue;
 		}
 		netTerm();
 		sceKernelExitGame();
 
 		return 0;
 	}
-
 	netTerm();
 	sceKernelExitGame();
 
