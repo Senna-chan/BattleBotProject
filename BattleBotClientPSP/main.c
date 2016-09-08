@@ -33,11 +33,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/time.h> 
 #include "common/callback.h"
 #include "common/graphics.h"
 #include <psppower.h>
-#include <stdlib.h>
 #include "common/ini.h"
 
 PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
@@ -270,6 +268,13 @@ void remove_all_chars(char* str, char c) {
 	}
 	*pw = '\0';
 }
+int strpos(char *haystack, char *needle)
+{
+	char *p = strstr(haystack, needle);
+	if (p)
+		return p - haystack;
+	return -1;   // Not found = -1.
+}
 // Config file stuff
 typedef struct
 {
@@ -282,14 +287,53 @@ typedef struct
 	int ipp4;
 	int waittime;
 } configuration;
-static int handler(void* user, const char* section, const char* name,
-	const char* value)
+static int handler(void* user, const char* section, const char* name, const char* value)
 {
 	configuration* pconfig = (configuration*)user;
 
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 	if (MATCH("IP", "ip1")) {
 		pconfig->ip1 = strdup(value);
+	}
+	else if (MATCH("IP", "ip2")) {
+		pconfig->ip2 = strdup(value);
+	}
+	else if (MATCH("IP", "ip3")) {
+		pconfig->ip3 = strdup(value);
+	}
+//	else if(MATCH("CIP", "ipp1"))
+//	{
+//		pconfig->ipp1 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp2"))
+//	{
+//		pconfig->ipp2 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp3"))
+//	{
+//		pconfig->ipp3 = atoi(value);
+//	}
+//	else if(MATCH("CIP", "ipp4"))
+//	{
+//		pconfig->ipp4 = atoi(value);
+//	}
+//	else if(MATCH("MISC", "waittime"))
+//	{
+//		pconfig->waittime = atoi(value);
+//	}
+	else {
+		return 0;  /* unknown section/name, error */
+	}
+	return 1;
+}
+static int save_handler(void* user, const char* section, const char* name, const char* value, FILE fp_file)
+{
+	configuration* pconfig = (configuration*)user;
+	char* buf[30];
+	snprintf(buf, 30, "%s=%s", name, value);
+	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+	if (MATCH("IP", "ip1")) {
+		//fseek(fp_file, strpos(fp_file, buf)) Something like this?
 	}
 	else if (MATCH("IP", "ip2")) {
 		pconfig->ip2 = strdup(value);
@@ -352,7 +396,7 @@ int main(int argc, char *argv[])
 	int ip4 = 001;
 
 	configuration config;
-
+	configuration save_config;
 	if (ini_parse("config.ini", handler, &config) < 0) {
 		PrintError("Can't load config.ini");
 		PrintText(50, 100, ColorRed, "Please make sure that the config.ini file is present");
@@ -983,11 +1027,11 @@ int main(int argc, char *argv[])
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				if(parsedbufA[0] == "AHRS")
+				if(strncmp(parsedbufA[0], "AHRS", 4) == 0)
 				{
 					strcpy(temp,"AHRS");
 				}
-				else if(parsedbufA[0] == "GPS")
+				else if(strncmp(parsedbufA[0], "GPS", 4) == 0)
 				{
 					strcpy(temp, "GPS");
 				}
@@ -997,14 +1041,14 @@ int main(int argc, char *argv[])
 			{
 				PrintText(10, 80, ColorGray, "Old %s Data", temp);
 			}
-			if (temp == "AHRS") {
+			if (strncmp(temp, "AHRS", 4)) {
 				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
 				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
 				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
 				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
 				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
 			}
-			else if (temp == "GPS")
+			else if (strncmp(temp, "GPS", 4))
 			{
 				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
 				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
@@ -1024,11 +1068,11 @@ int main(int argc, char *argv[])
 					p = strtok(NULL, ",:");
 					i++;
 				}
-				if (parsedbufB[0] == "AHRS")
+				if (strncmp(parsedbufB[0], "AHRS", 4) == 0)
 				{
 					strcpy(temp, "AHRS");
 				}
-				else if (parsedbufB[0] == "GPS")
+				else if (strncmp(parsedbufB[0], "GPS", 4) == 0)
 				{
 					strcpy(temp, "GPS");
 				}
@@ -1038,19 +1082,19 @@ int main(int argc, char *argv[])
 			{
 				PrintText(10, 80, ColorGray, "Old %s Data", temp);
 			}
-			if (temp == "AHRS") {
-				PrintText(10, 90, ColorBlue,  "Temp:            %s", parsedbufB[1]);
-				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufB[2]);
-				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufB[3]);
-				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufB[4]);
-				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufB[5]);
+			if (strncmp(temp, "AHRS", 4)) {
+				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
+				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
+				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
+				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
+				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
 			}
-			else if (temp == "GPS")
+			else if (strncmp(temp, "GPS", 4))
 			{
-				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufB[1]);
-				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufB[2]);
-				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufB[3]);
-				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufB[4]);
+				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
+				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
+				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
+				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
 			}
 			flipScreen();
 			delay(waittime - 10);

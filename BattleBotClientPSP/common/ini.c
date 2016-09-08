@@ -265,14 +265,17 @@ int ini_save_stream(ini_reader reader, void* stream, ini_handler handler,
 				*end = '\0';
 				name = rstrip(start);
 				value = lskip(end + 1);
-#if INI_ALLOW_INLINE_COMMENTS
+				#if INI_ALLOW_INLINE_COMMENTS
 				end = find_chars_or_comment(value, NULL);
 				if (*end)
 					*end = '\0';
-#endif
+				#endif
 				rstrip(value);
 
 				/* Valid name[=:]value pair found, call handler */
+				// todo: Here we need to save the stuff
+				fseek(stream, *start, SEEK_CUR);
+				fprintf(stream, "%s=%s", name, value);
 				strncpy0(prev_name, name, sizeof(prev_name));
 				if (!handler(user, section, name, value) && !error)
 					error = lineno;
@@ -283,10 +286,10 @@ int ini_save_stream(ini_reader reader, void* stream, ini_handler handler,
 			}
 		}
 
-#if INI_STOP_ON_FIRST_ERROR
+		#if INI_STOP_ON_FIRST_ERROR
 		if (error)
 			break;
-#endif
+		#endif
 	}
 
 #if !INI_USE_STACK
@@ -299,7 +302,7 @@ int ini_save_stream(ini_reader reader, void* stream, ini_handler handler,
 /* See documentation in header file. */
 int ini_save_file(FILE* file, ini_handler handler, void* user)
 {
-	return ini_parse_stream((ini_reader)fgets, file, handler, user);
+	return ini_save_stream((ini_reader)fgets, file, handler, user);
 }
 
 /* See documentation in header file. */
@@ -308,10 +311,10 @@ int ini_save(const char* filename, ini_handler handler, void* user)
 	FILE* file;
 	int error;
 
-	file = fopen(filename, "r");
+	file = fopen(filename, "r+");
 	if (!file)
 		return -1;
-	error = ini_parse_file(file, handler, user);
+	error = ini_save_file(file, handler, user);
 	fclose(file);
 	return error;
 }
