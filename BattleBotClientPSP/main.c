@@ -326,46 +326,46 @@ static int handler(void* user, const char* section, const char* name, const char
 	}
 	return 1;
 }
-static int save_handler(void* user, const char* section, const char* name, const char* value, FILE fp_file)
-{
-	configuration* pconfig = (configuration*)user;
-	char* buf[30];
-	snprintf(buf, 30, "%s=%s", name, value);
-	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if (MATCH("IP", "ip1")) {
-		//fseek(fp_file, strpos(fp_file, buf)) Something like this?
-	}
-	else if (MATCH("IP", "ip2")) {
-		pconfig->ip2 = strdup(value);
-	}
-	else if (MATCH("IP", "ip3")) {
-		pconfig->ip3 = strdup(value);
-	}
-//	else if(MATCH("CIP", "ipp1"))
-//	{
-//		pconfig->ipp1 = atoi(value);
+//static int save_handler(void* user, const char* section, const char* name, const char* value, FILE fp_file)
+//{
+//	configuration* pconfig = (configuration*)user;
+//	char* buf[30];
+//	snprintf(buf, 30, "%s=%s", name, value);
+//	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+//	if (MATCH("IP", "ip1")) {
+//		//fseek(fp_file, strpos(fp_file, buf)) Something like this?
 //	}
-//	else if(MATCH("CIP", "ipp2"))
-//	{
-//		pconfig->ipp2 = atoi(value);
+//	else if (MATCH("IP", "ip2")) {
+//		pconfig->ip2 = strdup(value);
 //	}
-//	else if(MATCH("CIP", "ipp3"))
-//	{
-//		pconfig->ipp3 = atoi(value);
+//	else if (MATCH("IP", "ip3")) {
+//		pconfig->ip3 = strdup(value);
 //	}
-//	else if(MATCH("CIP", "ipp4"))
-//	{
-//		pconfig->ipp4 = atoi(value);
+////	else if(MATCH("CIP", "ipp1"))
+////	{
+////		pconfig->ipp1 = atoi(value);
+////	}
+////	else if(MATCH("CIP", "ipp2"))
+////	{
+////		pconfig->ipp2 = atoi(value);
+////	}
+////	else if(MATCH("CIP", "ipp3"))
+////	{
+////		pconfig->ipp3 = atoi(value);
+////	}
+////	else if(MATCH("CIP", "ipp4"))
+////	{
+////		pconfig->ipp4 = atoi(value);
+////	}
+////	else if(MATCH("MISC", "waittime"))
+////	{
+////		pconfig->waittime = atoi(value);
+////	}
+//	else {
+//		return 0;  /* unknown section/name, error */
 //	}
-//	else if(MATCH("MISC", "waittime"))
-//	{
-//		pconfig->waittime = atoi(value);
-//	}
-	else {
-		return 0;  /* unknown section/name, error */
-	}
-	return 1;
-}
+//	return 1;
+//}
 
 
 int main(int argc, char *argv[])
