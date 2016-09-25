@@ -212,7 +212,10 @@ print "Altitude:            "+str(calalt )
 print "Accelerometer:       "+str(calacc )
 print "Magnometer/Compass:  "+str(calmag )
 print "Gyroscoop:           "+str(calgyro)
-tenDOF.Calibrate(calalt, calacc, calmag, calgyro, caltemp)
+try:
+    tenDOF.Calibrate(calalt, calacc, calmag, calgyro, caltemp)
+except:
+    print ""
 print "Calibrated"
 
 print "Awaiting senpai"
@@ -297,7 +300,10 @@ while True:
                 clientConnected = False;
                 running = False;
                 cleanup()
-        data = tenDOF.returnAHRSGD()
+        try:
+            data = tenDOF.returnAHRSGD()
+        except:
+            data = "AHRS:0,0,0,0,0";
         s.sendto(data, addr)
         time.sleep(0.005)
         data = "GPS:lat,long,alt,heading"
