@@ -1,3 +1,4 @@
+#include <ESP8266mDNS.h>
 #include "PinOuts.h"
 #include "MotorHelper.h"
 #include <ESP8266WiFi.h>
@@ -32,13 +33,13 @@ void setupOTA()
 {
   Serial.println("Setting up Android OTA");
   // Port defaults to 8266
-  // ArduinoOTA.setPort(8266);
+  ArduinoOTA.setPort(8266);
 
   // Hostname defaults to esp8266-[ChipID]
-  // ArduinoOTA.setHostname("myesp8266");
+  ArduinoOTA.setHostname("Natsuki-esp8266");
 
   // No authentication by default
-  ArduinoOTA.setPassword();
+  ArduinoOTA.setPassword((const char *)"123");
 
   ArduinoOTA.onStart([]() {
     Serial.println("Start");
@@ -61,6 +62,16 @@ void setupOTA()
   Serial.println("AndroidOTA started");
 }
 
+void StopMotors()
+{
+	DC1Helper.Stop();
+	DC2Helper.Stop();
+}
+
+void WiFiEvent(WiFiEvent_t event) {
+	Serial.printf("[WiFi-event] event: %d\n", event);
+}
+
 void setup()
 {
 	Serial.begin(115200);
@@ -74,6 +85,7 @@ void setup()
 	Serial.println();
 	Serial.print("Connecting to ");
 	Serial.println(ssid);
+	WiFi.onEvent(WiFiEvent);
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(ssid, password);
 	serverIP = WiFi.localIP();
@@ -95,7 +107,10 @@ void setup()
 		Serial.print(".");
 		counter++;
 	}
-
+	if(!serverIP)
+	{
+		serverIP = WiFi.localIP();
+	}
 	Serial.println("");
 	Serial.println("WiFi connected");
 	setupOTA();
@@ -106,6 +121,8 @@ void setup()
 	// Serial.println(the IP address
 	Serial.println(serverIP);
 }
+
+
 
 void HandleClientCommand(char* clienttype, char* clientaction)
 {
@@ -118,7 +135,7 @@ void HandleClientCommand(char* clienttype, char* clientaction)
 		Serial.println(server.remoteIP());
 	}
 	if (clientaction == "disconnected") {
-		//StopMotors();
+		StopMotors();
 	}
 	if (clienttype == "pc") {
 		if (clientaction == "connected") {

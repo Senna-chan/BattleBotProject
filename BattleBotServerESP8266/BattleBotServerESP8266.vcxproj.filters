@@ -58,6 +58,18 @@
     <Filter Include="src\_micro-api-readonly\libraries\Wire">
       <UniqueIdentifier>{4de3d6f4-91ed-4f85-9dae-a4f95be86a9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_AHRS">
+      <UniqueIdentifier>{cdcf11f4-2909-48b3-8974-d45928b00163}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified">
+      <UniqueIdentifier>{fcc6cc05-9f68-4140-814d-8fdee7225d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_L3GD20_U">
+      <UniqueIdentifier>{e9c394bd-c5e2-46b2-b624-1dd85f5da4ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor">
+      <UniqueIdentifier>{0ed191e1-3acd-469c-a2ce-52b928bf9d7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="BattleBotServerESP8266.ino" />
@@ -75,6 +87,18 @@
     </None>
     <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\library.properties">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </None>
+    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    </None>
+    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
+    </None>
+    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
+    </None>
+    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_Unified_Sensor\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +312,21 @@
     <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.h">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Sensor_Set.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\Adafruit_L3GD20_U.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_Unified_Sensor\Adafruit_Sensor.h">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MotorHelper.cpp">
@@ -475,6 +514,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.cpp">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\Adafruit_L3GD20_U.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
