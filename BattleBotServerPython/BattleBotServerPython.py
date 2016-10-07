@@ -8,7 +8,7 @@ GPIO.setmode(GPIO.BCM)
 import netifaces as ni
 import Adafruit_PCA9685
 from time import sleep
-from tenDOFclass import *
+#from tenDOFclass import *
 import threading
 
 
@@ -19,7 +19,7 @@ motor.set_pwm_freq(1000)
 servo.set_pwm_freq(60)
 DC1Helper = MotorHelper(motor, 0, 16, 19)
 DC2Helper = MotorHelper(motor, 1, 20, 21)
-tenDOF = tenDOFclass();
+#tenDOF = tenDOFclass();
 WiFiStrength = 0
 
 isStepping = False;
@@ -213,7 +213,7 @@ print "Accelerometer:       "+str(calacc )
 print "Magnometer/Compass:  "+str(calmag )
 print "Gyroscoop:           "+str(calgyro)
 try:
-    tenDOF.Calibrate(calalt, calacc, calmag, calgyro, caltemp)
+    #tenDOF.Calibrate(calalt, calacc, calmag, calgyro, caltemp)
 except:
     print ""
 print "Calibrated"
@@ -290,7 +290,8 @@ while True:
                    CalStuff = parameters.split(',')
                    Calibrate(CalStuff[0],CalStuff[1],CalStuff[2],CalStuff[3],CalStuff[4])
             if(command == "reset10dof"):
-                tenDOF.reset10dof()
+                print "Nope"
+                #tenDOF.reset10dof()
 
             if(command == "reload"):
                 DoSteps(512, False)
@@ -300,13 +301,14 @@ while True:
                 clientConnected = False;
                 running = False;
                 cleanup()
-        try:
-            data = tenDOF.returnAHRSGD()
-        except:
-            data = "AHRS:0,0,0,0,0";
+        #try:
+        #    data = tenDOF.returnAHRSGD()
+        #except:
+        #    data = "AHRS:0,0,0,0,0";
+        data = "AHRS:0,0,0,0,0";
         s.sendto(data, addr)
         time.sleep(0.005)
-        data = "GPS:lat,long,alt,heading"
+        data = "GPS:lat,long,alt,speed,heading"
         s.sendto(data, addr)
         time.sleep(0.005)
         data = "MISC:c1,c2,c3,{}".format(WiFiStrength)

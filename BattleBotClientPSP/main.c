@@ -37,6 +37,8 @@
 #include "common/graphics.h"
 #include <psppower.h>
 #include "common/ini.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
 
@@ -666,14 +668,13 @@ int main(int argc, char *argv[])
 
 		char buf[255];
 		buf[0] = '\0';
+		char buf1[255];
+		buf1[0] = '\0';
+		char buf2[255];
+		buf2[0] = '\0';
 		char temp[10];
 		temp[0] = '\0';
-		char *dofbuf[255];
-		dofbuf[0] = '\0';
-		char *gpsbuf[255];
-		gpsbuf[0] = '\0';
-		char *parsedbufA[9];
-		char *parsedbufB[9];
+
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
 		int waittime = 40;
@@ -1016,86 +1017,156 @@ int main(int argc, char *argv[])
 				PrintError("Send failed");
 				continue;
 			}
-			buf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (buf[0] != '\0') {
-				char *p = strtok(buf, ",:");
-				int i = 0;
-				while (p != NULL)
+			
+			char data_type[10];
+			char data_data[255];
+			char *temperature[10];
+			char *altitudedof[10];
+			char *altitudegps[10];
+			char *headingdof[10];
+			char *headinggps[10];
+			char *roll[10];
+			char *pitch[10];
+			char *latitude[10];
+			char *longitude[10];
+			char *speedgps[10];
+			char *cell1[10];
+			char *cell2[10];
+			char *cell3[10];
+			char *cells[10];
+			char *excecutetime[10];
+			int k, j;
+			for (k = 0; k < 3; k++) {
+				int colloncounter = 0;
+				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+				for(j = 0; j <= sizeof(buf1); j++)
 				{
-					parsedbufA[i] = p;
-					p = strtok(NULL, ",:");
-					i++;
-				}
-				if(strncmp(parsedbufA[0], "AHRS", 4) == 0)
+					char recieved_char = buf1[j];
+					if (buf1[j] == ':')
+					{
+						colloncounter++;
+						continue;
+					}
+					if (colloncounter == 0)
+					{
+						strncat(data_type, &recieved_char, 1);
+					}
+					else if (colloncounter == 1)
+					{
+						strncat(data_data, &recieved_char, 1);
+					}
+				} // end for
+				if (!strcmp(data_type, "AHRS"))
 				{
-					strcpy(temp,"AHRS");
+					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
 				}
-				else if(strncmp(parsedbufA[0], "GPS", 4) == 0)
+				else if (!strcmp(data_type, "GPS"))
 				{
-					strcpy(temp, "GPS");
+					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
 				}
-				PrintText(10, 80, ColorGray, "New %s Data", temp);
-			}
-			else
-			{
-				PrintText(10, 80, ColorGray, "Old %s Data", temp);
-			}
-			if (strncmp(temp, "AHRS", 4)) {
-				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
-				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
-				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
-				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
-				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
-			}
-			else if (strncmp(temp, "GPS", 4))
-			{
-				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
-				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
-				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
-				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
+				else if (!strcmp(data_type, "misc"))
+				{
+					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
+				}
 			}
 
-			delay(10);
-			buf[0] = '\0';
-			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			if (buf[0] != '\0') {
-				char *p = strtok(buf, ",:");
-				int i = 0;
-				while (p != NULL)
-				{
-					parsedbufB[i] = p;
-					p = strtok(NULL, ",:");
-					i++;
-				}
-				if (strncmp(parsedbufB[0], "AHRS", 4) == 0)
-				{
-					strcpy(temp, "AHRS");
-				}
-				else if (strncmp(parsedbufB[0], "GPS", 4) == 0)
-				{
-					strcpy(temp, "GPS");
-				}
-				PrintText(10, 80, ColorGray, "New %s Data", temp);
-			}
-			else
-			{
-				PrintText(10, 80, ColorGray, "Old %s Data", temp);
-			}
-			if (strncmp(temp, "AHRS", 4)) {
-				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
-				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
-				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
-				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
-				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
-			}
-			else if (strncmp(temp, "GPS", 4))
-			{
-				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
-				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
-				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
-				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
-			}
+			int SensorDataPos = 50;
+
+			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
+			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
+			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
+			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
+			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
+			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
+
+			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
+			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
+			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
+			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
+			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
+
+			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
+			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
+			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
+
+//			if (buf[0] != '\0') {
+//				char *p = strtok(buf, ",:");
+//				int i = 0;
+//				while (p != NULL)
+//				{
+//					parsedbufA[i] = p;
+//					p = strtok(NULL, ",:");
+//					i++;
+//				}
+//				if(strncmp(parsedbufA[0], "AHRS", 4) == 0)
+//				{
+//					strcpy(temp,"AHRS");
+//				}
+//				else if(strncmp(parsedbufA[0], "GPS", 4) == 0)
+//				{
+//					strcpy(temp, "GPS");
+//				}
+//				PrintText(10, 80, ColorGray, "New %s Data", temp);
+//			}
+//			else
+//			{
+//				PrintText(10, 80, ColorGray, "Old %s Data", temp);
+//			}
+//			if (strncmp(temp, "AHRS", 4)) {
+//				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
+//				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
+//				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
+//				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
+//				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
+//			}
+//			else if (strncmp(temp, "GPS", 4))
+//			{
+//				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
+//				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
+//				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
+//				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
+//			}
+//
+//			delay(10);
+//			buf[0] = '\0';
+//			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+//			if (buf[0] != '\0') {
+//				char *p = strtok(buf, ",:");
+//				int i = 0;
+//				while (p != NULL)
+//				{
+//					parsedbufB[i] = p;
+//					p = strtok(NULL, ",:");
+//					i++;
+//				}
+//				if (strncmp(parsedbufB[0], "AHRS", 4) == 0)
+//				{
+//					strcpy(temp, "AHRS");
+//				}
+//				else if (strncmp(parsedbufB[0], "GPS", 4) == 0)
+//				{
+//					strcpy(temp, "GPS");
+//				}
+//				PrintText(10, 80, ColorGray, "New %s Data", temp);
+//			}
+//			else
+//			{
+//				PrintText(10, 80, ColorGray, "Old %s Data", temp);
+//			}
+//			if (strncmp(temp, "AHRS", 4)) {
+//				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
+//				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
+//				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
+//				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
+//				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
+//			}
+//			else if (strncmp(temp, "GPS", 4))
+//			{
+//				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
+//				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
+//				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
+//				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
+//			}
 			flipScreen();
 			delay(waittime - 10);
 		}
