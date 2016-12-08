@@ -1,0 +1,19 @@
+﻿<Page
+    x:Class="BattleBotClientWin10IoT.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:BattleBotClientWin10IoT"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:iconPacks="using:MahApps.Metro.IconPacks"
+    mc:Ignorable="d" Height="402.545" Width="294.727">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Image Source="Assets/image.png"></Image>
+        <Button x:Name="CloseButton" Margin="249,0,0,375" Background="#00000000" Click="CloseButton_Click">
+            <iconPacks:PackIconFontAwesome Width="16"
+                                       Height="16"
+                                       Kind="Times" Foreground="#FFD40000"  />
+        </Button>
+    </Grid>
+</Page>

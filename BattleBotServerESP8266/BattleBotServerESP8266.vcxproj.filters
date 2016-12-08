@@ -14,61 +14,58 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{007e618c-7803-4079-9bdc-c73885fb8e59}</UniqueIdentifier>
+      <UniqueIdentifier>{f4032014-3c0d-44ef-96b4-4ed356dc35d9}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{3740794b-4ddc-4218-b6ca-93a3abd41cc4}</UniqueIdentifier>
+      <UniqueIdentifier>{fa693ebd-913f-4dee-80cc-8f551a7ac13b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{0b034770-f617-4f33-bf06-6f7ec38bc2bf}</UniqueIdentifier>
+      <UniqueIdentifier>{47f5b925-5b56-4067-ad0a-0436e09fcff3}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants">
-      <UniqueIdentifier>{f0b7c859-cb61-471e-9e0f-a91a23a6c9d8}</UniqueIdentifier>
+      <UniqueIdentifier>{e54a9201-552d-453b-8685-4cb357bd846d}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants\nodemcu">
-      <UniqueIdentifier>{74dfab1c-3009-4d20-a779-89f4ac24b447}</UniqueIdentifier>
+      <UniqueIdentifier>{1e16016b-6115-4483-abe5-5fbd70afe087}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\libb64">
-      <UniqueIdentifier>{4900e6b0-8cce-4ba6-838b-bb396d6ce039}</UniqueIdentifier>
+      <UniqueIdentifier>{04162808-99b0-47ac-b0b1-6e983e4e8750}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\spiffs">
-      <UniqueIdentifier>{2897e65f-5785-4829-a6bd-3b480f12c204}</UniqueIdentifier>
+      <UniqueIdentifier>{be3fb199-fcdc-437b-84c0-78c9074b256b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\umm_malloc">
-      <UniqueIdentifier>{0006d869-0471-4a6a-b045-80f1b405798f}</UniqueIdentifier>
+      <UniqueIdentifier>{4f1cc98c-f41e-4ee0-8a67-d7751c5819c9}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{a9e37d79-8abd-478f-a92d-050b7554ce9a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit-PWM">
-      <UniqueIdentifier>{56ef6592-4933-4424-a1c6-5e9ff6820c57}</UniqueIdentifier>
+      <UniqueIdentifier>{94441831-07a1-43f2-8200-bdf89e050e48}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ArduinoOTA">
-      <UniqueIdentifier>{bd3be893-b48f-4b6e-961a-a314fccafc7b}</UniqueIdentifier>
+      <UniqueIdentifier>{306550ab-7113-423b-939a-91a5dc565125}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\ESP8266mDNS">
+      <UniqueIdentifier>{f5ea1b40-85f2-43b1-8a4c-fb4ee4665bdd}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi">
-      <UniqueIdentifier>{0b698bef-d1ef-41b6-b91d-863dc47562bf}</UniqueIdentifier>
+      <UniqueIdentifier>{30679261-6bb6-4c5e-8db0-91f5462902dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src">
-      <UniqueIdentifier>{bc9389b5-2635-4f1f-96fa-3a287c0b7438}</UniqueIdentifier>
+      <UniqueIdentifier>{c812ef69-034c-482c-bd5b-bc29d7d90fc8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src\include">
-      <UniqueIdentifier>{b7576a99-c181-44a1-8102-48018466b4a1}</UniqueIdentifier>
+      <UniqueIdentifier>{d21eb5d7-8633-4a4b-840c-01ff492653b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Wire">
-      <UniqueIdentifier>{4de3d6f4-91ed-4f85-9dae-a4f95be86a9f}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\RemoteDebug">
+      <UniqueIdentifier>{1eaaf7a2-52b3-45dd-ba59-9f314d8913fd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_AHRS">
-      <UniqueIdentifier>{cdcf11f4-2909-48b3-8974-d45928b00163}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\espsoftwareserial">
+      <UniqueIdentifier>{4ffb11db-9012-4726-adf0-4ac6bf4b1615}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified">
-      <UniqueIdentifier>{fcc6cc05-9f68-4140-814d-8fdee7225d16}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\SoftwareSerial">
+      <UniqueIdentifier>{e5b6b4d2-0bdc-487c-9fd8-8aa4ba74872e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_L3GD20_U">
-      <UniqueIdentifier>{e9c394bd-c5e2-46b2-b624-1dd85f5da4ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor">
-      <UniqueIdentifier>{0ed191e1-3acd-469c-a2ce-52b928bf9d7f}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\DualVNH5019MotorShield">
+      <UniqueIdentifier>{83785b67-f045-4c3f-bc2f-d0c4138c6996}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,36 +73,21 @@
     <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\cont.S">
       <Filter>src\_micro-api-readonly\core</Filter>
     </None>
-    <None Include="..\..\..\..\Arduino\libraries\Adafruit-PWM\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit-PWM</Filter>
-    </None>
     <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ArduinoOTA\library.properties">
       <Filter>src\_micro-api-readonly\libraries\ArduinoOTA</Filter>
     </None>
     <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\library.properties">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    <None Include="..\..\..\..\Arduino\libraries\RemoteDebug\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </None>
-    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </None>
-    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
-    </None>
-    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
-    </None>
-    <None Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_Unified_Sensor\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor</Filter>
+    <None Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.BattleBotServerESP8266.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MotorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PinOuts.h">
@@ -252,11 +234,11 @@
     <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\variants\nodemcu\pins_arduino.h">
       <Filter>src\_micro-api-readonly\variants\nodemcu</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit-PWM\Adafruit_PWMServoDriver.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit-PWM</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ArduinoOTA\ArduinoOTA.h">
       <Filter>src\_micro-api-readonly\libraries\ArduinoOTA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266mDNS\ESP8266mDNS.h">
+      <Filter>src\_micro-api-readonly\libraries\ESP8266mDNS</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\src\ESP8266WiFi.h">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi\src</Filter>
@@ -309,29 +291,17 @@
     <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\src\include\wl_definitions.h">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi\src\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.h">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    <ClInclude Include="..\..\..\..\Arduino\libraries\RemoteDebug\RemoteDebug.h">
+      <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Sensor_Set.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    <ClInclude Include="..\BattleBotServerArduino\ESPCOMBYTES.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\Adafruit_L3GD20_U.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_Unified_Sensor\Adafruit_Sensor.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_Unified_Sensor</Filter>
+    <ClInclude Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.h">
+      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MotorHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\abi.cpp">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
@@ -476,11 +446,11 @@
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\umm_malloc\umm_malloc.c">
       <Filter>src\_micro-api-readonly\core\umm_malloc</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\Adafruit-PWM\Adafruit_PWMServoDriver.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit-PWM</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ArduinoOTA\ArduinoOTA.cpp">
       <Filter>src\_micro-api-readonly\libraries\ArduinoOTA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266mDNS\ESP8266mDNS.cpp">
+      <Filter>src\_micro-api-readonly\libraries\ESP8266mDNS</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\src\ESP8266WiFi.cpp">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi\src</Filter>
@@ -512,31 +482,28 @@
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\src\WiFiUdp.cpp">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    <ClCompile Include="..\..\..\..\Arduino\libraries\RemoteDebug\RemoteDebug.cpp">
+      <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\UserFiles\Documents\Arduino\libraries\Adafruit_L3GD20_U\Adafruit_L3GD20_U.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_L3GD20_U</Filter>
+    <ClCompile Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.cpp">
+      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\..\..\Arduino\libraries\Adafruit-PWM\license.txt">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit-PWM</Filter>
-    </Text>
     <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ArduinoOTA\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ArduinoOTA</Filter>
+    </Text>
+    <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266mDNS\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\ESP8266mDNS</Filter>
     </Text>
     <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi</Filter>
     </Text>
-    <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
+    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    </Text>
+    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\LICENSE.txt">
+      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
     </Text>
   </ItemGroup>
 </Project>

@@ -680,8 +680,9 @@ int main(int argc, char *argv[])
 		int waittime = 40;
 
 		buf[0] = '\0';
-		delay(10);
+		delay(500);
 		sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+		PrintError(buf);
 		if (buf[0] != '\0')
 		{
 			PrintText(150, 100, ColorGreen, "Connection made");
@@ -696,6 +697,8 @@ int main(int argc, char *argv[])
 			delay(2000);
 			continue;
 		}
+
+
 
 		scePowerLock(0); // Forbids user to turn the device in standby. Todo: make it so that when the device is resuming from standby that the wifi is initialized again
 		// Making sure both buffers of the screen are clear
@@ -719,37 +722,22 @@ int main(int argc, char *argv[])
 			running = isRunning();
 			pspDebugScreenSetXY(0, 0);
 			clearScreen(ColorBlack);
-			if (scePowerGetBatteryLifePercent() < 10)
+			if (scePowerGetBatteryLifePercent() < 10 && !scePowerIsBatteryCharging())
 			{
 				PrintError("BATTERY TO LOW");
 				PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
+				
 				message = "DC:0,0,0:0,0";
-				for (;;) {
-					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-					{
-						PrintError("Motor stop message failed sending");
-						flipScreen();
-						delay(1000);
-						continue;
-					}
-					break;
-				}
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				
 				message = "client:psp:disconnected";
-				for (;;) {
-					if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-					{
-						PrintError("Disconenct message failed sending");
-						flipScreen();
-						sceDisplayWaitVblankStart();
-						delay(50);
-						continue;
-					}
-					break;
-				}
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				
+				PrintToScreen(ColorBlack);
+
 				delay(2000);
 				sceNetInetClose(socket_desc);
 				running = 0;
-				break;
 			}
 			PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
 			if (scePowerIsLowBattery()) {
@@ -956,7 +944,7 @@ int main(int argc, char *argv[])
 				{
 					onHold = 1;
 				}
-			}
+			} // end if buttons
 			oldButton = pad.Buttons;
 
 
@@ -1009,9 +997,34 @@ int main(int argc, char *argv[])
 			wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
 			wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
 			speed = map(speed, -100, 100, mapMin, mapMax);
-
+			int m1speed, m2speed;
+			if (speed > 0)
+			{
+				m1speed = speed - wheelpos1;
+				m2speed = speed - wheelpos2;
+			}
+			else if (speed<0)
+			{
+				m1speed = speed + wheelpos1;
+				m2speed = speed + wheelpos2;
+			}
+			if (speed == 0)
+			{
+				if (wheelpos1 >0)
+				{
+					m1speed = wheelpos1 * -1;
+					m2speed = wheelpos1;
+				}
+				if (wheelpos2 > 0)
+				{
+					m1speed = wheelpos2;
+					m2speed = wheelpos2 * -1;
+				}
+			}
+			m1speed =+ 100;
+			m2speed =+ 100;
 			char dcmessage[30];
-			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i,%i:%i,%i", speed, wheelpos1, wheelpos2, servoX, servoY);
+			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i:%i,%i", m1speed, m2speed, servoX, servoY);
 			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
 			{
 				PrintError("Send failed");
@@ -1035,59 +1048,77 @@ int main(int argc, char *argv[])
 			char *cell3[10];
 			char *cells[10];
 			char *excecutetime[10];
-			int k, j;
-			for (k = 0; k < 3; k++) {
-				int colloncounter = 0;
-				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-				for(j = 0; j <= sizeof(buf1); j++)
-				{
-					char recieved_char = buf1[j];
-					if (buf1[j] == ':')
-					{
-						colloncounter++;
-						continue;
-					}
-					if (colloncounter == 0)
-					{
-						strncat(data_type, &recieved_char, 1);
-					}
-					else if (colloncounter == 1)
-					{
-						strncat(data_data, &recieved_char, 1);
-					}
-				} // end for
-				if (!strcmp(data_type, "AHRS"))
-				{
-					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
-				}
-				else if (!strcmp(data_type, "GPS"))
-				{
-					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
-				}
-				else if (!strcmp(data_type, "misc"))
-				{
-					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
-				}
-			}
+			temperature[0]	  = '\0' ;
+			altitudedof[0]	  = '\0' ;
+			altitudegps[0]	  = '\0' ;
+			headingdof[0]	  = '\0' ;
+			headinggps[0]	  = '\0' ;
+			roll[0]			  = '\0' ;
+			pitch[0]		  = '\0' ;
+			latitude[0]		  = '\0' ;
+			longitude[0]	  = '\0' ;
+			speedgps[0]		  = '\0' ;
+			cell1[0]		  = '\0' ;
+			cell2[0]		  = '\0' ;
+			cell3[0]		  = '\0' ;
+			cells[0]		  = '\0' ;
+			excecutetime[0]	  = '\0' ;
 
-			int SensorDataPos = 50;
-
-			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
-			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
-			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
-			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
-			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
-			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
-
-			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
-			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
-			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
-			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
-			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
-
-			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
-			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
-			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
+//			int k, j;
+//			for (k = 0; k < 3; k++) {
+//				int colloncounter = 0;
+//				buf1[0] = '\0';
+//				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+//				if (buf1[0] == '\0') { continue; } // We didn't recieve data
+//				for(j = 0; j <= sizeof(buf1); j++)
+//				{
+//					char recieved_char = buf1[j];
+//					if (buf1[j] == ':')
+//					{
+//						colloncounter++;
+//						continue;
+//					}
+//					if (colloncounter == 0)
+//					{
+//						strncat(data_type, &recieved_char, 1);
+//					}
+//					else if (colloncounter == 1)
+//					{
+//						strncat(data_data, &recieved_char, 1);
+//					}
+//				} // end for
+//				if (!strcmp(data_type, "AHRS"))
+//				{
+//					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
+//				}
+//				else if (!strcmp(data_type, "GPS"))
+//				{
+//					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
+//				}
+//				else if (!strcmp(data_type, "misc"))
+//				{
+//					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
+//				}
+//			}// end for
+//
+//			int SensorDataPos = 50;
+//
+//			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
+//			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
+//			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
+//			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
+//			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
+//			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
+//
+//			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
+//			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
+//			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
+//			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
+//			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
+//
+//			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
+//			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
+//			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
 
 //			if (buf[0] != '\0') {
 //				char *p = strtok(buf, ",:");
@@ -1169,6 +1200,7 @@ int main(int argc, char *argv[])
 //			}
 			flipScreen();
 			delay(waittime - 10);
+			running = isRunning();
 		}
 		if(resumedfromsuspend == 1)
 		{

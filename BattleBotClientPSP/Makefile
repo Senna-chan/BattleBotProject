@@ -2,13 +2,13 @@ TARGET = SimpleBattleBotClientPSP
 OBJS = main.o common/graphics.o common/framebuffer.o common/callback.o common/ini.o
 #OBJS = main.o common/callback.o
 
-BUILD_PRX = 1
 
 
-CFLAGS = -O2 -G0 -Wall
+
+CFLAGS = -O2 -G0 -Wall -g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
-
+BUILD_PRX = 1
 
 LIBDIR =
 LDFLAGS =

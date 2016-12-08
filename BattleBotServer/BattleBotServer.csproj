@@ -53,41 +53,41 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdafruitPorts">
-      <HintPath>..\ProjectLibs\AdafruitPorts.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\AdafruitPorts.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging">
-      <HintPath>..\ProjectLibs\Common.Logging.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging.Core">
-      <HintPath>..\ProjectLibs\Common.Logging.Core.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>..\ProjectLibs\OpenTK.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO">
-      <HintPath>..\ProjectLibs\Raspberry.IO.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO.Components">
-      <HintPath>..\ProjectLibs\Raspberry.IO.Components.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.Components.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO.GeneralPurpose">
-      <HintPath>..\ProjectLibs\Raspberry.IO.GeneralPurpose.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.GeneralPurpose.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO.InterIntegratedCircuit">
-      <HintPath>..\ProjectLibs\Raspberry.IO.InterIntegratedCircuit.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.InterIntegratedCircuit.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO.Interop">
-      <HintPath>..\ProjectLibs\Raspberry.IO.Interop.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.IO.SerialPeripheralInterface">
-      <HintPath>..\ProjectLibs\Raspberry.IO.SerialPeripheralInterface.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.IO.SerialPeripheralInterface.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.System">
-      <HintPath>..\ProjectLibs\Raspberry.System.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\Raspberry.System.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnitsNet">
-      <HintPath>..\ProjectLibs\UnitsNet.dll</HintPath>
+      <HintPath>..\ProjectLibs\WPFClient\UnitsNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

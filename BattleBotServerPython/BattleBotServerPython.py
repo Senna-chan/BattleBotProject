@@ -212,10 +212,10 @@ print "Altitude:            "+str(calalt )
 print "Accelerometer:       "+str(calacc )
 print "Magnometer/Compass:  "+str(calmag )
 print "Gyroscoop:           "+str(calgyro)
-try:
+#try:
     #tenDOF.Calibrate(calalt, calacc, calmag, calgyro, caltemp)
-except:
-    print ""
+#except:
+#    print ""
 print "Calibrated"
 
 print "Awaiting senpai"
