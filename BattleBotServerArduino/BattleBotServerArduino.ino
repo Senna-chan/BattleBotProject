@@ -220,13 +220,11 @@ void HandleESPData()
 				Serial.println("ESP is ready for data");
 			}
 		}
-		else if (c == 0x00) {
+		else if (c == 0x03) {
 			if (Serial.read() == ESPMESSAGEEND) {
-				if (Serial.read() == ESPMESSAGEEND) {
-					Serial.println("ESP lost connection to the client either with or without normal disconnect");
-					clientConnected = false;
-					Motors.setBrakes(0, 0);
-				}
+				Serial.println("ESP lost connection to the client either with or without normal disconnect");
+				clientConnected = false;
+				Motors.setBrakes(0, 0);
 			}
 		}
 	}

@@ -89,7 +89,7 @@ void WiFiEvent(WiFiEvent_t event)
 	if(event == WIFI_EVENT_SOFTAPMODE_STADISCONNECTED)
 	{
 		SerialArd.write(ESPCLIENT);
-		SerialArd.write(0x00);
+		SerialArd.write(0x03);
 		SerialArd.write(ESPMESSAGEEND);
 	}
 }
@@ -136,10 +136,6 @@ void setup()
 	if (!MDNS.begin(mdnsName))
 	{
 		Serial.println("Error setting up MDNS responder!");
-		while (1)
-		{
-			delay(1000);
-		}
 	}
 	else
 	{
@@ -200,7 +196,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 		SerialArd.write(ESPMESSAGEEND);
 
 		SerialArd.write(ESPCLIENT);
-		SerialArd.write(0x02);
+		SerialArd.write(0x03);
 		SerialArd.write(ESPMESSAGEEND);
 	}
 	if (clienttype == "pc")
