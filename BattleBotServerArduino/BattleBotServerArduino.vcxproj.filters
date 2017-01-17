@@ -14,394 +14,285 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{2d864d20-4a55-4a03-9807-f6d3101d31eb}</UniqueIdentifier>
+      <UniqueIdentifier>{10ce1535-fce8-4350-bc82-9ec995850bda}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{b33f49a8-02f7-45e6-9967-b62e2c2dc5a8}</UniqueIdentifier>
+      <UniqueIdentifier>{de45ef82-77cd-43f1-8ba1-1f6eebc473d5}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{3835f239-9963-4e8a-ad3a-fa17692bc884}</UniqueIdentifier>
+      <UniqueIdentifier>{7f966bff-1c4c-41a2-b957-7e81e4e57e22}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants">
-      <UniqueIdentifier>{1c59ff36-1501-4f1d-89aa-a253cc0c1c66}</UniqueIdentifier>
+      <UniqueIdentifier>{3eaa9ff8-405a-4e45-9386-f2c8bac789d5}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants\mega">
-      <UniqueIdentifier>{bfc2b486-2939-447a-a50e-6067eb06938a}</UniqueIdentifier>
+      <UniqueIdentifier>{76656eb6-1a99-4f55-8005-8ff3c8507ea1}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{6b609316-ff3d-4172-b9dc-5db92358c63d}</UniqueIdentifier>
+      <UniqueIdentifier>{53ae0b78-598e-4352-804a-0f0270c20e8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_10DOF">
-      <UniqueIdentifier>{2409c2d1-4086-4bfb-b042-bb4db355b183}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_AHRS">
-      <UniqueIdentifier>{17e32183-0527-4c41-bd4f-3f0fc99f7c59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified">
-      <UniqueIdentifier>{f7b00d53-ebe3-48ef-9c53-5db6d495e670}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\Adafruit_BMP085_Library">
+      <UniqueIdentifier>{913572c9-f5f3-49b2-b215-79537286e5ee}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Adafruit_LSM303DLHC">
-      <UniqueIdentifier>{9dd985aa-8bff-44b2-b723-4e0b8ed52ab0}</UniqueIdentifier>
+      <UniqueIdentifier>{635d7d43-bb68-43cd-9e20-95094743c6c2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Adafruit_Sensor">
-      <UniqueIdentifier>{2c4cd694-ddf9-4fab-a3a9-3f92f0a149fc}</UniqueIdentifier>
+      <UniqueIdentifier>{3ae38838-aa55-413c-b761-e3b86b45db77}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ArduinoThread">
-      <UniqueIdentifier>{991f8041-87da-427d-b99e-156e3084f2eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\DualVNH5019MotorShieldMega">
-      <UniqueIdentifier>{54e45fe1-50be-4c2f-be7c-b9cbd1defe49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Servo">
-      <UniqueIdentifier>{f6964453-6c77-44b5-8800-69611d2df41e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Servo\src">
-      <UniqueIdentifier>{379e9630-090a-4e3c-b98b-724b840097c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\avr">
-      <UniqueIdentifier>{a788c05e-7dfe-4704-be2a-6bd17e939168}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\sam">
-      <UniqueIdentifier>{e21f207e-bcaf-4b85-8306-92da1860b9c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\samd">
-      <UniqueIdentifier>{72b8c83b-d113-41cb-bdf8-34f1e5668f25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\TimerOne">
-      <UniqueIdentifier>{bb26eee7-7981-479f-8f2f-214354277ba4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Wire">
-      <UniqueIdentifier>{de06c6a6-2f43-4ecc-bcf4-8cadc5693eed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Wire\src">
-      <UniqueIdentifier>{aae98932-7411-4b63-b1f2-141867c4b05a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\Wire\src\utility">
-      <UniqueIdentifier>{37d464e6-d36d-473e-8620-80ad244f1454}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\arduino_261766">
-      <UniqueIdentifier>{86d8cd56-eb7c-41bb-881d-2cf013c2dcb6}</UniqueIdentifier>
+      <UniqueIdentifier>{68789d01-3ab2-48c2-9c39-cf3c52ae3c45}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\DualVNH5019MotorShield">
-      <UniqueIdentifier>{61966e7a-04ca-4826-842c-4ea523df83a7}</UniqueIdentifier>
+      <UniqueIdentifier>{aa20e784-9c47-4028-9e28-8297820e95ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\DualVNH5019MotorShieldMega">
+      <UniqueIdentifier>{b14a49e3-b707-497a-92ea-f035e4bfd8a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\L3G">
+      <UniqueIdentifier>{0fd1a451-3441-49b2-ab16-7a7d8b9c71ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Servo">
+      <UniqueIdentifier>{bd80298a-f4e9-4fd2-aa69-3043043824b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Servo\src">
+      <UniqueIdentifier>{b03ce701-1c03-4f22-8fcf-5071f7546308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\avr">
+      <UniqueIdentifier>{740ee77d-e67c-40ce-bbd2-81fac8868a8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\sam">
+      <UniqueIdentifier>{5bf891a1-3969-4a3c-9726-14de75c79860}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Servo\src\samd">
+      <UniqueIdentifier>{5a94c1e1-0f4a-422e-a95c-e68f66d5f8a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\TimerOne">
+      <UniqueIdentifier>{c11f9bbf-3a28-4e07-96d2-fc6f26030dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Wire">
+      <UniqueIdentifier>{0f1548c2-8dd7-44fd-a238-fec4b66e7340}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Wire\src">
+      <UniqueIdentifier>{e262b595-ed03-4b16-8cff-e6477845cffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\_micro-api-readonly\libraries\Wire\src\utility">
+      <UniqueIdentifier>{47ac1e52-41bb-4bf3-86e5-747380d6fcc3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="BattleBotServerArduino.ino" />
-    <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_pulse.S">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\Adafruit_AHRS\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\Adafruit_BMP085_Unified\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\Adafruit_LSM303DLHC\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_LSM303DLHC</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\Adafruit_Sensor\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_Sensor</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\ArduinoThread\library.json">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\ArduinoThread\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Servo</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\TimerOne\library.json">
-      <Filter>src\_micro-api-readonly\libraries\TimerOne</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\TimerOne\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\TimerOne</Filter>
-    </None>
-    <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\arduino_261766\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\arduino_261766</Filter>
-    </None>
-    <None Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
-    </None>
+    <None Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\wiring_pulse.S" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.BattleBotServerArduino.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Arduino.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\binary.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Client.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial_private.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\IPAddress.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\new.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\PluggableUSB.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Print.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Printable.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Server.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Stream.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Udp.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBAPI.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBDesc.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\WCharacter.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_private.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\WString.h">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\variants\mega\pins_arduino.h">
-      <Filter>src\_micro-api-readonly\variants\mega</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_10DOF\Adafruit_10DOF.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_10DOF</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_AHRS\Adafruit_Sensor_Set.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_LSM303DLHC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303_U.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_LSM303DLHC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\Adafruit_Sensor\Adafruit_Sensor.h">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_Sensor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\ArduinoThread\StaticThreadController.h">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\ArduinoThread\Thread.h">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\ArduinoThread\ThreadController.h">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShieldMega\DualVNH5019MotorShieldMega.h">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShieldMega</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\Servo.h">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\avr\ServoTimers.h">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\avr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\sam\ServoTimers.h">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\sam</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\samd\ServoTimers.h">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\samd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\TimerOne\TimerOne.h">
-      <Filter>src\_micro-api-readonly\libraries\TimerOne</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src\Wire.h">
-      <Filter>src\_micro-api-readonly\libraries\Wire\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src\utility\twi.h">
-      <Filter>src\_micro-api-readonly\libraries\Wire\src\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\arduino_261766\L3G.h">
-      <Filter>src\_micro-api-readonly\libraries\arduino_261766</Filter>
-    </ClInclude>
-    <ClInclude Include="ESPCOMBYTES.h">
+    <ClInclude Include="BattleBotComBytes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.h">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\avr\ServoTimers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\samd\ServoTimers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\sam\ServoTimers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\Servo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Arduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\binary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial_private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\IPAddress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\new.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\PluggableUSB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Print.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Printable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Udp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\USBAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\USBCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\USBDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\WCharacter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\wiring_private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\WString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\libraries\Wire\src\utility\twi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\libraries\Wire\src\Wire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\variants\mega\pins_arduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_BMP085_Library\Adafruit_BMP085.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303_U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_Sensor\Adafruit_Sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\ArduinoThread\StaticThreadController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\ArduinoThread\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\ArduinoThread\ThreadController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\DualVNH5019MotorShieldMega\DualVNH5019MotorShieldMega.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\L3G\L3G.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files (x86)\Arduino\libraries\TimerOne\TimerOne.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\abi.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\avr\Servo.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\CDC.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\samd\Servo.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\Servo\src\sam\Servo.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial0.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\abi.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial1.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\CDC.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial2.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial3.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial0.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\hooks.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial1.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\IPAddress.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial2.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\main.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\HardwareSerial3.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\new.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\IPAddress.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\PluggableUSB.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\main.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Print.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\new.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Stream.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\PluggableUSB.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\Tone.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Print.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Stream.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\WInterrupts.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\Tone.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\USBCore.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_analog.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\WMath.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_digital.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\cores\arduino\WString.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_pulse.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\libraries\Wire\src\utility\twi.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_shift.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Users\Natsuki\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.15\libraries\Wire\src\Wire.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\WMath.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_BMP085_Library\Adafruit_BMP085.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\WString.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303_U.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\Adafruit_10DOF\Adafruit_10DOF.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_10DOF</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\ArduinoThread\Thread.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\Adafruit_AHRS\Adafruit_Simple_AHRS.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_AHRS</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\ArduinoThread\ThreadController.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_U.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_BMP085_Unified</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\DualVNH5019MotorShieldMega\DualVNH5019MotorShieldMega.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\Adafruit_LSM303DLHC\Adafruit_LSM303_U.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Adafruit_LSM303DLHC</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\ArduinoThread\Thread.cpp">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\L3G\L3G.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\ArduinoThread\ThreadController.cpp">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
+    <ClCompile Include="C:\Program Files (x86)\Arduino\libraries\TimerOne\TimerOne.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShieldMega\DualVNH5019MotorShieldMega.cpp">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShieldMega</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\avr\Servo.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\avr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\sam\Servo.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\sam</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\src\samd\Servo.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Servo\src\samd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\TimerOne\TimerOne.cpp">
-      <Filter>src\_micro-api-readonly\libraries\TimerOne</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src\Wire.cpp">
-      <Filter>src\_micro-api-readonly\libraries\Wire\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\src\utility\twi.c">
-      <Filter>src\_micro-api-readonly\libraries\Wire\src\utility</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\arduino_261766\L3G.cpp">
-      <Filter>src\_micro-api-readonly\libraries\arduino_261766</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.cpp">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\..\..\Arduino\libraries\ArduinoThread\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\ArduinoThread\LICENSE.txt">
-      <Filter>src\_micro-api-readonly\libraries\ArduinoThread</Filter>
-    </Text>
-    <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries\Servo\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\Servo</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\TimerOne\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\TimerOne</Filter>
-    </Text>
-    <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\arduino\avr\libraries\Wire\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\arduino_261766\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\arduino_261766</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\arduino_261766\LICENSE.txt">
-      <Filter>src\_micro-api-readonly\libraries\arduino_261766</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
-    </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\LICENSE.txt">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
-    </Text>
   </ItemGroup>
 </Project>

@@ -30,6 +30,12 @@
     <ClCompile Include="common\ini.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="common\jWrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\jsmn.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
@@ -48,6 +54,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common\ini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\BattleBotComBytes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\jWrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\jsmn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

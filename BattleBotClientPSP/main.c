@@ -37,15 +37,16 @@
 #include "common/graphics.h"
 #include <psppower.h>
 #include "common/ini.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "common/jWrite.h"
+#include "common/BattleBotComBytes.h"
+#include "common/jsmn.h"
 
-PSP_MODULE_INFO("Simple Battlebot Client PSP", 0, 1, 1);
+PSP_MODULE_INFO("Battlebot Client PSP", 0, 1, 1);
 
 #define printf pspDebugScreenPrintf
 #define RGB(r, g, b) ((r)|((g)<<8)|((b)<<16))
 #define true 1
-#define false 1
+#define false 0
 int ColorRed = RGB(255, 0, 0); // Red
 int ColorBlue = RGB(0, 0, 255); // Blue
 int ColorGreen = RGB(0, 255, 0); // Green
@@ -63,6 +64,11 @@ static unsigned int __attribute__((aligned(16))) list[262144];
 #define PIXEL_SIZE (4)
 #define FRAME_SIZE (BUF_WIDTH * SCR_HEIGHT * PIXEL_SIZE)
 #define ZBUF_SIZE (BUF_WIDTH SCR_HEIGHT * 2)
+
+
+int socket_desc; // This is the socket
+struct sockaddr_in server; // Speaks for itself
+char *message; // Speaks for itself
 
 static void setupGu()
 {
@@ -219,7 +225,7 @@ void PrintError(const char* format, ...) {
 	printTextScreen(70, 230, buffer, ColorRed);
 }
 
-int QuitScreen()
+void QuitScreen(int Connected)
 {
 	SceCtrlData pad;
 	sceCtrlSetSamplingCycle(0);
@@ -230,10 +236,11 @@ int QuitScreen()
 	PrintText(210, 130, ColorWhite, "/");
 	PrintText(225, 130, ColorGreen, "O = No");
 	flipScreen();
+	message = "client:psp:paused";
+	sceNetInetSend(socket_desc, message, strlen(message), 0);
 	while (true)
 	{
 		sceCtrlPeekBufferPositive(&pad, 1);
-
 		if (pad.Buttons != 0)
 		{
 			if(pad.Buttons & PSP_CTRL_CROSS)
@@ -242,12 +249,17 @@ int QuitScreen()
 				PrintText(170, 125, ColorWhite, "Bye Bye");
 				flipScreen();
 				delay(250);
-				scePowerUnlock(0);
-				return 1;
+				message = "client:psp:disconnected";
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				sceNetInetClose(socket_desc);
+				netTerm();
+				sceKernelExitGame();
 			}
 			if(pad.Buttons & PSP_CTRL_CIRCLE)
 			{
-				return 0;
+				message = "client:psp:continued";
+				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				return;
 			}
 		}
 	}
@@ -328,47 +340,17 @@ static int handler(void* user, const char* section, const char* name, const char
 	}
 	return 1;
 }
-//static int save_handler(void* user, const char* section, const char* name, const char* value, FILE fp_file)
-//{
-//	configuration* pconfig = (configuration*)user;
-//	char* buf[30];
-//	snprintf(buf, 30, "%s=%s", name, value);
-//	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-//	if (MATCH("IP", "ip1")) {
-//		//fseek(fp_file, strpos(fp_file, buf)) Something like this?
-//	}
-//	else if (MATCH("IP", "ip2")) {
-//		pconfig->ip2 = strdup(value);
-//	}
-//	else if (MATCH("IP", "ip3")) {
-//		pconfig->ip3 = strdup(value);
-//	}
-////	else if(MATCH("CIP", "ipp1"))
-////	{
-////		pconfig->ipp1 = atoi(value);
-////	}
-////	else if(MATCH("CIP", "ipp2"))
-////	{
-////		pconfig->ipp2 = atoi(value);
-////	}
-////	else if(MATCH("CIP", "ipp3"))
-////	{
-////		pconfig->ipp3 = atoi(value);
-////	}
-////	else if(MATCH("CIP", "ipp4"))
-////	{
-////		pconfig->ipp4 = atoi(value);
-////	}
-////	else if(MATCH("MISC", "waittime"))
-////	{
-////		pconfig->waittime = atoi(value);
-////	}
-//	else {
-//		return 0;  /* unknown section/name, error */
-//	}
-//	return 1;
-//}
+void OpenJsonFile()
+{
+	FILE *jsonFile = fopen("")
 
+	int i;
+	int r;
+	jsmn_parser p;
+	jsmntok_t t[128]; /* We expect no more than 128 tokens */
+
+	jsmn_init(&p);
+}
 
 int main(int argc, char *argv[])
 {
@@ -390,7 +372,7 @@ int main(int argc, char *argv[])
 	clearScreen(ColorBlack);
 	flipScreen();
 	int ipToChoose;
-
+	OpenJsonFile();
 
 	int ip1 = 192;
 	int ip2 = 168;
@@ -398,7 +380,6 @@ int main(int argc, char *argv[])
 	int ip4 = 001;
 
 	configuration config;
-	configuration save_config;
 	if (ini_parse("config.ini", handler, &config) < 0) {
 		PrintError("Can't load config.ini");
 		PrintText(50, 100, ColorRed, "Please make sure that the config.ini file is present");
@@ -444,17 +425,12 @@ int main(int argc, char *argv[])
 					ipToChoose = 3;
 					break;
 				}
-				if (pad.Buttons & PSP_CTRL_START) {
-					if (QuitScreen())
-					{
-						netTerm();
-						sceKernelExitGame();
-						return 0;
-					}
-				}
 				if (pad.Buttons & PSP_CTRL_SQUARE) {
 					ipToChoose = 4;
 					break;
+				}
+				if (pad.Buttons & PSP_CTRL_START) {
+					QuitScreen(false);
 				}
 			}
 		}
@@ -561,12 +537,7 @@ int main(int argc, char *argv[])
 					}
 					if (pad.Buttons & PSP_CTRL_START)
 					{
-						if (QuitScreen())
-						{
-							netTerm();
-							sceKernelExitGame();
-							return 0;
-						}
+						QuitScreen(false);
 					}
 					PrintText(10, 10, ColorWhite, "Enter a ip address here:");
 					if (index == 1) PrintText(50, 50, ColorBlue, "%i", ip1);
@@ -597,9 +568,8 @@ int main(int argc, char *argv[])
 		flipScreen();
 		delay(1000);
 		pspDebugScreenClear();
-		int socket_desc;
-		struct sockaddr_in server;
-		char *message;
+		
+		
 		pspDebugScreenSetXY(0, 0);
 		socket_desc = sceNetInetSocket(AF_INET, SOCK_DGRAM, 0);
 		if (socket_desc == -1)
@@ -647,25 +617,27 @@ int main(int argc, char *argv[])
 			{
 				PrintError("Send failed again. Shutting down");
 				PrintToScreen(ColorBlack);
-				delay(500);
+				delay(2000);
 				netTerm();
 				sceKernelExitGame();
 			}
 		}
 		int speed = 0;
-		int wheelpos1 = 0;
-		int wheelpos2 = 0;
-		int servoY = 0;
-		int servoX = 0;
-
+		int wheelpos1 = 100;
+		int wheelpos2 = 100;
+		int wheelpos1Raw = 0, wheelpos2Raw=0;
+		int servoY = 100;
+		int servoX = 100;
+		int calcspeed = 0;
 		// Turn speed vars
-		int turngear = 4;
-		int turnmapMax = 100;
+		int turngear = 1;
+		int turnmapMax = 25;
 		// Normal speed vars
-		int mapMax = 100;
-		int mapMin = -100;
-		int gear = 4;
-
+		int mapMax = 125;
+		int mapMin = 75;
+		int gear = 1;
+		int lmSpeed = 100;
+		int rmSpeed = 100;
 		char buf[255];
 		buf[0] = '\0';
 		char buf1[255];
@@ -714,7 +686,7 @@ int main(int argc, char *argv[])
 				resumedfromsuspend = 1;
 				break;
 			}
-			scePowerTick(0); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
+			scePowerTick(PSP_POWER_TICK_ALL); // Forbids the screen to turn blank when no BUTTONS are pressed. It still would go blank if you only used the analog stick
 			sceCtrlPeekBufferPositive(&pad, 1);
 			int cruiseControll = 0;
 			int rPressed = 0;
@@ -727,7 +699,7 @@ int main(int argc, char *argv[])
 				PrintError("BATTERY TO LOW");
 				PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
 				
-				message = "DC:0,0,0:0,0";
+				message = "DC:100,100:0,0";
 				sceNetInetSend(socket_desc, message, strlen(message), 0);
 				
 				message = "client:psp:disconnected";
@@ -749,48 +721,22 @@ int main(int argc, char *argv[])
 			else if (aX < -27)	aX += 27;
 			else {
 				aX = 0;
-				wheelpos1 = 0;
-				wheelpos2 = 0;
+
+				//wheelpos1 = 0;
+				//wheelpos2 = 0;
 			}
 
 			if (aY > 27)		aY -= 28;
 			else if (aY < -27) 	aY += 27;
 			else {
 				aY = 0;
+				//speed = 0;
 			}
 			sceCtrlPeekBufferPositive(&pad, 1);
 			if (pad.Buttons != 0)
 			{
 				if (pad.Buttons & PSP_CTRL_START) {
-					message = "DC:0,0,0:0,0";
-					for (;;) {
-						if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-						{
-							PrintError("Send failed");
-							flipScreen();
-							sceDisplayWaitVblankStart();
-							delay(50);
-							continue;
-						}
-						break;
-					}
-					if (QuitScreen()) {
-						message = "client:psp:disconnected";
-						for (;;) {
-							if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-							{
-								PrintError("Send failed");
-								flipScreen();
-								sceDisplayWaitVblankStart();
-								delay(50);
-								continue;
-							}
-							break;
-						}
-						sceNetInetClose(socket_desc);
-						running = 0;
-						break;
-					}
+					QuitScreen(true);
 				}
 				if (pad.Buttons & PSP_CTRL_SELECT && pad.Buttons != oldButton)
 				{
@@ -833,7 +779,7 @@ int main(int argc, char *argv[])
 
 												if (pad.Buttons & PSP_CTRL_LEFT && !oldButton)
 												{
-													if (waittime > 40)
+													if (waittime > 10)
 														waittime--;
 												}
 												if (pad.Buttons & PSP_CTRL_RIGHT && !oldButton)
@@ -849,24 +795,7 @@ int main(int argc, char *argv[])
 										}
 										if(pad.Buttons & PSP_CTRL_START)
 										{
-											if (QuitScreen()) {
-												message = "client:psp:disconnected";
-												for (;;) {
-													if (sceNetInetSend(socket_desc, message, strlen(message), 0) < 0)
-													{
-														PrintError("\nSend failed");
-														flipScreen();
-														sceDisplayWaitVblankStart();
-														delay(50);
-														continue;
-													}
-													break;
-												}
-												sceNetInetClose(socket_desc);
-												netTerm();
-												sceKernelExitGame();
-												return 0;
-											}
+											QuitScreen(true);
 										}
 										PrintText(30, 10, ColorWhite, "Time between transmitting data     (%i)", waittime);
 										PrintText(30, 20, ColorWhite, "You might want to change this if the RC does not respond well");
@@ -907,7 +836,7 @@ int main(int argc, char *argv[])
 
 
 				if (pad.Buttons & PSP_CTRL_CROSS && pad.Buttons != oldButton) {
-					message = "c:shoot";
+					message = "gen:shoot:0";
 					sceNetInetSend(socket_desc, message, strlen(message), 0);
 					PrintText(60, 230, ColorRed, "PEW PEW PEW");
 				}
@@ -952,30 +881,41 @@ int main(int argc, char *argv[])
 			{
 				speed = speed;
 				if (aX > 0) {
-					wheelpos1 = aX;
-					wheelpos2 = 0;
+					wheelpos1Raw = aX;
+					wheelpos2Raw = 0;
 				}
 				else if (aX < 0) {
-					wheelpos1 = 0;
-					wheelpos2 = aX * -1;
+					wheelpos1Raw = 0;
+					wheelpos2Raw = aX * -1;
 				}
 				PrintText(10, 20, ColorWhite, "Drive mode:     %s" , "Cruise controlled");
 			}
 			else {
+				if(aY == 0)
+				{
+					speed = 0;
+				}
+				if(aX == 0)
+				{
+					wheelpos1Raw = 0;
+					wheelpos2Raw = 0;
+				}
 				if (rPressed)// Servo
 				{
-					servoX = aX * -1;
-					servoY = aY * -1;
+					servoX = map(aX, -100, 100, 0, 200);
+					servoY = map(aY, 100, -100, 0, 200);
+					wheelpos1Raw = wheelpos1Raw;
+					wheelpos2Raw = wheelpos2Raw;
 					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Servo moving");
 				}
 				else if (!rPressed)// Motor
 				{
 					speed = aY;
 					if (aX > 0) {
-						wheelpos1 = aX;
+						wheelpos1Raw = aX;
 					}
 					else if (aX < 0) {
-						wheelpos2 = aX * -1;
+						wheelpos2Raw = aX * -1;
 					}
 					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
 				}
@@ -983,8 +923,8 @@ int main(int argc, char *argv[])
 			if (onHold)
 			{
 				speed = 0;
-				wheelpos1 = 0;
-				wheelpos2 = 0;
+				wheelpos1Raw = 0;
+				wheelpos2Raw = 0;
 			}
 			PrintText(10, 10, ColorGray, "PSP Data");
 			//PrintText(10, 20, ColorBlack, ""); I already printed something here
@@ -994,41 +934,55 @@ int main(int argc, char *argv[])
 			PrintText(10, 60, ColorWhite, "Analog X:       %d", aX);
 			PrintText(10, 70, ColorWhite, "PowerStatus:    %i", GetPowerStatus());
 
-			wheelpos1 = map(wheelpos1, 0, 100, 0, turnmapMax);
-			wheelpos2 = map(wheelpos2, 0, 100, 0, turnmapMax);
-			speed = map(speed, -100, 100, mapMin, mapMax);
-			int m1speed, m2speed;
-			if (speed > 0)
+
+			PrintText(10, 80, ColorWhite,  "lmSpeed:        %i", lmSpeed);
+			PrintText(10, 90, ColorWhite,  "rmSpeed:        %i", rmSpeed);
+			PrintText(10, 100, ColorWhite, "Speed:          %i", speed);
+			PrintText(10, 110, ColorWhite, "Wheelpos1:      %i", wheelpos1Raw);
+			PrintText(10, 120, ColorWhite, "Wheelpos2:      %i", wheelpos2Raw);
+
+			wheelpos1 = map(wheelpos1Raw, 0, 100, 0, turnmapMax);
+			wheelpos2 = map(wheelpos2Raw, 0, 100, 0, turnmapMax);
+			calcspeed = map(speed, -100, 100, mapMin, mapMax);
+			lmSpeed = rmSpeed = 100;
+
+			if (calcspeed == 100)
 			{
-				m1speed = speed - wheelpos1;
-				m2speed = speed - wheelpos2;
-			}
-			else if (speed<0)
-			{
-				m1speed = speed + wheelpos1;
-				m2speed = speed + wheelpos2;
-			}
-			if (speed == 0)
-			{
-				if (wheelpos1 >0)
+				if (wheelpos1 > 0)
 				{
-					m1speed = wheelpos1 * -1;
-					m2speed = wheelpos1;
+					lmSpeed = 100 - wheelpos1;
+					rmSpeed = 100 + wheelpos1;
 				}
 				if (wheelpos2 > 0)
 				{
-					m1speed = wheelpos2;
-					m2speed = wheelpos2 * -1;
+					lmSpeed = 100 + wheelpos2;
+					rmSpeed = 100 - wheelpos2;
 				}
 			}
-			m1speed =+ 100;
-			m2speed =+ 100;
-			char dcmessage[30];
-			snprintf(dcmessage, sizeof(dcmessage), "DC:%i,%i:%i,%i", m1speed, m2speed, servoX, servoY);
-			if (sceNetInetSend(socket_desc, dcmessage, strlen(dcmessage), 0) < 0)
+			else if (calcspeed > 100)
+			{
+				lmSpeed = calcspeed - wheelpos1;
+				rmSpeed = calcspeed - wheelpos2;
+			}
+			else if (speed < 100)
+			{
+				lmSpeed = calcspeed + wheelpos1;
+				rmSpeed = calcspeed + wheelpos2;
+			}
+			else
+			{
+				lmSpeed = 100;
+				rmSpeed = 100;
+			}
+
+			char mMessage[30];
+			snprintf(mMessage, sizeof(mMessage), "DC:%i,%i:%i,%i", lmSpeed, rmSpeed, servoX, servoY);
+			if (sceNetInetSend(socket_desc, mMessage, strlen(mMessage), 0) < 0)
 			{
 				PrintError("Send failed");
-				continue;
+				flipScreen();
+				delay(waittime - 10);
+				running = isRunning();
 			}
 			
 			char data_type[10];

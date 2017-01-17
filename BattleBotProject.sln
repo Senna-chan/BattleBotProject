@@ -20,6 +20,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerArduino", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleBotClientWin10IoT", "BattleBotClientWin10IoT\BattleBotClientWin10IoT.csproj", "{15C59A7C-C085-4613-82ED-C6EFD62A1F22}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SimpleServer", "SimpleServer\SimpleServer.pyproj", "{D627AD39-FCF6-4154-9821-F07C11A98C8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +143,14 @@ Global
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Release|x86.ActiveCfg = Release|x86
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Release|x86.Build.0 = Release|x86
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Release|x86.Deploy.0 = Release|x86
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|ARM.ActiveCfg = Release|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|x64.ActiveCfg = Release|Any CPU
+		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

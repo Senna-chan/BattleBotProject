@@ -2,6 +2,7 @@
 This code is for the ESP8266 that is gonna handle the wifi connection for the Arduino Mega
 */
 
+#include <Wire/Wire.h>
 #include <SoftwareSerial.h>
 #include <RemoteDebug.h>
 #include <ESP8266mDNS.h>
@@ -9,22 +10,25 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-#include "ESPCOMBYTES.h"
-#define true  1
-#define false 0
+#include "BattleBotComBytes.h"
+#include <stdbool.h>
 
-#define ESPRESETPIN D3
+#define ESPREADYPIN D3
+
 //const char* ssid = "Zycon";
 //const char* password = "cdfc3d9152";
 const char* ssid = "Natsuki-WiFi";
 const char* password = "Golden-Darkness";
 //const char* ssid = "Sitecom02A1ED";
 //const char* password = "X8FZNV3Z393R";
+//const char* ssid = "hijlkema2.4";
+//const char* password = "Ruudanita.1";
 
 const char* otapassword = "4453c907975672a2a27bcacd1ee850b8";
 const char* apssid = "BattleBotNetwork";
 const char* mdnsName = "natsuki-esp8266";
 int counter = 0;
+int noBytes; // Holds the amount of bytes read by either the UDP server or the Serial UART
 boolean clientConnected = false;
 
 SoftwareSerial SerialArd = SoftwareSerial(D7, D8);
@@ -86,18 +90,20 @@ void setupOTA()
 
 void WiFiEvent(WiFiEvent_t event)
 {
-	if(event == WIFI_EVENT_SOFTAPMODE_STADISCONNECTED)
-	{
-		SerialArd.write(ESPCLIENT);
-		SerialArd.write(0x03);
-		SerialArd.write(ESPMESSAGEEND);
-	}
+//	if(event == WIFI_EVENT_SOFTAPMODE_STADISCONNECTED)
+//	{
+//		SerialArd.write(COMCLIENT);
+//		SerialArd.write(0x03);
+//		SerialArd.write(ESPMESSAGEEND);
+//	}
 }
 
 void setup()
 {
+	SerialArd.begin(250000);
 	Serial.begin(115200);
-	SerialArd.begin(115200);
+	Wire.begin(0x10);
+	Serial.println("Serial monitors activated");
 	//Serial.setDebugOutput(true);
 	Serial.println("Starting");
 	// Connect to WiFi network
@@ -105,8 +111,6 @@ void setup()
 	Serial.println();
 	Serial.print("Connecting to ");
 	Serial.println(ssid);
-	pinMode(ESPRESETPIN, INPUT);
-	WiFi.onEvent(WiFiEvent);
 	WiFi.persistent(false);
 	WiFi.mode(WIFI_OFF); // this is a temporary line, to be removed after SDK update to 1.5.4
 	WiFi.mode(WIFI_STA);
@@ -163,10 +167,11 @@ void setup()
 	Serial.println(WiFi.RSSI());
 	Serial.println("Ready for communication");
 	Serial.println();
-	digitalWrite(D1, HIGH);
-	SerialArd.write(ESPCLIENT);
-	SerialArd.write(0x01);
-	SerialArd.write(ESPMESSAGEEND);
+	digitalWrite(ESPREADYPIN, HIGH);
+	SerialArd.write((byte)0x00);
+	SerialArd.write(COMCLIENT);
+	SerialArd.write(CLIENTESPREADY);
+	SerialArd.write(MESSAGEEND);
 }
 
 void HandleClientCommand(String clienttype, String clientaction)
@@ -180,24 +185,47 @@ void HandleClientCommand(String clienttype, String clientaction)
 	{
 		clientConnected = true;
 		server.beginPacket(server.remoteIP(), server.remotePort());
-		server.println("YouConnected");
+		server.write(0x01);
 		if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
 		Debug.print("Senpai noticed me from: ");
 		Debug.println(server.remoteIP());
-		SerialArd.write(ESPCLIENT);
-		SerialArd.write(0x02);
-		SerialArd.write(ESPMESSAGEEND);
+		SerialArd.write((byte)0x00);
+		SerialArd.write(COMCLIENT);
+		SerialArd.write(CLIENTCONNECT);
+		SerialArd.write(MESSAGEEND);
 	}
 	if (clientaction == "disconnected")
 	{
-		SerialArd.write(ESPMOTOR);
-		SerialArd.write(100);
-		SerialArd.write(100);
-		SerialArd.write(ESPMESSAGEEND);
+		byte hunderd = 100;
+		SerialArd.write((byte)0x00);
+		SerialArd.write(COMMOTOR);
+		SerialArd.write(hunderd);
+		SerialArd.write(hunderd);
+		SerialArd.write(MESSAGEEND);
 
-		SerialArd.write(ESPCLIENT);
-		SerialArd.write(0x03);
-		SerialArd.write(ESPMESSAGEEND);
+		SerialArd.write((byte)0x00);
+		SerialArd.write(COMCLIENT);
+		SerialArd.write(CLIENTDISCONNECT);
+		SerialArd.write(MESSAGEEND);
+	}
+	if(clientaction == "paused")
+	{
+		byte hunderd = 100;
+		SerialArd.write(COMMOTOR);
+		SerialArd.write(hunderd);
+		SerialArd.write(hunderd);
+		SerialArd.write(MESSAGEEND);
+
+		SerialArd.write(COMCLIENT);
+		SerialArd.write(CLIENTPAUSED);
+		SerialArd.write(MESSAGEEND);
+	}
+	if(clientaction == "continued")
+	{
+		SerialArd.write((byte)0x00);
+		SerialArd.write(COMCLIENT);
+		SerialArd.write(CLIENTCONTINUED);
+		SerialArd.write(MESSAGEEND);
 	}
 	if (clienttype == "pc")
 	{
@@ -231,12 +259,9 @@ void HandleClientCommand(String clienttype, String clientaction)
 
 void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 {
-	Debug.println("Recieved command is a motor command");
-	int leftMotorSpeed, rightMotorSpeed, pan, tilt;
-	Debug.print("Wifi Strength: ");
-	Debug.println(WiFi.RSSI());
-	Debug.println();
-	if (sscanf(MotorSpeeds, "%d,%d", &leftMotorSpeed, &rightMotorSpeed) == 2){
+	int pan, tilt;
+	int leftMotorSpeed, rightMotorSpeed;;
+	if (sscanf(MotorSpeeds, "%i,%i", &leftMotorSpeed, &rightMotorSpeed) == 2){
 		if(leftMotorSpeed > 200 || rightMotorSpeed > 200 || leftMotorSpeed < 0 || rightMotorSpeed < 0)
 		{
 			Debug.println("Speeds received are not valid");
@@ -246,26 +271,26 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 		Debug.print(leftMotorSpeed);
 		Debug.print(" m2speed: ");
 		Debug.println(rightMotorSpeed);
-		SerialArd.write(ESPMOTOR);
-		SerialArd.write(leftMotorSpeed);
-		SerialArd.write(rightMotorSpeed);
-		SerialArd.write(ESPMESSAGEEND);
+		SerialArd.write(COMMOTOR);
+		SerialArd.write((byte)leftMotorSpeed);
+		SerialArd.write((byte)rightMotorSpeed);
+		SerialArd.write(MESSAGEEND);
+		delay(3);
 	}
 	else
 	{
 		Debug.println("Motorspeed was not valid");
-		return;
 	}
-	if (sscanf(ServoSpeeds, "%d,%d", &pan, &tilt)==2){
-		if(pan > 100 || tilt > 100 || pan < -100 || tilt < -100)
+	if (sscanf(ServoSpeeds, "%i,%i", &pan, &tilt)==2){
+		if(pan > 200 || tilt > 200)
 		{
 			Debug.println("Servo positions received are not valid");
 			return;
 		}
-		SerialArd.write(0xf1);
-		SerialArd.write(pan + 100);
-		SerialArd.write(tilt + 100);
-		SerialArd.write(0xff);
+		SerialArd.write(COMSERVO);
+		SerialArd.write((byte)pan);
+		SerialArd.write((byte)tilt);
+		SerialArd.write(MESSAGEEND);
 	}
 	else
 	{
@@ -273,20 +298,20 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	}
 }
 
-void HandleUDPData(int noBytes)
+void HandleGenericCommand(String command, String param)
+{
+	if(command == "shoot")
+	{
+		SerialArd.write(COMGENERIC);
+		SerialArd.write(GENSHOOT);
+		SerialArd.write(MESSAGEEND);
+	}
+}
+
+void HandleUDPData(byte Packet[])
 {
 	delay(0);
-	Debug.print(millis() / 1000);
-	Debug.print(":Packet of ");
-	Debug.print(noBytes);
-	Debug.print(" received from ");
-	Debug.print(server.remoteIP());
-	Debug.print(":");
-	Debug.println(server.remotePort());
-	delay(0);
-	server.read(packetBuffer, noBytes); // read the packet into the buffer
-
-										// following 4 lines are needed because of a possible bu.g
+	// following 4 lines are needed because of a possible b.ug.
 	commandType.remove(0);
 	command.remove(0);
 	arguments.remove(0);
@@ -295,13 +320,13 @@ void HandleUDPData(int noBytes)
 	int colloncounter = 0;
 	for (int i = 0; i <= noBytes - 1; i++)
 	{
-		char receivedChar = char(packetBuffer[i]);
+		char receivedChar = char(Packet[i]);
 		ReceivedString += receivedChar;
 
 		//      Debug.print(char(packetBuffer[i]));
 		//      Debug.print(" colloncounter: ");
 		//      Debug.println(colloncounter);
-		if (packetBuffer[i] == 58)
+		if (Packet[i] == 58)
 		{
 			colloncounter++;
 			continue;
@@ -326,18 +351,20 @@ void HandleUDPData(int noBytes)
 	char arguments1[20];
 	command.toCharArray(command1, sizeof(command));
 	arguments.toCharArray(arguments1, sizeof(arguments));
-
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	Debug.print("Commandtype: ");
-	Debug.println(commandType);
-	Debug.print("Command: ");
-	Debug.println(command);
-	Debug.print(" Arguments: ");
-	Debug.println(arguments);
+	if (Debug.ative(Debug.VERBOSE)) {
+		Debug.print("Commandtype: ");
+		Debug.println(commandType);
+		Debug.print("Command: ");
+		Debug.println(command);
+		Debug.print(" Arguments: ");
+		Debug.println(arguments);
+	}
 	delay(0);
 	if (commandType == "client") HandleClientCommand(command, arguments);
 	if (commandType == "dc") HandleMotorCommand(command1, arguments1);
+	if (commandType == "gen") HandleGenericCommand(command1, arguments1);
 }
 
 void HandleArduinoSerialData()
@@ -347,14 +374,14 @@ void HandleArduinoSerialData()
 	{
 		byte m = SerialArd.read();
 		byte p = SerialArd.read();
-		if (SerialArd.read() == ESPMESSAGEEND) {
-			if (p == 0x01)
+		if (SerialArd.read() == MESSAGEEND) {
+			if (p == CURRENTWARNING)
 			{
 				Debug.print("The current in motor ");
 				Debug.print(m);
 				Debug.println(" is to high");
 			}
-			if (p == 0x02)
+			if (p == MOTORFAULT)
 			{
 				Debug.print("A fault occured in motor ");
 				Debug.println(m);
@@ -365,32 +392,33 @@ void HandleArduinoSerialData()
 
 void loop()
 {
-//	if(digitalRead(ESPRESETPIN) == HIGH)
-//	{
-//		Debug.println("Received Reset signal, Rebooting");
-//		ESP.restart();
-//	}
 	delay(0);
 	ArduinoOTA.handle();
 	Debug.handle();
 	MDNS.update();
 	delay(0);
-	int noBytes = server.parsePacket();
+	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		HandleUDPData(noBytes);
-	} // end if
-	if(Serial.available()) // Forward everything to the client
-	{
-		server.beginPacket(server.remoteIP(), server.remotePort());
-		while (Serial.available()) {
-			server.println(Serial.readStringUntil('\r\n'));
+		if (Debug.ative(Debug.VERBOSE)) {
+			Debug.print(millis() / 1000);
+			Debug.print(":Packet of ");
+			Debug.print(noBytes);
+			Debug.print(" received from ");
+			Debug.print(server.remoteIP());
+			Debug.print(":");
+			Debug.println(server.remotePort());
 		}
-		server.endPacket();
-	}
-	if(SerialArd.available())
+		delay(0);
+		server.read(packetBuffer, noBytes); // read the packet into the buffer
+
+		HandleUDPData(packetBuffer);
+	} // end if
+	if(Serial.available())
 	{
-		HandleArduinoSerialData();
+		delay(0);
+		noBytes = Serial.readBytesUntil('\r\n', packetBuffer, 30);
+		HandleUDPData(packetBuffer);
 	}
 	delay(0);
 }

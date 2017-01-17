@@ -14,58 +14,55 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{f4032014-3c0d-44ef-96b4-4ed356dc35d9}</UniqueIdentifier>
+      <UniqueIdentifier>{ad0b6dff-d4ab-4d91-b5f9-2d0fcfa1794b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{fa693ebd-913f-4dee-80cc-8f551a7ac13b}</UniqueIdentifier>
+      <UniqueIdentifier>{31692c8b-d7c6-4de3-9228-d4745be3ebd4}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{47f5b925-5b56-4067-ad0a-0436e09fcff3}</UniqueIdentifier>
+      <UniqueIdentifier>{94e1911d-ab61-4b40-bf98-b8748b0735e8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants">
-      <UniqueIdentifier>{e54a9201-552d-453b-8685-4cb357bd846d}</UniqueIdentifier>
+      <UniqueIdentifier>{f27ff452-7d67-4a52-9c3d-5a9495455ec2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants\nodemcu">
-      <UniqueIdentifier>{1e16016b-6115-4483-abe5-5fbd70afe087}</UniqueIdentifier>
+      <UniqueIdentifier>{616782f9-534e-488f-ae87-dadf09adfe43}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\libb64">
-      <UniqueIdentifier>{04162808-99b0-47ac-b0b1-6e983e4e8750}</UniqueIdentifier>
+      <UniqueIdentifier>{7ca1d0ab-ac5d-4239-99bc-57849c87b808}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\spiffs">
-      <UniqueIdentifier>{be3fb199-fcdc-437b-84c0-78c9074b256b}</UniqueIdentifier>
+      <UniqueIdentifier>{23ee4657-927a-452b-a1ce-405ab2f82753}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\umm_malloc">
-      <UniqueIdentifier>{4f1cc98c-f41e-4ee0-8a67-d7751c5819c9}</UniqueIdentifier>
+      <UniqueIdentifier>{fb070b4d-8b79-4a0f-afc5-3e1c11169eb1}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{94441831-07a1-43f2-8200-bdf89e050e48}</UniqueIdentifier>
+      <UniqueIdentifier>{e9b8fef5-73ce-456d-b270-ba685b0f960d}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ArduinoOTA">
-      <UniqueIdentifier>{306550ab-7113-423b-939a-91a5dc565125}</UniqueIdentifier>
+      <UniqueIdentifier>{44b054bc-e246-4f5b-ac95-5669515a267c}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266mDNS">
-      <UniqueIdentifier>{f5ea1b40-85f2-43b1-8a4c-fb4ee4665bdd}</UniqueIdentifier>
+      <UniqueIdentifier>{86fc323e-8941-4608-9060-b62bbba37eb6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi">
-      <UniqueIdentifier>{30679261-6bb6-4c5e-8db0-91f5462902dc}</UniqueIdentifier>
+      <UniqueIdentifier>{8b386689-db64-403d-8ad1-dea2f201050b}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src">
-      <UniqueIdentifier>{c812ef69-034c-482c-bd5b-bc29d7d90fc8}</UniqueIdentifier>
+      <UniqueIdentifier>{71c37d34-2fb8-4a01-9eeb-5feb79d3d8d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src\include">
-      <UniqueIdentifier>{d21eb5d7-8633-4a4b-840c-01ff492653b5}</UniqueIdentifier>
+      <UniqueIdentifier>{37f2e554-2f3c-4392-9f4d-97ee101366e6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\RemoteDebug">
-      <UniqueIdentifier>{1eaaf7a2-52b3-45dd-ba59-9f314d8913fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\espsoftwareserial">
-      <UniqueIdentifier>{4ffb11db-9012-4726-adf0-4ac6bf4b1615}</UniqueIdentifier>
+      <UniqueIdentifier>{618284e0-279c-4f83-a1b4-de32a020fa87}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\SoftwareSerial">
-      <UniqueIdentifier>{e5b6b4d2-0bdc-487c-9fd8-8aa4ba74872e}</UniqueIdentifier>
+      <UniqueIdentifier>{ba7ab764-bddf-42c0-92d4-fb7873499592}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\_micro-api-readonly\libraries\DualVNH5019MotorShield">
-      <UniqueIdentifier>{83785b67-f045-4c3f-bc2f-d0c4138c6996}</UniqueIdentifier>
+    <Filter Include="src\_micro-api-readonly\libraries\Wire">
+      <UniqueIdentifier>{8a44c3b7-d3e8-430b-b0d0-e0f9db55ccf0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -82,8 +79,14 @@
     <None Include="..\..\..\..\Arduino\libraries\RemoteDebug\library.properties">
       <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </None>
-    <None Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\library.properties">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <None Include="..\..\..\..\Arduino\libraries\SoftwareSerial\library.json">
+      <Filter>src\_micro-api-readonly\libraries\SoftwareSerial</Filter>
+    </None>
+    <None Include="..\..\..\..\Arduino\libraries\SoftwareSerial\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\SoftwareSerial</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\library.properties">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -294,11 +297,14 @@
     <ClInclude Include="..\..\..\..\Arduino\libraries\RemoteDebug\RemoteDebug.h">
       <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </ClInclude>
-    <ClInclude Include="..\BattleBotServerArduino\ESPCOMBYTES.h">
+    <ClInclude Include="..\..\..\..\Arduino\libraries\SoftwareSerial\SoftwareSerial.h">
+      <Filter>src\_micro-api-readonly\libraries\SoftwareSerial</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleBotComBytes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.h">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <ClInclude Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.h">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -311,52 +317,7 @@
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\cbuf.cpp">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\cont_util.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_eboot_command.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_flash_utils.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_i2s.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_main.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_noniso.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_phy.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_postmortem.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_si2c.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_timer.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring_analog.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring_digital.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring_pulse.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring_pwm.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\core_esp8266_wiring_shift.c">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\debug.cpp">
@@ -371,13 +332,7 @@
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\HardwareSerial.cpp">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\heap.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\IPAddress.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\libc_replacements.c">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\MD5Builder.cpp">
@@ -404,13 +359,7 @@
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\StreamString.cpp">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\time.c">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\Tone.cpp">
-      <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\uart.c">
       <Filter>src\_micro-api-readonly\core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\Updater.cpp">
@@ -421,30 +370,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\WString.cpp">
       <Filter>src\_micro-api-readonly\core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\libb64\cdecode.c">
-      <Filter>src\_micro-api-readonly\core\libb64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\libb64\cencode.c">
-      <Filter>src\_micro-api-readonly\core\libb64</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\spiffs\spiffs_cache.c">
-      <Filter>src\_micro-api-readonly\core\spiffs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\spiffs\spiffs_check.c">
-      <Filter>src\_micro-api-readonly\core\spiffs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\spiffs\spiffs_gc.c">
-      <Filter>src\_micro-api-readonly\core\spiffs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\spiffs\spiffs_hydrogen.c">
-      <Filter>src\_micro-api-readonly\core\spiffs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\spiffs\spiffs_nucleus.c">
-      <Filter>src\_micro-api-readonly\core\spiffs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\cores\esp8266\umm_malloc\umm_malloc.c">
-      <Filter>src\_micro-api-readonly\core\umm_malloc</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ArduinoOTA\ArduinoOTA.cpp">
       <Filter>src\_micro-api-readonly\libraries\ArduinoOTA</Filter>
@@ -485,8 +410,11 @@
     <ClCompile Include="..\..\..\..\Arduino\libraries\RemoteDebug\RemoteDebug.cpp">
       <Filter>src\_micro-api-readonly\libraries\RemoteDebug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\DualVNH5019MotorShield.cpp">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <ClCompile Include="..\..\..\..\Arduino\libraries\SoftwareSerial\SoftwareSerial.cpp">
+      <Filter>src\_micro-api-readonly\libraries\SoftwareSerial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\Wire.cpp">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -499,11 +427,11 @@
     <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\ESP8266WiFi\keywords.txt">
       <Filter>src\_micro-api-readonly\libraries\ESP8266WiFi</Filter>
     </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\keywords.txt">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <Text Include="..\..\..\..\Arduino\libraries\SoftwareSerial\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\SoftwareSerial</Filter>
     </Text>
-    <Text Include="..\..\..\..\Arduino\libraries\DualVNH5019MotorShield\LICENSE.txt">
-      <Filter>src\_micro-api-readonly\libraries\DualVNH5019MotorShield</Filter>
+    <Text Include="..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\esp8266com\esp8266\libraries\Wire\keywords.txt">
+      <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
     </Text>
   </ItemGroup>
 </Project>

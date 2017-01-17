@@ -10,7 +10,7 @@ namespace SimpleSocketServer
         private static Socket socket;
         private static Socket accepted;
         private static IPAddress clientIP;
-
+        private static IPEndPoint _clientEndPoint;
         public static int BattleBotServerPort = 20010;
         private static byte[] Buffer { get; set; }
 
@@ -19,16 +19,14 @@ namespace SimpleSocketServer
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             socket.Bind(new IPEndPoint(0, BattleBotServerPort));
             Console.WriteLine("Awaiting Data");
-            socket.Listen(1000);
             accepted = socket.Accept();
             while (true)
             {
                 Console.WriteLine("Client Connected");
                 if (clientIP == null)
                 {
-                    var clientIPEndPoint = accepted.RemoteEndPoint as IPEndPoint;
-                    clientIP = clientIPEndPoint.Address;
-                    
+                    _clientEndPoint = accepted.RemoteEndPoint as IPEndPoint;
+                    clientIP = _clientEndPoint.Address;   
                 }
                 Buffer = new byte[accepted.SendBufferSize];
                 var bytesRead = accepted.Receive(Buffer);
@@ -38,6 +36,13 @@ namespace SimpleSocketServer
                     formatted[i] = Buffer[i];
                 }
                 var strData = Encoding.ASCII.GetString(formatted);
+                var strSplitData = strData.Split(':');
+                var commandType = strSplitData[0];
+                var command = strSplitData[1];
+                if (commandType.ToLower().Equals("client"))
+                {
+                    socket.SendTo(Encoding.ASCII.GetBytes("YouConnected"), SocketFlags.None, _clientEndPoint);
+                }
                 Console.WriteLine(strData);
                 if (strData == "exit") break;
             }
