@@ -14,13 +14,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSocketClient", "Simpl
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "BattleBotTestServerPythonWindows", "BattleBotTestServerPythonWindows\BattleBotTestServerPythonWindows.pyproj", "{B3F639B3-ECE3-43A8-AF94-6B554E3E56D0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerESP8266", "BattleBotServerESP8266\BattleBotServerESP8266.vcxproj", "{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerArduino", "BattleBotServerArduino\BattleBotServerArduino.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleBotClientWin10IoT", "BattleBotClientWin10IoT\BattleBotClientWin10IoT.csproj", "{15C59A7C-C085-4613-82ED-C6EFD62A1F22}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SimpleServer", "SimpleServer\SimpleServer.pyproj", "{D627AD39-FCF6-4154-9821-F07C11A98C8C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerArduino", "BattleBotServerArduino\BattleBotServerArduino.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerESP8266", "BattleBotServerESP8266\BattleBotServerESP8266.vcxproj", "{304D74C0-8CA9-4545-8858-0A93613A0E0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,26 +103,6 @@ Global
 		{B3F639B3-ECE3-43A8-AF94-6B554E3E56D0}.Release|ARM.ActiveCfg = Release|Any CPU
 		{B3F639B3-ECE3-43A8-AF94-6B554E3E56D0}.Release|x64.ActiveCfg = Release|Any CPU
 		{B3F639B3-ECE3-43A8-AF94-6B554E3E56D0}.Release|x86.ActiveCfg = Release|Any CPU
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Debug|ARM.ActiveCfg = Debug|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Debug|x64.ActiveCfg = Debug|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Debug|x86.ActiveCfg = Debug|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Debug|x86.Build.0 = Debug|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Release|Any CPU.ActiveCfg = Release|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Release|ARM.ActiveCfg = Release|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Release|x64.ActiveCfg = Release|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Release|x86.ActiveCfg = Release|Win32
-		{E442835F-CB7F-4DCB-9E05-C9616EF1C56C}.Release|x86.Build.0 = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Debug|ARM.ActiveCfg = Debug|ARM
 		{15C59A7C-C085-4613-82ED-C6EFD62A1F22}.Debug|ARM.Build.0 = Debug|ARM
@@ -151,6 +131,26 @@ Global
 		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|ARM.ActiveCfg = Release|Any CPU
 		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|x64.ActiveCfg = Release|Any CPU
 		{D627AD39-FCF6-4154-9821-F07C11A98C8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|ARM.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x64.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|ARM.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x64.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Debug|ARM.ActiveCfg = Debug|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Debug|x64.ActiveCfg = Debug|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Debug|x86.ActiveCfg = Debug|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Debug|x86.Build.0 = Debug|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|Any CPU.ActiveCfg = Release|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|ARM.ActiveCfg = Release|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x64.ActiveCfg = Release|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x86.ActiveCfg = Release|Win32
+		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

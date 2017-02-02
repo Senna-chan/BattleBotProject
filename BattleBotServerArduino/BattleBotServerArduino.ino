@@ -5,8 +5,8 @@
 */
 
 // the setup function runs once when you press reset or power the board
-#include <L3G/L3G.h>
-#include <Adafruit_LSM303DLHC/Adafruit_LSM303.h>
+#include <L3G.h>
+#include <Adafruit_LSM303.h>
 #include <Adafruit_BMP085.h>
 #include <Servo.h>
 #include <Wire.h>

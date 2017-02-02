@@ -27,19 +27,19 @@
     <ClCompile Include="common\graphics.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\ini.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="common\jWrite.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="common\jsmn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="common\helpers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
-    <None Include="config.ini">
+    <None Include="config.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -53,9 +53,6 @@
     <ClInclude Include="common\graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\ini.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\BattleBotComBytes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common\jsmn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -78,13 +78,13 @@
     <ClCompile Include="common\callback.c" />
     <ClCompile Include="common\framebuffer.c" />
     <ClCompile Include="common\graphics.c" />
-    <ClCompile Include="common\ini.c" />
+    <ClCompile Include="common\helpers.c" />
     <ClCompile Include="common\jsmn.c" />
     <ClCompile Include="common\jWrite.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="config.ini" />
+    <None Include="config.json" />
     <None Include="Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +92,10 @@
     <ClInclude Include="common\callback.h" />
     <ClInclude Include="common\framebuffer.h" />
     <ClInclude Include="common\graphics.h" />
-    <ClInclude Include="common\ini.h" />
+    <ClInclude Include="common\helpers.h" />
     <ClInclude Include="common\jsmn.h" />
     <ClInclude Include="common\jWrite.h" />
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 This code is for the ESP8266 that is gonna handle the wifi connection for the Arduino Mega
 */
 
-#include <Wire/Wire.h>
+#include <Wire.h>
 #include <SoftwareSerial.h>
 #include <RemoteDebug.h>
 #include <ESP8266mDNS.h>
@@ -11,7 +11,6 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "BattleBotComBytes.h"
-#include <stdbool.h>
 
 #define ESPREADYPIN D3
 
@@ -90,12 +89,12 @@ void setupOTA()
 
 void WiFiEvent(WiFiEvent_t event)
 {
-//	if(event == WIFI_EVENT_SOFTAPMODE_STADISCONNECTED)
-//	{
-//		SerialArd.write(COMCLIENT);
-//		SerialArd.write(0x03);
-//		SerialArd.write(ESPMESSAGEEND);
-//	}
+	if(event == WIFI_EVENT_SOFTAPMODE_STADISCONNECTED)
+	{
+		SerialArd.write(COMCLIENT);
+		SerialArd.write(CLIENTDISCONNECT);
+		SerialArd.write(MESSAGEEND);
+	}
 }
 
 void setup()
@@ -117,7 +116,7 @@ void setup()
 	WiFi.setOutputPower(20.5);
 	WiFi.hostname(mdnsName);
 	WiFi.begin(ssid, password);
-	while (WiFi.status() != WL_CONNECTED)
+	while (WiFi.waitForConnectResult() != WL_CONNECTED)
 	{
 		if (counter == 10)
 		{
@@ -185,7 +184,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 	{
 		clientConnected = true;
 		server.beginPacket(server.remoteIP(), server.remotePort());
-		server.write(0x01);
+		server.write(0x70);
 		if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
 		Debug.print("Senpai noticed me from: ");
 		Debug.println(server.remoteIP());

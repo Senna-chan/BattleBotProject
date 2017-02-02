@@ -1,19 +1,3 @@
-/*
-* Licensing stuff from the original Net Dialog Sample for PSP
-* PSP Software Development Kit - http://www.pspdev.org
-* -----------------------------------------------------------------------
-* Licensed under the BSD license, see LICENSE in PSPSDK root for details.
-*
-* main.c - Net dialog sample for connecting to an access point
-*
-* For OE firmwares, this sample must be run under the 3.xx kernel.
-*
-* Copyright (c) 2007 David Perry (Insert_Witty_Name)
-*
-*
-*
-*/
-
 #include <pspkernel.h>
 #include <pspdisplay.h>
 #include <string.h>
@@ -36,10 +20,12 @@
 #include "common/callback.h"
 #include "common/graphics.h"
 #include <psppower.h>
-#include "common/ini.h"
 #include "common/jWrite.h"
 #include "common/BattleBotComBytes.h"
 #include "common/jsmn.h"
+#include <stdlib.h>
+#include "common/helpers.h"
+#include "main.h"
 
 PSP_MODULE_INFO("Battlebot Client PSP", 0, 1, 1);
 
@@ -69,6 +55,30 @@ static unsigned int __attribute__((aligned(16))) list[262144];
 int socket_desc; // This is the socket
 struct sockaddr_in server; // Speaks for itself
 char *message; // Speaks for itself
+char *ip;
+
+char tempip[20];
+
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+	if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+		strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+		return 0;
+	}
+	return -1;
+}
+typedef struct
+{
+	char *ip1[20];
+	char *ip2[20];
+	char *ip3[20];
+	int ipp1;
+	int ipp2;
+	int ipp3;
+	int ipp4;
+	int waittime;
+	int cameraEnabled;
+} configuration;
+configuration config;
 
 static void setupGu()
 {
@@ -199,10 +209,6 @@ int netDialog()
 	return 1;
 }
 
-int map(int x, int in_min, int in_max, int out_min, int out_max)
-{
-	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
 
 void PrintText(int x, int y, int color, const char* format, ...) {
 	va_list fmtargs;
@@ -264,92 +270,401 @@ void QuitScreen(int Connected)
 		}
 	}
 }
+
+void ConfigScreen()
+{
+	SceCtrlData pad;
+	int oldButton = 0;
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	clearScreen(ColorBlack);
+	PrintText(10, 10, ColorBlue, "Help page");
+	PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
+	PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
+	PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and");
+	PrintText(10, 70, ColorWhite, "the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
+	PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
+	PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
+	PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
+	PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
+	PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
+	PrintText(10, 140, ColorWhite, "Press R to controll the camera.");
+	PrintText(10, 150, ColorWhite, "Moving continues in this mode. WATCH OUT FOR THAT");
+	PrintText(10, 160, ColorWhite, "Press SELECT to display help");
+	PrintText(10, 170, ColorWhite, "Press START to quit the client");
+	PrintText(10, 200, ColorRed, "Press O to close this help screen");
+	PrintText(10, 220, ColorWhite, "Press R now to go to Settings page and L to go back to this page");
+	flipScreen();
+	sceDisplayWaitVblankStart();
+	while (1)
+	{
+		sceCtrlPeekBufferPositive(&pad, 1);
+		if (pad.Buttons != 0)
+		{
+			if (pad.Buttons & PSP_CTRL_CIRCLE) {
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_RTRIGGER)
+			{
+				int index = 0;
+				while (true)
+				{
+					sceCtrlPeekBufferPositive(&pad, 1);
+					if (pad.Buttons != 0) {
+						switch (index) {
+						case 0:
+							PrintText(10, 10, ColorBlue, "==>");
+							if (pad.Buttons & PSP_CTRL_LEFT && !oldButton)
+							{
+								if (config.waittime > 10)
+									config.waittime--;
+							}
+							if (pad.Buttons & PSP_CTRL_RIGHT && !oldButton)
+							{
+								if (config.waittime < 100)
+									config.waittime++;
+							}
+							break;
+						case 1:
+							PrintText(10, 40, ColorBlue, "==>");
+							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
+								config.cameraEnabled = !config.cameraEnabled;
+							break;
+						}
+						if(pad.Buttons & PSP_CTRL_UP && !oldButton)
+						{
+							if (index == 1) continue;
+							index++;
+						}
+						if(pad.Buttons & PSP_CTRL_DOWN && !oldButton)
+						{
+							if (index == 0) continue;
+							index--;
+						}
+						if (pad.Buttons & PSP_CTRL_LTRIGGER || pad.Buttons & PSP_CTRL_CIRCLE)
+						{
+							break;
+						}
+						if (pad.Buttons & PSP_CTRL_START)
+						{
+							QuitScreen(true);
+						}
+						PrintText(30, 10, ColorWhite, "Time between transmitting data:     (%i)", config.waittime);
+						PrintText(30, 20, ColorWhite, "You might want to change this if the RC does not respond well");
+						PrintText(30, 40, ColorWhite, "Camera enabled:                     (%s)", config.cameraEnabled ? "Yes" : "No");
+						PrintToScreen(ColorBlack);
+					}
+					oldButton = pad.Buttons;
+				}
+			}
+		}
+	}
+}
+
 void PrintToScreen(Color color)
 {
 	flipScreen();
 	clearScreen(color);
 }
 
-int StringStartsWith(const char *pre, const char *str)
-{
-	return strncmp(pre, str, strlen(pre)) == 0;
-}
-void remove_all_chars(char* str, char c) {
-	char *pr = str, *pw = str;
-	while (*pr) {
-		*pw = *pr++;
-		pw += (*pw != c);
+void connectToIP() {
+	int ipToChoose;
+	PrintText(10, 10, ColorWhite, "Select /\\ for %s", config.ip1);
+	PrintText(10, 20, ColorWhite, "Select o for  %s", config.ip2);
+	PrintText(10, 30, ColorWhite, "Select x for  %s", config.ip3);
+	PrintText(10, 40, ColorWhite, "Select [] for manual entering IP W.I.P.");
+	flipScreen();
+	sceDisplayWaitVblankStart();
+	SceCtrlData pad;
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	while (1) {
+		sceCtrlPeekBufferPositive(&pad, 1);
+		if (pad.Buttons != 0)
+		{
+			if (pad.Buttons & PSP_CTRL_TRIANGLE) {
+				ipToChoose = 1;
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_CIRCLE) {
+				ipToChoose = 2;
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_CROSS) {
+				ipToChoose = 3;
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_SQUARE) {
+				ipToChoose = 4;
+				break;
+			}
+			if (pad.Buttons & PSP_CTRL_START) {
+				QuitScreen(false);
+			}
+		}
 	}
-	*pw = '\0';
-}
-int strpos(char *haystack, char *needle)
-{
-	char *p = strstr(haystack, needle);
-	if (p)
-		return p - haystack;
-	return -1;   // Not found = -1.
-}
-// Config file stuff
-typedef struct
-{
-	char *ip1;
-	char *ip2;
-	char *ip3;
-	int ipp1;
-	int ipp2;
-	int ipp3;
-	int ipp4;
-	int waittime;
-} configuration;
-static int handler(void* user, const char* section, const char* name, const char* value)
-{
-	configuration* pconfig = (configuration*)user;
+	switch (ipToChoose)
+	{
+	case 1:
+		ip = config.ip1;
+		break;
+	case 2:
+		ip = config.ip2;
+		break;
+	case 3:
+		ip = config.ip3;
+		break;
+	case 4:;
+		int oldButton = 0;
+		int index = 1;
+		flipScreen();
+		while (1) {
+			sceCtrlPeekBufferPositive(&pad, 1);
+			if (pad.Buttons != 0)
+			{
+				if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
+					switch (index) {
+					case 1:
+						if (config.ipp1 < 255) config.ipp1++;
+						break;
+					case 2:
+						if (config.ipp2 < 255) config.ipp2++;
+						break;
+					case 3:
+						if (config.ipp3 < 255) config.ipp3++;
+						break;
+					case 4:
+						if (config.ipp4 < 254) config.ipp4++;
+						break;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_RTRIGGER && pad.Buttons != oldButton)
+				{
+					switch (index) {
+					case 1:
+						if (config.ipp1 < 245) config.ipp1 += 10;
+						break;
+					case 2:
+						if (config.ipp2 < 245) config.ipp2 += 10;
+						break;
+					case 3:
+						if (config.ipp3 < 245) config.ipp3 += 10;
+						break;
+					case 4:
+						if (config.ipp4 < 244) config.ipp4 += 10;
+						break;
+					}
+				}
 
-#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if (MATCH("IP", "ip1")) {
-		pconfig->ip1 = strdup(value);
-	}
-	else if (MATCH("IP", "ip2")) {
-		pconfig->ip2 = strdup(value);
-	}
-	else if (MATCH("IP", "ip3")) {
-		pconfig->ip3 = strdup(value);
-	}
-//	else if(MATCH("CIP", "ipp1"))
-//	{
-//		pconfig->ipp1 = atoi(value);
-//	}
-//	else if(MATCH("CIP", "ipp2"))
-//	{
-//		pconfig->ipp2 = atoi(value);
-//	}
-//	else if(MATCH("CIP", "ipp3"))
-//	{
-//		pconfig->ipp3 = atoi(value);
-//	}
-//	else if(MATCH("CIP", "ipp4"))
-//	{
-//		pconfig->ipp4 = atoi(value);
-//	}
-//	else if(MATCH("MISC", "waittime"))
-//	{
-//		pconfig->waittime = atoi(value);
-//	}
-	else {
-		return 0;  /* unknown section/name, error */
-	}
-	return 1;
-}
-void OpenJsonFile()
-{
-	FILE *jsonFile = fopen("")
+				if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
+					switch (index) {
+					case 1:
+						if (config.ipp1 > 0) config.ipp1--;
+						break;
+					case 2:
+						if (config.ipp2 > 0) config.ipp2--;
+						break;
+					case 3:
+						if (config.ipp3 > 0) config.ipp3--;
+						break;
+					case 4:
+						if (config.ipp4 > 1) config.ipp4--;
+						break;
+					}
+				}
+				if (pad.Buttons & PSP_CTRL_LTRIGGER && pad.Buttons != oldButton)
+				{
+					switch (index) {
+					case 1:
+						if (config.ipp1 >= 10) config.ipp1 -= 10;
+						break;
+					case 2:
+						if (config.ipp2 >= 10) config.ipp2 -= 10;
+						break;
+					case 3:
+						if (config.ipp3 >= 10) config.ipp3 -= 10;
+						break;
+					case 4:
+						if (config.ipp4 >= 11) config.ipp4 -= 10;
+						break;
+					}
+				}
 
+
+				if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton)
+				{
+					if (index != 4) index++;
+				}
+				if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton)
+				{
+					if (index != 1) index--;
+				}
+
+				if (pad.Buttons & PSP_CTRL_CROSS)
+				{
+					break;
+				}
+				if (pad.Buttons & PSP_CTRL_START)
+				{
+					QuitScreen(false);
+				}
+				PrintText(10, 10, ColorWhite, "Enter a ip address here:");
+				if (index == 1) PrintText(50, 50, ColorBlue, "%i", config.ipp1);
+				else			PrintText(50, 50, ColorWhite, "%i", config.ipp1);
+				PrintText(74, 50, ColorWhite, ".");
+				if (index == 2) PrintText(80, 50, ColorBlue, "%i", config.ipp2);
+				else			PrintText(80, 50, ColorWhite, "%i", config.ipp2);
+				PrintText(104, 50, ColorWhite, ".");
+				if (index == 3) PrintText(110, 50, ColorBlue, "%i", config.ipp3);
+				else			PrintText(110, 50, ColorWhite, "%i", config.ipp3);
+				PrintText(132, 50, ColorWhite, ".");
+				if (index == 4) PrintText(138, 50, ColorBlue, "%i", config.ipp4);
+				else			PrintText(138, 50, ColorWhite, "%i", config.ipp4);
+
+				PrintText(10, 230, ColorWhite, "Controls: Left=goto left, Right=goto right, Up=+1, Down=-1");
+				PrintText(10, 240, ColorWhite, "R=+10, L=-10, Start=quit, X=confirm");
+				flipScreen();
+				clearScreen(ColorBlack);
+			}
+			oldButton = pad.Buttons;
+		}
+		snprintf(ip, 20, "%i.%i.%i.%i", config.ipp1, config.ipp2, config.ipp3, config.ipp4);
+		break;
+	default:
+		break;
+	}
+	PrintText(100, 80, ColorRed, "IP: %s", ip);
+	flipScreen();
+	delay(1000);
+	pspDebugScreenClear();
+}
+
+void readJson()
+{
 	int i;
 	int r;
 	jsmn_parser p;
+	char *json_str;
 	jsmntok_t t[128]; /* We expect no more than 128 tokens */
+	FILE *jsonFile = fopen("config.json", "r");
+	char *strbuffer[20];
+	if (jsonFile == NULL)
+	{
+		PrintError("The config file is not found!");
+		PrintText(10, 100, ColorWhite, "Make sure the file config.json is");
+		PrintText(20, 100, ColorWhite, "in the root of the program");
+		sceKernelExitGame();
+	}
+	fseek(jsonFile, 0, SEEK_END);
+	long fsize = ftell(jsonFile);
+	fseek(jsonFile, 0, SEEK_SET);  //same as rewind(f);
+
+	json_str = malloc(fsize + 1);
+	fread(json_str, fsize, 1, jsonFile);
+	fclose(jsonFile);
+
+	json_str[fsize] = 0;
 
 	jsmn_init(&p);
+	r = jsmn_parse(&p, json_str, strlen(json_str), t, sizeof(t) / sizeof(t[0]));
+	if (r < 0) {
+		printf("Failed to parse JSON: %d\n", r);
+		return;
+	}
+
+	/* Assume the top-level element is an object */
+	if (r < 1 || t[0].type != JSMN_OBJECT) {
+		printf("Object expected\n");
+		return;
+	}
+	for (i = 1; i < r; i++) {
+		if (jsoneq(json_str, &t[i], "ip1") == 0) {
+			sprintf(config.ip1, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "ip2") == 0) {
+			sprintf(config.ip2, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "ip3") == 0) {
+			sprintf(config.ip3, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "cameraEnabled") == 0) {
+			sprintf(strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.cameraEnabled = atoi(strbuffer);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "customip") == 0) {
+			int found = 0;
+			int j;
+			if (t[i + 1].type != JSMN_ARRAY) {
+				continue;
+			}
+			for (j = 0; j < t[i + 1].size; j++) {
+				jsmntok_t *g = &t[i + j + 2];
+				sprintf(strbuffer, "%.*s", g->end - g->start, json_str + g->start);
+				switch (found)
+				{
+				case 0:
+					config.ipp1 = atoi(strbuffer);
+					break;
+				case 1:
+					config.ipp2 = atoi(strbuffer);
+					break;
+				case 2:
+					config.ipp3 = atoi(strbuffer);
+					break;
+				case 3:
+					config.ipp4 = atoi(strbuffer);
+					break;
+				default:
+					break;
+				}
+				found++;
+			}
+			i += t[i + 1].size + 1;
+		}
+		else if (jsoneq(json_str, &t[i], "waittime") == 0)
+		{
+			sprintf(strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.waittime = atoi(strbuffer);
+		}
+		else {
+			i++; // Unexcepted key. We just ignore that.
+		}
+	}
+	fclose(jsonFile);
+}
+void writeJson()
+{
+	char buffer[512];
+	char jsonString[512];
+	FILE *jsonFile = fopen("config.json", "r");
+	jwOpen(buffer, sizeof(buffer), JW_OBJECT, JW_PRETTY);
+	jwObj_string("ip1", config.ip1);
+	jwObj_string("ip2", config.ip2);
+	jwObj_int("ip3", config.ip3);
+	jwObj_bool("cameraEnabled", config.cameraEnabled);
+	jwObj_array("customip");
+	jwArr_int(config.ipp1);
+	jwArr_int(config.ipp2);
+	jwArr_int(config.ipp3);
+	jwArr_int(config.ipp4);
+	jwEnd();
+	jwObj_int("waittime", config.waittime);
+	jwClose();
+
+	char *t;
+	for (t = buffer + strlen(buffer); --t >= buffer; )
+		if (*t == '}')
+			*t = '\0';
+		else
+			break;
+
+	strcpy(jsonString, t);
+	fwrite(jsonString, sizeof(char), sizeof(jsonString), jsonFile);
+	fclose(jsonFile);
 }
 
 int main(int argc, char *argv[])
@@ -364,29 +679,17 @@ int main(int argc, char *argv[])
 	setupGu();
 	netInit();
 	netDialog();
-	char *ip = "";
+	
 	initGraphics();
 	pspDebugScreenInit();
 	pspDebugScreenSetXY(0, 0);
 
 	clearScreen(ColorBlack);
 	flipScreen();
-	int ipToChoose;
-	OpenJsonFile();
-
-	int ip1 = 192;
-	int ip2 = 168;
-	int ip3 = 000;
-	int ip4 = 001;
-
-	configuration config;
-	if (ini_parse("config.ini", handler, &config) < 0) {
-		PrintError("Can't load config.ini");
-		PrintText(50, 100, ColorRed, "Please make sure that the config.ini file is present");
-		PrintToScreen(ColorBlack);
-		delay(1000);
-		return 0;
-	}
+	SceCtrlData pad;
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	readJson();
 	
 	
 	while (isRunning()) { // The main loop to initialize everything
@@ -398,178 +701,7 @@ int main(int argc, char *argv[])
 			netInit();
 			netDialog();
 		}
-		PrintText(10, 10, ColorWhite, "Select /\\ for %s", config.ip1);
-		PrintText(10, 20, ColorWhite, "Select o for  %s", config.ip2);
-		PrintText(10, 30, ColorWhite, "Select x for  %s", config.ip3);
-		PrintText(10, 40, ColorWhite, "Select [] for manual entering IP W.I.P.");
-		flipScreen();
-		sceDisplayWaitVblankStart();
-		SceCtrlData pad;
-		sceCtrlSetSamplingCycle(0);
-		sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-		while (1) {
-			sceCtrlPeekBufferPositive(&pad, 1);
-
-			if (pad.Buttons != 0)
-			{
-
-				if (pad.Buttons & PSP_CTRL_TRIANGLE) {
-					ipToChoose = 1;
-					break;
-				}
-				if (pad.Buttons & PSP_CTRL_CIRCLE) {
-					ipToChoose = 2;
-					break;
-				}
-				if (pad.Buttons & PSP_CTRL_CROSS) {
-					ipToChoose = 3;
-					break;
-				}
-				if (pad.Buttons & PSP_CTRL_SQUARE) {
-					ipToChoose = 4;
-					break;
-				}
-				if (pad.Buttons & PSP_CTRL_START) {
-					QuitScreen(false);
-				}
-			}
-		}
-		switch (ipToChoose)
-		{
-		case 1:
-			ip = config.ip1;
-			break;
-		case 2:
-			ip = config.ip2;
-			break;
-		case 3:
-			ip = config.ip3;
-			break;
-		case 4:;
-			int oldButton = 0;
-			int index = 1;
-			flipScreen();
-			while (1) {
-				sceCtrlPeekBufferPositive(&pad, 1);
-				if (pad.Buttons != 0)
-				{
-					if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
-						switch (index) {
-						case 1:
-							if (ip1 < 255) ip1++;
-							break;
-						case 2:
-							if (ip2 < 255) ip2++;
-							break;
-						case 3:
-							if (ip3 < 255) ip3++;
-							break;
-						case 4:
-							if (ip4 < 254) ip4++;
-							break;
-						}
-					}
-					if (pad.Buttons & PSP_CTRL_RTRIGGER && pad.Buttons != oldButton)
-					{
-						switch (index) {
-						case 1:
-							if (ip1 < 245) ip1 += 10;
-							break;
-						case 2:
-							if (ip2 < 245) ip2 += 10;
-							break;
-						case 3:
-							if (ip3 < 245) ip3 += 10;
-							break;
-						case 4:
-							if (ip4 < 244) ip4 += 10;
-							break;
-						}
-					}
-
-					if (pad.Buttons & PSP_CTRL_DOWN && pad.Buttons != oldButton) {
-						switch (index) {
-						case 1:
-							if (ip1 > 0) ip1--;
-							break;
-						case 2:
-							if (ip2 > 0) ip2--;
-							break;
-						case 3:
-							if (ip3 > 0) ip3--;
-							break;
-						case 4:
-							if (ip4 > 1) ip4--;
-							break;
-						}
-					}
-					if (pad.Buttons & PSP_CTRL_LTRIGGER && pad.Buttons != oldButton)
-					{
-						switch (index) {
-						case 1:
-							if (ip1 >= 10) ip1 -= 10;
-							break;
-						case 2:
-							if (ip2 >= 10) ip2 -= 10;
-							break;
-						case 3:
-							if (ip3 >= 10) ip3 -= 10;
-							break;
-						case 4:
-							if (ip4 >= 11) ip4 -= 10;
-							break;
-						}
-					}
-
-
-					if (pad.Buttons & PSP_CTRL_RIGHT && pad.Buttons != oldButton)
-					{
-						if (index != 4) index++;
-					}
-					if (pad.Buttons & PSP_CTRL_LEFT && pad.Buttons != oldButton)
-					{
-						if (index != 1) index--;
-					}
-
-					if (pad.Buttons & PSP_CTRL_CROSS)
-					{
-						break;
-					}
-					if (pad.Buttons & PSP_CTRL_START)
-					{
-						QuitScreen(false);
-					}
-					PrintText(10, 10, ColorWhite, "Enter a ip address here:");
-					if (index == 1) PrintText(50, 50, ColorBlue, "%i", ip1);
-					else			PrintText(50, 50, ColorWhite, "%i", ip1);
-					PrintText(74, 50, ColorWhite, ".");
-					if (index == 2) PrintText(80, 50, ColorBlue, "%i", ip2);
-					else			PrintText(80, 50, ColorWhite, "%i", ip2);
-					PrintText(104, 50, ColorWhite, ".");
-					if (index == 3) PrintText(110, 50, ColorBlue, "%i", ip3);
-					else			PrintText(110, 50, ColorWhite, "%i", ip3);
-					PrintText(132, 50, ColorWhite, ".");
-					if (index == 4) PrintText(138, 50, ColorBlue, "%i", ip4);
-					else			PrintText(138, 50, ColorWhite, "%i", ip4);
-
-					PrintText(10, 230, ColorWhite, "Controls: Left=goto left, Right=goto right, Up=+1, Down=-1");
-					PrintText(10, 240, ColorWhite, "R=+10, L=-10, Start=quit, X=confirm");
-					flipScreen();
-					clearScreen(ColorBlack);
-				}
-				oldButton = pad.Buttons;
-			}
-			snprintf(ip, 20, "%i.%i.%i.%i", ip1, ip2, ip3, ip4);
-			break;
-		default:
-			break;
-		}
-		PrintText(100, 80, ColorRed, "IP: %s", ip);
-		flipScreen();
-		delay(1000);
-		pspDebugScreenClear();
-		
-		
+		connectToIP();
 		pspDebugScreenSetXY(0, 0);
 		socket_desc = sceNetInetSocket(AF_INET, SOCK_DGRAM, 0);
 		if (socket_desc == -1)
@@ -623,12 +755,10 @@ int main(int argc, char *argv[])
 			}
 		}
 		int speed = 0;
-		int wheelpos1 = 100;
-		int wheelpos2 = 100;
-		int wheelpos1Raw = 0, wheelpos2Raw=0;
-		int servoY = 100;
-		int servoX = 100;
-		int calcspeed = 0;
+		int wheelpos1 = 0;
+		int wheelpos2 = 0;
+		int servoY = 0;
+		int servoX = 0;
 		// Turn speed vars
 		int turngear = 1;
 		int turnmapMax = 25;
@@ -636,8 +766,8 @@ int main(int argc, char *argv[])
 		int mapMax = 125;
 		int mapMin = 75;
 		int gear = 1;
-		int lmSpeed = 100;
-		int rmSpeed = 100;
+		int lmSpeed = 0;
+		int rmSpeed = 0;
 		char buf[255];
 		buf[0] = '\0';
 		char buf1[255];
@@ -712,7 +842,7 @@ int main(int argc, char *argv[])
 				running = 0;
 			}
 			PrintText(10, 262, ColorWhite, "Battery percentage: %d%%   PowerLock: %s", scePowerGetBatteryLifePercent(), powerlock == 0 ? "unlocked" : "locked");
-			if (scePowerIsLowBattery()) {
+			if (scePowerGetBatteryLifePercent() < 25 && !scePowerIsBatteryCharging()) {
 				PrintError("BATTERY IS LOW");
 			}
 			int aX = pad.Lx - 127;
@@ -721,16 +851,12 @@ int main(int argc, char *argv[])
 			else if (aX < -27)	aX += 27;
 			else {
 				aX = 0;
-
-				//wheelpos1 = 0;
-				//wheelpos2 = 0;
 			}
 
 			if (aY > 27)		aY -= 28;
 			else if (aY < -27) 	aY += 27;
 			else {
 				aY = 0;
-				//speed = 0;
 			}
 			sceCtrlPeekBufferPositive(&pad, 1);
 			if (pad.Buttons != 0)
@@ -740,72 +866,7 @@ int main(int argc, char *argv[])
 				}
 				if (pad.Buttons & PSP_CTRL_SELECT && pad.Buttons != oldButton)
 				{
-					PrintText(10, 10, ColorBlue, "Help page");
-					PrintText(10, 40, ColorWhite, "Press O to reset the 10 DOF chip");
-					PrintText(10, 50, ColorWhite, "Press /\\ to reset the socket");
-					PrintText(10, 60, ColorWhite, "Press [] to change the powerlocking. If its changed from locked to unlocked and");
-					PrintText(10, 70, ColorWhite,"the powerswitch was used it shutdowns immediately. WATCH OUT FOR THAT.");
-					PrintText(10, 80, ColorWhite, "Press UP to shift the gear up");
-					PrintText(10, 90, ColorWhite, "Press DOWN to shift the gear down");
-					PrintText(10, 100, ColorWhite, "Press LEFT to change the steering sensitivity down");
-					PrintText(10, 110, ColorWhite, "Press RIGHT to change the steering sensitivity up");
-					PrintText(10, 130, ColorWhite, "Press L to enable cruise control. This locks speed but doesn't lock steering");
-					PrintText(10, 140, ColorWhite, "Press R to controll the camera. This can be combined with the L function. ");
-					PrintText(10, 150, ColorWhite, "Moving continues in this mode. WATCH OUT FOR THAT");
-					PrintText(10, 160, ColorWhite, "Press SELECT to display help");
-					PrintText(10, 170, ColorWhite, "Press START to quit the client");
-					PrintText(10, 200, ColorRed, "Press O to close this help screen");
-					PrintText(10, 220, ColorWhite, "Press R now to go to Settings page and L to go back to this page");
-					flipScreen();
-					sceDisplayWaitVblankStart();
-					while (1)
-					{
-						sceCtrlPeekBufferPositive(&pad, 1);
-						if (pad.Buttons != 0)
-						{
-							if (pad.Buttons & PSP_CTRL_CIRCLE) {
-								break;
-							}
-							if(pad.Buttons & PSP_CTRL_RTRIGGER)
-							{
-								int index = 0;
-								while (true)
-								{
-									sceCtrlPeekBufferPositive(&pad, 1);
-									if (pad.Buttons != 0) {
-										switch (index) {
-											case 0:
-												PrintText(10, 10, ColorBlue, "==>");
-
-												if (pad.Buttons & PSP_CTRL_LEFT && !oldButton)
-												{
-													if (waittime > 10)
-														waittime--;
-												}
-												if (pad.Buttons & PSP_CTRL_RIGHT && !oldButton)
-												{
-													if (waittime < 100)
-														waittime++;
-												}
-												break;
-											}
-										if(pad.Buttons & PSP_CTRL_LTRIGGER || pad.Buttons & PSP_CTRL_CIRCLE)
-										{
-											break;
-										}
-										if(pad.Buttons & PSP_CTRL_START)
-										{
-											QuitScreen(true);
-										}
-										PrintText(30, 10, ColorWhite, "Time between transmitting data     (%i)", waittime);
-										PrintText(30, 20, ColorWhite, "You might want to change this if the RC does not respond well");
-										PrintToScreen(ColorBlack);
-									}
-									oldButton = pad.Buttons;
-								}
-							}
-						}
-					}
+					ConfigScreen();
 				}
 				if (pad.Buttons & PSP_CTRL_UP && pad.Buttons != oldButton) {
 					if (gear != 4) {
@@ -876,55 +937,50 @@ int main(int argc, char *argv[])
 			} // end if buttons
 			oldButton = pad.Buttons;
 
-
-			if (cruiseControll)
+			if (onHold)
+			{
+				speed = 100;
+				wheelpos1 = 100;
+				wheelpos2 = 100;
+			}
+			else if(cruiseControll)
 			{
 				speed = speed;
-				if (aX > 0) {
-					wheelpos1Raw = aX;
-					wheelpos2Raw = 0;
+				if(aX > 0)
+				{
+					wheelpos1 = map(aX, 0, 100, 0, turnmapMax);
+					wheelpos2 = 0;
 				}
-				else if (aX < 0) {
-					wheelpos1Raw = 0;
-					wheelpos2Raw = aX * -1;
+				else if(aX < 0)
+				{
+					wheelpos1 = 0;
+					wheelpos2 = map(aX, 0, -100, 0, turnmapMax);
+				}
+				else
+				{
+					wheelpos1 = 0;
+					wheelpos2 = 0;
 				}
 				PrintText(10, 20, ColorWhite, "Drive mode:     %s" , "Cruise controlled");
 			}
-			else {
-				if(aY == 0)
-				{
-					speed = 0;
-				}
-				if(aX == 0)
-				{
-					wheelpos1Raw = 0;
-					wheelpos2Raw = 0;
-				}
-				if (rPressed)// Servo
-				{
-					servoX = map(aX, -100, 100, 0, 200);
-					servoY = map(aY, 100, -100, 0, 200);
-					wheelpos1Raw = wheelpos1Raw;
-					wheelpos2Raw = wheelpos2Raw;
-					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Servo moving");
-				}
-				else if (!rPressed)// Motor
-				{
-					speed = aY;
-					if (aX > 0) {
-						wheelpos1Raw = aX;
-					}
-					else if (aX < 0) {
-						wheelpos2Raw = aX * -1;
-					}
-					PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
-				}
-			}
-			if (onHold)
+			else if (rPressed)// Servo
 			{
-				speed = 0;
-				wheelpos1Raw = 0;
-				wheelpos2Raw = 0;
+				servoX = map(aX, -100, 100, 0, 200);
+				servoY = map(aY, -100, 100, 0, 200);
+				wheelpos1 = wheelpos1;
+				wheelpos2 = wheelpos2;
+				PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Servo moving");
+			}
+			else if (!rPressed)// Motor
+			{
+				speed = map(aY, -100, 100, 0, 200);
+				if (aX > 0) {
+					wheelpos1 = map(aX, 0, 100, 0, turnmapMax);
+				}
+				else if (aX < 0) {
+					wheelpos2 = map(aX, 0, -100, 0, turnmapMax);
+				}
+				PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
 			}
 			PrintText(10, 10, ColorGray, "PSP Data");
 			//PrintText(10, 20, ColorBlack, ""); I already printed something here
@@ -938,15 +994,11 @@ int main(int argc, char *argv[])
 			PrintText(10, 80, ColorWhite,  "lmSpeed:        %i", lmSpeed);
 			PrintText(10, 90, ColorWhite,  "rmSpeed:        %i", rmSpeed);
 			PrintText(10, 100, ColorWhite, "Speed:          %i", speed);
-			PrintText(10, 110, ColorWhite, "Wheelpos1:      %i", wheelpos1Raw);
-			PrintText(10, 120, ColorWhite, "Wheelpos2:      %i", wheelpos2Raw);
+			PrintText(10, 110, ColorWhite, "Wheelpos1:      %i", wheelpos1);
+			PrintText(10, 120, ColorWhite, "Wheelpos2:      %i", wheelpos2);
 
-			wheelpos1 = map(wheelpos1Raw, 0, 100, 0, turnmapMax);
-			wheelpos2 = map(wheelpos2Raw, 0, 100, 0, turnmapMax);
-			calcspeed = map(speed, -100, 100, mapMin, mapMax);
-			lmSpeed = rmSpeed = 100;
 
-			if (calcspeed == 100)
+			if (speed == 100)
 			{
 				if (wheelpos1 > 0)
 				{
@@ -959,15 +1011,15 @@ int main(int argc, char *argv[])
 					rmSpeed = 100 - wheelpos2;
 				}
 			}
-			else if (calcspeed > 100)
+			else if (speed > 100)
 			{
-				lmSpeed = calcspeed - wheelpos1;
-				rmSpeed = calcspeed - wheelpos2;
+				lmSpeed = speed - wheelpos1;
+				rmSpeed = speed - wheelpos2;
 			}
 			else if (speed < 100)
 			{
-				lmSpeed = calcspeed + wheelpos1;
-				rmSpeed = calcspeed + wheelpos2;
+				lmSpeed = speed + wheelpos1;
+				rmSpeed = speed + wheelpos2;
 			}
 			else
 			{
@@ -985,38 +1037,38 @@ int main(int argc, char *argv[])
 				running = isRunning();
 			}
 			
-			char data_type[10];
-			char data_data[255];
-			char *temperature[10];
-			char *altitudedof[10];
-			char *altitudegps[10];
-			char *headingdof[10];
-			char *headinggps[10];
-			char *roll[10];
-			char *pitch[10];
-			char *latitude[10];
-			char *longitude[10];
-			char *speedgps[10];
-			char *cell1[10];
-			char *cell2[10];
-			char *cell3[10];
-			char *cells[10];
-			char *excecutetime[10];
-			temperature[0]	  = '\0' ;
-			altitudedof[0]	  = '\0' ;
-			altitudegps[0]	  = '\0' ;
-			headingdof[0]	  = '\0' ;
-			headinggps[0]	  = '\0' ;
-			roll[0]			  = '\0' ;
-			pitch[0]		  = '\0' ;
-			latitude[0]		  = '\0' ;
-			longitude[0]	  = '\0' ;
-			speedgps[0]		  = '\0' ;
-			cell1[0]		  = '\0' ;
-			cell2[0]		  = '\0' ;
-			cell3[0]		  = '\0' ;
-			cells[0]		  = '\0' ;
-			excecutetime[0]	  = '\0' ;
+//			char data_type[10];
+//			char data_data[255];
+//			char *temperature[10];
+//			char *altitudedof[10];
+//			char *altitudegps[10];
+//			char *headingdof[10];
+//			char *headinggps[10];
+//			char *roll[10];
+//			char *pitch[10];
+//			char *latitude[10];
+//			char *longitude[10];
+//			char *speedgps[10];
+//			char *cell1[10];
+//			char *cell2[10];
+//			char *cell3[10];
+//			char *cells[10];
+//			char *excecutetime[10];
+//			temperature[0]	  = '\0' ;
+//			altitudedof[0]	  = '\0' ;
+//			altitudegps[0]	  = '\0' ;
+//			headingdof[0]	  = '\0' ;
+//			headinggps[0]	  = '\0' ;
+//			roll[0]			  = '\0' ;
+//			pitch[0]		  = '\0' ;
+//			latitude[0]		  = '\0' ;
+//			longitude[0]	  = '\0' ;
+//			speedgps[0]		  = '\0' ;
+//			cell1[0]		  = '\0' ;
+//			cell2[0]		  = '\0' ;
+//			cell3[0]		  = '\0' ;
+//			cells[0]		  = '\0' ;
+//			excecutetime[0]	  = '\0' ;
 
 //			int k, j;
 //			for (k = 0; k < 3; k++) {
@@ -1073,85 +1125,6 @@ int main(int argc, char *argv[])
 //			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
 //			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
 //			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
-
-//			if (buf[0] != '\0') {
-//				char *p = strtok(buf, ",:");
-//				int i = 0;
-//				while (p != NULL)
-//				{
-//					parsedbufA[i] = p;
-//					p = strtok(NULL, ",:");
-//					i++;
-//				}
-//				if(strncmp(parsedbufA[0], "AHRS", 4) == 0)
-//				{
-//					strcpy(temp,"AHRS");
-//				}
-//				else if(strncmp(parsedbufA[0], "GPS", 4) == 0)
-//				{
-//					strcpy(temp, "GPS");
-//				}
-//				PrintText(10, 80, ColorGray, "New %s Data", temp);
-//			}
-//			else
-//			{
-//				PrintText(10, 80, ColorGray, "Old %s Data", temp);
-//			}
-//			if (strncmp(temp, "AHRS", 4)) {
-//				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
-//				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
-//				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
-//				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
-//				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
-//			}
-//			else if (strncmp(temp, "GPS", 4))
-//			{
-//				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
-//				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
-//				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
-//				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
-//			}
-//
-//			delay(10);
-//			buf[0] = '\0';
-//			sceNetInetRecvfrom(socket_desc, buf, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-//			if (buf[0] != '\0') {
-//				char *p = strtok(buf, ",:");
-//				int i = 0;
-//				while (p != NULL)
-//				{
-//					parsedbufB[i] = p;
-//					p = strtok(NULL, ",:");
-//					i++;
-//				}
-//				if (strncmp(parsedbufB[0], "AHRS", 4) == 0)
-//				{
-//					strcpy(temp, "AHRS");
-//				}
-//				else if (strncmp(parsedbufB[0], "GPS", 4) == 0)
-//				{
-//					strcpy(temp, "GPS");
-//				}
-//				PrintText(10, 80, ColorGray, "New %s Data", temp);
-//			}
-//			else
-//			{
-//				PrintText(10, 80, ColorGray, "Old %s Data", temp);
-//			}
-//			if (strncmp(temp, "AHRS", 4)) {
-//				PrintText(10, 90, ColorBlue, "Temp:            %s", parsedbufA[1]);
-//				PrintText(10, 100, ColorBlue, "Altitude:        %s", parsedbufA[2]);
-//				PrintText(10, 110, ColorBlue, "Roll:            %s", parsedbufA[3]);
-//				PrintText(10, 120, ColorBlue, "Pitch:           %s", parsedbufA[4]);
-//				PrintText(10, 130, ColorBlue, "Heading:         %s", parsedbufA[5]);
-//			}
-//			else if (strncmp(temp, "GPS", 4))
-//			{
-//				PrintText(10, 160, ColorBlue, "Longitude:       %s", parsedbufA[1]);
-//				PrintText(10, 170, ColorBlue, "Latitude:        %s", parsedbufA[2]);
-//				PrintText(10, 180, ColorBlue, "Altitude:        %s", parsedbufA[3]);
-//				PrintText(10, 190, ColorBlue, "Heading:         %s", parsedbufA[4]);
-//			}
 			flipScreen();
 			delay(waittime - 10);
 			running = isRunning();
