@@ -5,23 +5,6 @@ namespace BattleBotClientWin10IoT.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-
-        private BitmapImage _mJpegStreamImage;
-        public BitmapImage mJpegStreamImage
-        {
-            get { return _mJpegStreamImage; }
-            set
-            {
-                if (_mJpegStreamImage != value)
-                {
-                    _mJpegStreamImage = value;
-                    RaisePropertyChanged("mJpegStreamImage");
-                }
-            }
-        }
-
-
-
         private string _spiStatus = "Not connected";
 
         public string spiStatus

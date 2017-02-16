@@ -14,55 +14,55 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{8140791c-e55d-4624-bd52-35e41f092e97}</UniqueIdentifier>
+      <UniqueIdentifier>{61bec7ce-9c88-4464-8eec-f64073215fa4}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly">
-      <UniqueIdentifier>{b666857f-a13e-43cc-955f-1183b402c224}</UniqueIdentifier>
+      <UniqueIdentifier>{a908fdc6-461e-4453-b6dc-1cc15fe670a0}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core">
-      <UniqueIdentifier>{d91ed0e1-b37d-40fa-a04e-50890f3612da}</UniqueIdentifier>
+      <UniqueIdentifier>{f9bf0c33-71b6-448e-be89-e6c508d4e9e7}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants">
-      <UniqueIdentifier>{3db9b930-dcdf-44a3-85ac-b1c4d9666700}</UniqueIdentifier>
+      <UniqueIdentifier>{9625bd6e-dd9c-4129-b785-761c04240c57}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\variants\nodemcu">
-      <UniqueIdentifier>{3c975d3a-f93d-4274-8fc9-d2fd9936335a}</UniqueIdentifier>
+      <UniqueIdentifier>{1e8ac357-b709-4f5d-8f55-7213c3ebdac3}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\libb64">
-      <UniqueIdentifier>{a7eee749-ecff-4c4e-bf79-e5946d033aca}</UniqueIdentifier>
+      <UniqueIdentifier>{d125044c-3b3b-4307-a52f-8e715c864278}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\spiffs">
-      <UniqueIdentifier>{a52b1a8c-41f5-4bfb-b8dc-c0b77c9ad2c5}</UniqueIdentifier>
+      <UniqueIdentifier>{d247f2ee-67df-442a-9c9e-272d80917135}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\core\umm_malloc">
-      <UniqueIdentifier>{cde0316b-2929-4296-a358-8f0554049eee}</UniqueIdentifier>
+      <UniqueIdentifier>{f1d4b751-a313-4d55-9a7b-d254f4ef6981}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries">
-      <UniqueIdentifier>{dd61cd36-71f6-41f5-9344-5efa9fe770a2}</UniqueIdentifier>
+      <UniqueIdentifier>{a1c84ac3-4942-4d91-a10d-3c533bfe2a1f}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ArduinoOTA">
-      <UniqueIdentifier>{7be782ce-56d8-4db9-ac85-303613dca860}</UniqueIdentifier>
+      <UniqueIdentifier>{0bfa5ccc-d9ca-4130-b345-c4c5e7bd0d41}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266mDNS">
-      <UniqueIdentifier>{974bfbd5-93a8-4a41-a1a8-ae607dc77133}</UniqueIdentifier>
+      <UniqueIdentifier>{9f79f83b-9a1f-467f-8264-7909bc1e48db}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi">
-      <UniqueIdentifier>{8a3b899b-dffb-4b58-ac90-a2909413eb14}</UniqueIdentifier>
+      <UniqueIdentifier>{06edcabf-0b15-4fcc-af1e-3c2c7afa15f9}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src">
-      <UniqueIdentifier>{e610e878-c8be-4d16-9b7b-da60802a640b}</UniqueIdentifier>
+      <UniqueIdentifier>{ece63cd3-23ca-4f3d-90e6-be232fe08fc7}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\ESP8266WiFi\src\include">
-      <UniqueIdentifier>{2bbe8996-4532-461b-b6dd-8635e3509a3b}</UniqueIdentifier>
+      <UniqueIdentifier>{89d4f8b0-3f76-4224-85bc-ffcc83042702}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\RemoteDebug">
-      <UniqueIdentifier>{c65ff6fb-ae5a-48ba-9b0a-758d88b652f6}</UniqueIdentifier>
+      <UniqueIdentifier>{ec3b78a2-bfcc-42aa-b8a0-281c0c6bb519}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\SoftwareSerial">
-      <UniqueIdentifier>{7fe501b7-416c-4e9f-a4ef-33f8359591f4}</UniqueIdentifier>
+      <UniqueIdentifier>{e0678c45-fdcc-4742-9a0f-21d7f1c35819}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\_micro-api-readonly\libraries\Wire">
-      <UniqueIdentifier>{96becad2-e412-4a53-b0ca-ee2a45c7f616}</UniqueIdentifier>
+      <UniqueIdentifier>{f99e0086-acef-442f-80a7-76d0dde2e0a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +94,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PinOuts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="__vm\.BattleBotServerESP8266.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\..\Programs\Arduino\1.8\hardware\esp8266com\esp8266\cores\esp8266\Arduino.h">
@@ -302,9 +305,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\..\Programs\Arduino\1.8\hardware\esp8266com\esp8266\libraries\Wire\Wire.h">
       <Filter>src\_micro-api-readonly\libraries\Wire</Filter>
-    </ClInclude>
-    <ClInclude Include="__vm\.BattleBotServerESP8266.vsarduino.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

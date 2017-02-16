@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Networking.ServiceDiscovery.Dnssd;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using BattleBotClientWin10IoT.Helpers;
@@ -24,7 +25,6 @@ namespace BattleBotClientWin10IoT
             VariableStorage.MjpegDecoder.Error += mjpeg_OnError;
             VariableStorage.MjpegDecoder.ParseStream(new Uri("http://192.168.1.132:8080/stream/video.mjpeg"));
             VariableStorage.ViewModel = ((MainViewModel)base.DataContext);
-
             InitMDNS();
         }
 
@@ -60,8 +60,13 @@ namespace BattleBotClientWin10IoT
                 
                 var bmp = new BitmapImage();
                 await bmp.SetSourceAsync(ms);
-                VariableStorage.ViewModel.mJpegStreamImage = bmp;
+                MjpegImage.Source = bmp;
             }
+        }
+
+        private void GotoSettings(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(SettingsPage));
         }
     }
 }

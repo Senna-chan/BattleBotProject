@@ -38,12 +38,12 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public int GetSpeedAxisPosition()
         {
-            return GeneralHelpers.MapIntToValue(SpeedAxis, -1, 1, 0, 1023);
+            return GeneralHelpers.MapIntToValue(SpeedAxis, -1, 1, -100, 100);
         }
 
         public int GetTurnAxisPosition()
         {
-            return GeneralHelpers.MapIntToValue(TurnAxis, -1, 1, 0, 1023);
+            return GeneralHelpers.MapIntToValue(TurnAxis, -1, 1, -100, 100);
         }
 
         public int GetPanAxisPosition()

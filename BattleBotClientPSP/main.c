@@ -1093,15 +1093,15 @@ int main(int argc, char *argv[])
 //						strncat(data_data, &recieved_char, 1);
 //					}
 //				} // end for
-//				if (!strcmp(data_type, "AHRS"))
+//				if (!strcmp(data_type, "ahrs"))
 //				{
 //					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
 //				}
-//				else if (!strcmp(data_type, "GPS"))
+//				else if (!strcmp(data_type, "gps"))
 //				{
 //					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
 //				}
-//				else if (!strcmp(data_type, "misc"))
+//				else if (!strcmp(data_type, "lipo"))
 //				{
 //					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
 //				}

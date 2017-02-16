@@ -361,9 +361,9 @@ void HandleUDPData(byte Packet[])
 		Debug.println(arguments);
 	}
 	delay(0);
-	if (commandType == "client") HandleClientCommand(command, arguments);
-	if (commandType == "dc") HandleMotorCommand(command1, arguments1);
-	if (commandType == "gen") HandleGenericCommand(command1, arguments1);
+	if (commandType == STRCLIENT)	HandleClientCommand(command, arguments);
+	if (commandType == STRMOTOR)	HandleMotorCommand(command1, arguments1);
+	if (commandType == STRGENERAL)	HandleGenericCommand(command1, arguments1);
 }
 
 void HandleArduinoSerialData()

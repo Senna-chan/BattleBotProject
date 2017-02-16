@@ -11,31 +11,67 @@
     <Page.DataContext>
         <viewModels:MainViewModel/>
     </Page.DataContext>
-
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Image x:Name="mjpegStream"></Image>
-        <Button x:Name="SettingsButton" Background="#00000000" Margin="887,99,0,617" Click="SettingsButton_Click">
-            <iconPacks:PackIconMaterial Kind="Settings" Width="40" Height="40" />
-        </Button>
-        <Grid Name="MotorSlidersGrid" Margin="580,201,0,183">
-            <Image Source="./Assets/tank.png" Margin="42,46,58,54"></Image>
-            <Image Source="./Assets/turretdome.png" Margin="-10,-128,10,128" RenderTransformOrigin="0.5,0.806">
-                <Image.RenderTransform>
-                    <CompositeTransform Rotation="{Binding TurretPosition}"/>
-                </Image.RenderTransform>
-            </Image>
-            <Slider x:Name="LeftMotorSpeed" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="270" TickPlacement="None" RenderTransformOrigin="0.5,0.5" Margin="-52,172,0,0" UseLayoutRounding="False" d:LayoutRounding="Auto" Minimum="-100" Maximum="100" Value="{Binding LeftMotorSpeed}">
-                <Slider.RenderTransform>
-                    <CompositeTransform Rotation="-90"/>
-                </Slider.RenderTransform>
-            </Slider>
-            <Slider x:Name="RightMotorSpeed" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="270" TickPlacement="None" RenderTransformOrigin="0.5,0.5" Margin="210,172,-36.5,0" UseLayoutRounding="False" d:LayoutRounding="Auto" Minimum="-100" Maximum="100" Value="{Binding RightMotorSpeed}">
-                <Slider.RenderTransform>
-                    <CompositeTransform Rotation="-90"/>
-                </Slider.RenderTransform>
-            </Slider>
+    <Page.Content>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" x:Name="RowMain"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" x:Name="ColumnMain"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.RowSpan="9" Grid.ColumnSpan="16" x:Name="MjpegImage"/>
+            <Button Grid.Row="0" Grid.Column="15" x:Name="SettingsButton" Click="GotoSettings" Background="#00000000" Width="{Binding ActualWidth, ElementName=ColumnMain}" Height="{Binding ActualHeight, ElementName=RowMain}">
+                <iconPacks:PackIconMaterial Kind="Settings" Width="40" Height="40"/>
+            </Button>
+            <Grid Name="MotorSlidersGrid" Grid.Column="12" Grid.ColumnSpan="4" Grid.Row="4" Grid.RowSpan="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Image Source="./Assets/tank.png" Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="3"></Image>
+                <Image Source="./Assets/turretdome.png" RenderTransformOrigin="0.5,0.806" Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="3">
+                    <Image.RenderTransform>
+                        <CompositeTransform Rotation="{Binding TurretPosition}"/>
+                    </Image.RenderTransform>
+                </Image>
+                <Slider x:Name="LeftMotorSpeed"  HorizontalAlignment="Center" VerticalAlignment="Center" TickPlacement="None" Minimum="-100" Maximum="100" Value="{Binding LeftMotorSpeed}"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="5" Orientation="Vertical" Height="{Binding ActualHeight, ElementName=MotorSlidersGrid}" Margin="0,10"/>
+                <Slider x:Name="RightMotorSpeed" HorizontalAlignment="Center" VerticalAlignment="Center" TickPlacement="None" Minimum="-100" Maximum="100" Value="{Binding RightMotorSpeed}" Grid.Column="4" Grid.Row="0" Grid.RowSpan="5" Orientation="Vertical" Height="{Binding ActualHeight, ElementName=MotorSlidersGrid}" Margin="0,10"/>
+            </Grid>
         </Grid>
-    </Grid>
+    </Page.Content>
 </Page>
     
     

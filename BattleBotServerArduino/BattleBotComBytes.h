@@ -37,4 +37,13 @@
 
 #define MESSAGEEND			0xFF
 
+// String Data
+const char *STRGENERAL	=	"gen";
+const char *STRMOTOR	=	"dc";
+const char *STRLIPO		=	"lipo";
+const char *STRCLIENT	=	"client";
+const char *STRERROR	=	"error";
+const char *STRAHRS		=	"ahrs";
+const char *STRDEBUG	=	"debug";
+
 #endif

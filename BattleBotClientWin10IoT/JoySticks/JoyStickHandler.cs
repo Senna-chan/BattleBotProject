@@ -17,9 +17,17 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             ConnectToAJoystick();
             // TODO: Create controller polling method with task(Can't use thread.start)
+
         }
-        
-        
+
+        private async void PollController()
+        {
+            while (true)
+            {
+                CJoyStick.GetControllerData();
+
+            }
+        }
 
         private async void ConnectToAJoystick()
         {
