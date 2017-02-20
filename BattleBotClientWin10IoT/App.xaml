@@ -7,29 +7,3 @@
     RequestedTheme="Light">
 
 </Application>
-
-<!--if (speed > 0)-->
-<!--{-->
-<!--	m1speed = speed - wheelpos1;-->
-<!--	m2speed = speed - wheelpos2;-->
-<!--}-->
-<!--else if (speed<0)-->
-<!--{-->
-<!--	m1speed = speed + wheelpos1;-->
-<!--	m2speed = speed + wheelpos2;-->
-<!--}-->
-<!--if (speed == 0)-->
-<!--{-->
-<!--	if (wheelpos1 >0)-->
-<!--	{-->
-<!--		m1speed = wheelpos1 * -1;-->
-<!--		m2speed = wheelpos1;-->
-<!--	}-->
-<!--	if (wheelpos2 > 0)-->
-<!--	{-->
-<!--		m1speed = wheelpos2;-->
-<!--		m2speed = wheelpos2 * -1;-->
-<!--	}-->
-<!--}-->
-<!--DC1motorSpeed = m1speed + 100;-->
-<!--DC2motorSpeed = m2speed + 100;-->

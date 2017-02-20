@@ -28,8 +28,6 @@ namespace BattleBotClientWin10IoT
             InitMDNS();
         }
 
-
-
         private async void InitMDNS()
         {
             mDNS.mDNS client = new mDNS.mDNS();
@@ -45,7 +43,6 @@ namespace BattleBotClientWin10IoT
                 VariableStorage.ViewModel.mdnsStatus = "Camera not found";
             }
         }
-        
         
         private void mjpeg_OnError(object sender, ErrorEventArgs e)
         {

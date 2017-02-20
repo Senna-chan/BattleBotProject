@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Devices.Enumeration;
+using Windows.Gaming.Input;
 using BattleBotClientWin10IoT.Helpers;
-using BattleBotClientWin10IoT.Helpers.JoySticks;
+using BattleBotClientWin10IoT.Interfaces;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
@@ -13,19 +16,28 @@ namespace BattleBotClientWin10IoT.JoySticks
     {
         public IJoyStickInterface CJoyStick;
         public DeviceInformationCollection BluetoothDevices { get; set; }
+        private CancellationTokenSource CancelPolling = new CancellationTokenSource();
+        private bool ShouldStartPolling = false;
         public JoyStickHandler()
         {
             ConnectToAJoystick();
-            // TODO: Create controller polling method with task(Can't use thread.start)
-
+            PollController();
         }
 
-        private async void PollController()
+        private void PollController()
         {
-            while (true)
-            {
-                CJoyStick.GetControllerData();
+            new Task(PollControllerTask, CancelPolling.Token, TaskCreationOptions.LongRunning).Start();
+        }
 
+        private void PollControllerTask()
+        {
+            while (!CancelPolling.Token.IsCancellationRequested)
+            {
+                if (ShouldStartPolling)
+                {
+                    CJoyStick.GetControllerData();
+                }
+                CancelPolling.Token.WaitHandle.WaitOne(10);
             }
         }
 
@@ -33,7 +45,7 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             if (VariableStorage.DeviceFormFactor == DeviceFormFactorType.Desktop)
             {
-                GetBluetoothDevices();
+                await GetBluetoothDevices();
                 if (BluetoothDevices != null && BluetoothDevices.Count > 1)
                 {
                     Debug.WriteLine("We got some bluetooth devices");
@@ -53,7 +65,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                     }
                     else
                     {
-                        GetBluetoothDevices();
+                        await GetBluetoothDevices();
                         if (BluetoothDevices != null && BluetoothDevices.Count > 1)
                         {
                             Debug.WriteLine("We got some bluetooth devices");
@@ -76,10 +88,11 @@ namespace BattleBotClientWin10IoT.JoySticks
             }
         }
 
-        private async void GetBluetoothDevices()
+        private async Task GetBluetoothDevices()
         {
-            BluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
-            var devicess = await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
+//            BluetoothDevices = await DeviceInformation.FindAllAsync(BluetoothDevice.GetDeviceSelector());
+//            var devicess = await DeviceInformation.FindAllAsync(RfcommDeviceService.GetDeviceSelector(RfcommServiceId.SerialPort));
+//            DeviceInformationCollection collection = await DeviceInformation.FindAllAsync();
         }
 
     }

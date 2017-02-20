@@ -33,5 +33,11 @@
         <Function Type="name:serialPort" />
       </Device>
     </DeviceCapability>
+    <DeviceCapability Name="humaninterfacedevice">
+      <Device Id="any">
+        <Function Type="usage:0005 *"/>
+      </Device>
+    </DeviceCapability>
+
   </Capabilities>
 </Package>

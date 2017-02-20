@@ -1,4 +1,4 @@
-﻿using BattleBotClientWin10IoT.Helpers.JoySticks;
+﻿using BattleBotClientWin10IoT.Interfaces;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {

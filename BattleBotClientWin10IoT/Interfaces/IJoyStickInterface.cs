@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Security.Cryptography.Core;
-
-namespace BattleBotClientWin10IoT.Helpers.JoySticks
+﻿namespace BattleBotClientWin10IoT.Interfaces
 {
     interface IJoyStickInterface
     {

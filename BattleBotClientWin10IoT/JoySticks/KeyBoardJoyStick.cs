@@ -7,7 +7,7 @@ using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using BattleBotClientWin10IoT.Helpers;
-using BattleBotClientWin10IoT.Helpers.JoySticks;
+using BattleBotClientWin10IoT.Interfaces;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
@@ -58,7 +58,7 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public bool GetShootButtonState()
         {
-            throw new NotImplementedException();
+            return KeyHelper.IsKeyDown(VirtualKey.Space);
         }
 
         public bool GetSpeedDownGearButtonState()
@@ -80,5 +80,7 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BattleBotClientWin10IoT.Interfaces;
 
-namespace BattleBotClientWin10IoT.Helpers.JoySticks
+namespace BattleBotClientWin10IoT.JoySticks
 {
     class PS4JoyStick : IJoyStickInterface
     {
         public int SpeedAxis { get; set; }
         public int TurnAxis { get; set; }
-
+        
         public void GetControllerData()
         {
             throw new NotImplementedException();
