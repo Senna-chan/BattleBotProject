@@ -4,9 +4,46 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="using:BattleBotClientWin10IoT.ViewModels"
+    xmlns:iconPacks="using:MahApps.Metro.IconPacks"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Content>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" x:Name="RowMain"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" x:Name="ColumnMain"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <ProgressRing x:Name="ProgressRing1" Grid.Column="3" Grid.ColumnSpan="4" Height="auto" Width="auto" Grid.RowSpan="4" Grid.Row="1"/>
+            <TextBlock Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="4" Text="{Binding ControllerStatus}"/>
+            <TextBlock Grid.Row="1" Grid.Column="12" Grid.ColumnSpan="4" Text="{Binding SocketStatus}"/>
+            <TextBlock Grid.Row="2" Grid.Column="12" Grid.ColumnSpan="4" Text="{Binding CameraStatus}"/>
 
-    </Grid>
+        </Grid>
+    </Page.Content>
 </Page>

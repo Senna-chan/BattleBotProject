@@ -14,8 +14,6 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 
 #define ESPREADYPIN D3
 
-//const char* ssid = "Zycon";
-//const char* password = "cdfc3d9152";
 const char* ssid = "Natsuki-WiFi";
 const char* password = "Golden-Darkness";
 //const char* ssid = "Sitecom02A1ED";
@@ -116,7 +114,7 @@ void setup()
 	WiFi.setOutputPower(20.5);
 	WiFi.hostname(mdnsName);
 	WiFi.begin(ssid, password);
-	while (WiFi.waitForConnectResult() != WL_CONNECTED)
+	while (WiFi.status() != WL_CONNECTED)
 	{
 		if (counter == 10)
 		{
@@ -281,7 +279,7 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 		Debug.println("Motorspeed was not valid");
 	}
 	if (sscanf(ServoSpeeds, "%i,%i", &pan, &tilt)==2){
-		if(pan > 200 || tilt > 200)
+		if(pan > 180 || tilt > 180)
 		{
 			Debug.println("Servo positions received are not valid");
 			return;
@@ -385,6 +383,14 @@ void HandleArduinoSerialData()
 				Debug.print("A fault occured in motor ");
 				Debug.println(m);
 			}
+		}
+	}
+	else if(c == ESPGEN)
+	{
+		byte what = SerialArd.read();
+		if(what == ESPGENREADYACK)
+		{
+			digitalWrite(ESPREADYPIN, LOW);
 		}
 	}
 }

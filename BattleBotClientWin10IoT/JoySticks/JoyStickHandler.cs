@@ -7,9 +7,9 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Devices.Enumeration;
 using Windows.Gaming.Input;
+using Windows.UI.Xaml;
 using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Interfaces;
-
 namespace BattleBotClientWin10IoT.JoySticks
 {
     class JoyStickHandler
@@ -18,15 +18,15 @@ namespace BattleBotClientWin10IoT.JoySticks
         public DeviceInformationCollection BluetoothDevices { get; set; }
         private CancellationTokenSource CancelPolling = new CancellationTokenSource();
         private bool ShouldStartPolling = false;
-        public JoyStickHandler()
-        {
-            ConnectToAJoystick();
-            PollController();
-        }
 
-        private void PollController()
+        public void PollController()
         {
             new Task(PollControllerTask, CancelPolling.Token, TaskCreationOptions.LongRunning).Start();
+        }
+
+        public void StopPollingController()
+        {
+            CancelPolling.Cancel();
         }
 
         private void PollControllerTask()
@@ -41,7 +41,7 @@ namespace BattleBotClientWin10IoT.JoySticks
             }
         }
 
-        private async void ConnectToAJoystick()
+        public async Task ConnectToAJoystick()
         {
             if (VariableStorage.DeviceFormFactor == DeviceFormFactorType.Desktop)
             {
@@ -61,6 +61,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                     var result = await dialog.ShowAsync();
                     if ((int) result.Id == 0)
                     {
+                        VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard joystick";
                         CJoyStick = new KeyboardJoystick();
                     }
                     else
@@ -76,7 +77,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                             dialog = new Windows.UI.Popups.MessageDialog("Still no PS4 controller. Bye");
                             dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok"));
                             await dialog.ShowAsync();
-                            App.Current.Exit();
+                            Application.Current.Exit();
                         }
 
                     }

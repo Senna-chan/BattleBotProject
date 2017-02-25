@@ -20,17 +20,33 @@ namespace BattleBotClientWin10IoT.ViewModels
             }
         }
 
-        private string _mdnsStatus = "mDNS not initialized";
 
-        public string mdnsStatus
+        private string _controllerStatus = "Controller not initialized";
+
+        public string ControllerStatus
         {
-            get { return _mdnsStatus; }
+            get { return _controllerStatus; }
             set
             {
-                if (_mdnsStatus != value)
+                if (_controllerStatus != value)
                 {
-                    _mdnsStatus = value;
-                    RaisePropertyChanged("mdnsStatus");
+                    _controllerStatus = value;
+                    RaisePropertyChanged("ControllerStatus");
+                }
+            }
+        }
+
+        private string _cameraStatus = "Camera not initialized";
+
+        public string CameraStatus
+        {
+            get { return _cameraStatus; }
+            set
+            {
+                if (_cameraStatus != value)
+                {
+                    _cameraStatus = value;
+                    RaisePropertyChanged("CameraStatus");
                 }
             }
         }

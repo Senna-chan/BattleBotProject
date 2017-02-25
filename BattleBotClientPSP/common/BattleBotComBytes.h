@@ -28,6 +28,10 @@
 #define ESPMOTORDIAG		0xF1
 #define ESPDOFSTAT			0xF2
 #define ESPGPSSTAT			0xF3
+#define ESPGEN				0xF4
+
+// Arduino > ESP gen types
+#define ESPGENREADYACK		0x01
 
 // Motor diagagnostic data 
 #define MOTOR1				0x01
