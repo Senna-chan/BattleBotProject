@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Views;
 
 namespace BattleBotClientWin10IoT
@@ -100,7 +101,8 @@ namespace BattleBotClientWin10IoT
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            VariableStorage.JoyStick.StopPollingController();
+            VariableStorage.BattleBotCommunication.StopCommunication();
             deferral.Complete();
         }
     }

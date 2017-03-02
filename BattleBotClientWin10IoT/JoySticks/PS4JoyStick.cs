@@ -57,5 +57,14 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             throw new NotImplementedException();
         }
+
+        public int PanAxis { get; set; }
+        public int TiltAxis { get; set; }
+        public void PopulateOldButtons()
+        {
+            throw new NotImplementedException();
+        }
+
+        public JoyStickTypes JoystickType => JoyStickTypes.PSController;
     }
 }

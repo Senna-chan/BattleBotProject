@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Windows.UI.Xaml.Media.Imaging;
+using BattleBotClientWin10IoT.Helpers;
 
 namespace BattleBotClientWin10IoT.ViewModels
 {
@@ -7,7 +8,7 @@ namespace BattleBotClientWin10IoT.ViewModels
     {
         private string _spiStatus = "Not connected";
 
-        public string spiStatus
+        public string SpiStatus
         {
             get { return _spiStatus; }
             set
@@ -19,7 +20,21 @@ namespace BattleBotClientWin10IoT.ViewModels
                 }
             }
         }
+        private string _espStatus = "Not connected";
 
+        public string EspStatus
+        {
+            get { return _espStatus; }
+            set
+            {
+                if (_espStatus != value)
+                {
+                    _espStatus = value;
+                    RaisePropertyChanged("EspStatus");
+                }
+            }
+        }
+        
 
         private string _controllerStatus = "Controller not initialized";
 
@@ -51,39 +66,37 @@ namespace BattleBotClientWin10IoT.ViewModels
             }
         }
 
+        private int _speedGear = 1;
 
-        private int _Speed = 0;
-
-        public int Speed
+        public int SpeedGear
         {
-            get { return _Speed; }
+            get { return _speedGear; }
             set
             {
-                if (_Speed != value)
+                if (_speedGear != value)
                 {
-                    _Speed = value;
-                    RaisePropertyChanged("Speed");
+                    _speedGear = value;
+                    RaisePropertyChanged("SpeedGear");
                 }
             }
         }
 
+        private int _turnGear = 1;
 
-        private int _Wheelpos = 0;
-
-        public int Wheelpos
-        {
-            get { return _Wheelpos; }
+        public int TurnGear
+        { 
+            get { return _turnGear; }
             set
             {
-                if (_Wheelpos != value)
+                if (_turnGear != value)
                 {
-                    _Wheelpos = value;
-                    RaisePropertyChanged("Wheelpos");
+                    _turnGear = value;
+                    RaisePropertyChanged("TurnGear");
                 }
             }
         }
 
-        private int _LeftMotorSpeed = 0;
+        private int _LeftMotorSpeed = 100;
 
         public int LeftMotorSpeed
         {
@@ -98,31 +111,31 @@ namespace BattleBotClientWin10IoT.ViewModels
             }
         }
 
-        private int _RightMotorSpeed = 0;
+        private int _rightMotorSpeed = 100;
 
         public int RightMotorSpeed
         {
-            get { return _RightMotorSpeed; }
+            get { return _rightMotorSpeed; }
             set
             {
-                if (_RightMotorSpeed != value)
+                if (_rightMotorSpeed != value)
                 {
-                    _RightMotorSpeed = value;
+                    _rightMotorSpeed = value;
                     RaisePropertyChanged("RightMotorSpeed");
                 }
             }
         }
 
-        private bool _Shoot = false;
+        private bool _shoot = false;
 
         public bool Shoot
         {
-            get { return _Shoot; }
+            get { return _shoot; }
             set
             {
-                if (_Shoot != value)
+                if (_shoot != value)
                 {
-                    _Shoot = value;
+                    _shoot = value;
                     RaisePropertyChanged("Shoot");
                 }
             }
@@ -139,6 +152,19 @@ namespace BattleBotClientWin10IoT.ViewModels
                 {
                     _TurretPosition = value;
                     RaisePropertyChanged("TurretPosition");
+                }
+            }
+        }
+
+        public int WaitTime
+        {
+            get { return Settings.GetIntSetting("waittime"); }
+            set
+            {
+                if (Settings.GetIntSetting("waittime") != value)
+                {
+                    Settings.SaveSetting("waittime",value);
+                    RaisePropertyChanged("WaitTime");
                 }
             }
         }

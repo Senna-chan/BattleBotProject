@@ -16,11 +16,12 @@
 #include <DualVNH5019MotorShieldMega.h>
 
 #define ESPSTATUSLED	24 // Lights up when a client has connected to the ESP
-#define ESPRESETPIN		2 // This connects to the ESP reset pin incase it won't work
+#define ESPRESETPIN	45	 // This connects to the ESP reset pin incase it won't work
 // Shoot section
 #define SHOOTPIN		20 // Here the transistor is connected for the shooting
 #define LASERPIN		21 // This is where the laser for the ammo detection is.
 #define LASERDETECTPIN	22 // This is where the phototransistor for the laser is.
+
 #define PANSERVOPIN		8
 #define TILTSERVOPIN    9
 byte DC1MotorSpeedSerial, DC2MotorSpeedSerial, panSerial, tiltSerial;

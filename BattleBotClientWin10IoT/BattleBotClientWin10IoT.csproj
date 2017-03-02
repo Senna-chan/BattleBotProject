@@ -95,6 +95,8 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="Models\KeyHelperModel.cs" />
     <Compile Include="Modules\ESP.cs" />
     <Compile Include="Helpers\DeviceTypeHelper.cs" />
     <Compile Include="Helpers\GeneralHelpers.cs" />

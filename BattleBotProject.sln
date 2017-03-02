@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleBotServer", "BattleBotServer\BattleBotServer.csproj", "{E7B4F976-D791-464B-A9CD-375EDDA3EFDF}"
 EndProject
@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotClientPSP", "Battl
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "BattleBotServerPython", "BattleBotServerPython\BattleBotServerPython.pyproj", "{6066E422-1D2E-40A2-86F1-29535109D327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSocketClient", "SimpleSocketClient\SimpleSocketClient.csproj", "{51733E3A-3C9F-4246-A68B-FAE6FF5163FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSocketServer", "SimpleSocketClient\SimpleSocketServer.csproj", "{51733E3A-3C9F-4246-A68B-FAE6FF5163FF}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "BattleBotTestServerPythonWindows", "BattleBotTestServerPythonWindows\BattleBotTestServerPythonWindows.pyproj", "{B3F639B3-ECE3-43A8-AF94-6B554E3E56D0}"
 EndProject

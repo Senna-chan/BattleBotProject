@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Net;
 using System.Threading.Tasks;
+using Windows.Networking.Connectivity;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using BattleBotClientWin10IoT.Helpers;
+using BattleBotClientWin10IoT.Modules;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -18,13 +22,25 @@ namespace BattleBotClientWin10IoT.Views
         {
             InitializeComponent();
             DataContext = VariableStorage.ViewModel;
+            SetupSettings();
             Initialize();
+        }
+
+        private void SetupSettings()
+        {
+            var firstrun = Settings.GetStringSetting("firstrun");
+            if (firstrun == string.Empty)
+            {
+                Settings.SaveSetting("firstrun", "false");
+                Settings.SaveSetting("waittime", 30);
+            }
         }
 
         private async void Initialize()
         {
             await InitMDNS();
             await VariableStorage.JoyStick.ConnectToAJoystick();
+            InitWirelessCommunication();
             Frame.Navigate(typeof(MainPage));
         }
         private async Task InitMDNS()
@@ -35,11 +51,19 @@ namespace BattleBotClientWin10IoT.Views
             bool shouldConnectToCamera = true;
             do
             {
-                var services = await client.List("_bbcamera._tcp.local.");
-                if (services.Length == 1) // Assume its the camera
+                var services = await client.List("_workstation._tcp.local.");
+                await Task.Delay(200);
+                if (services != null && services.Length != 0)
                 {
-                    VariableStorage.BattlebotCameraAddress = services[0].Address;
-                    VariableStorage.ViewModel.CameraStatus = "Camera found on: " + services[0].HostAddress;
+                    foreach (var service in services)
+                    {
+                        if (service.Server.StartsWith("battlebotcamera"))
+                        {
+                            VariableStorage.BattlebotCameraAddress = services[0].Address;
+                            VariableStorage.ViewModel.CameraStatus = "Camera found on: " + services[0].HostAddress;
+                            shouldConnectToCamera = false;
+                        }
+                    }
                 }
                 else
                 {
@@ -76,16 +100,23 @@ namespace BattleBotClientWin10IoT.Views
                 if (services.Length == 1) // Assume its the camera
                 {
                     VariableStorage.EspAddress = services[0].Address;
-                    VariableStorage.ViewModel.CameraStatus = "Esp found on: " + services[0].HostAddress;
+                    VariableStorage.ViewModel.EspStatus = "Esp found on: " + services[0].HostAddress;
                     connectedToEsp = true;
                 }
 
                 if (counter == 0)
                 {
-                    var dialog = new MessageDialog("I can't seem to find the robot, please check the wifi and wires and try again.");
+                    var dialog = new MessageDialog("I can't seem to find the robot, please check the wifi and wires and try again.\r\nOr are you testing this?");
 
                     dialog.Commands.Add(new UICommand("Try again") { Id = 0 });
-                    await dialog.ShowAsync();
+                    dialog.Commands.Add(new UICommand("I'm testing") { Id = 1 });
+                    var result = await dialog.ShowAsync();
+                    if ((int) result.Id == 1)
+                    {
+                        VariableStorage.ViewModel.EspStatus = "Esp found on: 127.0.0.1 in Testing mode";
+                        VariableStorage.EspAddress = IPAddress.Parse("127.0.0.1");
+                        connectedToEsp = true;
+                    }
                 }
                 if (counter == 10)
                 {
@@ -99,6 +130,11 @@ namespace BattleBotClientWin10IoT.Views
                 await Task.Delay(250);
                 counter++;
             }
+        }
+
+        private void InitWirelessCommunication()
+        {
+            VariableStorage.BattleBotCommunication = new WiFiCommunication();
         }
     }
 }

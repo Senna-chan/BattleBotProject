@@ -27,21 +27,21 @@ namespace BattleBotClientWin10IoT
             string spiQuery = SpiDevice.GetDeviceSelector("SPI0");
             try
             {
-                VariableStorage.ViewModel.spiStatus = "Connecting to MCP3008";
+                VariableStorage.ViewModel.SpiStatus = "Connecting to MCP3008";
                 var deviceInfo = await DeviceInformation.FindAllAsync(spiQuery);
                 if (deviceInfo != null && deviceInfo.Count > 0)
                 {
                     _MCP3008 = SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings).GetResults();
-                    VariableStorage.ViewModel.spiStatus = "Connected to MCP3008";
+                    VariableStorage.ViewModel.SpiStatus = "Connected to MCP3008";
                 }
                 else
                 {
-                    VariableStorage.ViewModel.spiStatus = "No SPI device found";
+                    VariableStorage.ViewModel.SpiStatus = "No SPI device found";
                 }
             }
             catch (Exception ex)
             {
-                VariableStorage.ViewModel.spiStatus = "Not Connected";
+                VariableStorage.ViewModel.SpiStatus = "Not Connected";
                 Debug.WriteLine(new Exception("SPI Initialization Failed", ex));
             }
         }

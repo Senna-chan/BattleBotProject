@@ -6,14 +6,43 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:iconPacks="using:MahApps.Metro.IconPacks"
-    mc:Ignorable="d" Height="402.545" Width="294.727">
+    mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Image Source="Assets/image.png"></Image>
-        <Button x:Name="CloseButton" Margin="249,0,0,375" Background="#00000000" Click="CloseButton_Click">
-            <iconPacks:PackIconFontAwesome Width="16"
-                                       Height="16"
-                                       Kind="Times" Foreground="#FFD40000"  />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" x:Name="RowMain"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" x:Name="ColumnMain"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Image Source="/Assets/image.png" Grid.RowSpan="9" Grid.ColumnSpan="19"/>
+        <TextBlock Grid.Row="3" Grid.ColumnSpan="4" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10">Time between motor commands</TextBlock>
+        <Slider Grid.Row="4" Grid.ColumnSpan="4" Grid.Column="6" Minimum="20" Value="{Binding WaitTime}"></Slider>
+        <Button x:Name="CloseButton" Grid.Row="0" Grid.Column="15"  Background="#00000000" Click="CloseButton_Click" Width="{Binding ActualWidth, ElementName=ColumnMain}" Height="{Binding ActualHeight, ElementName=RowMain}">
+            <iconPacks:PackIconFontAwesome Width="16" Height="16" Kind="Times" Foreground="#FFD40000"  />
         </Button>
     </Grid>
 </Page>
