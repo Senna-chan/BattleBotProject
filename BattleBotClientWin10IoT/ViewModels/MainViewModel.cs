@@ -168,6 +168,18 @@ namespace BattleBotClientWin10IoT.ViewModels
                 }
             }
         }
+        public bool RealEngineHandling
+        {
+            get { return Settings.GetBoolSetting("realenginehandling"); }
+            set
+            {
+                if (Settings.GetBoolSetting("realenginehandling") != value)
+                {
+                    Settings.SaveSetting("realenginehandling", value);
+                    RaisePropertyChanged("RealEngineHandling");
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

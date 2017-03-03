@@ -109,33 +109,39 @@ namespace BattleBotClientWin10IoT.JoySticks
                 }
                 else if (wheelpos > 0)
                 {
-                    m1speed -= (wheelpos);
+                    m1speed -= wheelpos;
                 }
             }
-
-            m1targetSpeed = GeneralHelpers.MapIntToValue(m1speed, -100, 100, 0, 200);
-            m2targetSpeed = GeneralHelpers.MapIntToValue(m2speed, -100, 100, 0, 200);
-            var oldm1Speed = VariableStorage.ViewModel.LeftMotorSpeed;
-            var oldm2Speed = VariableStorage.ViewModel.RightMotorSpeed;
-            if (m1targetSpeed > oldm1Speed)
+            int oldm1Speed = 100;
+            int oldm2Speed = 100;
+            if (!Settings.GetBoolSetting("realenginehandling"))
             {
-                oldm1Speed+=5;
+                oldm1Speed = GeneralHelpers.MapIntToValue(m1speed, -100, 100, 0, 200);
+                oldm2Speed = GeneralHelpers.MapIntToValue(m2speed, -100, 100, 0, 200);
             }
-            else if (m1targetSpeed < oldm1Speed)
+            else if (Settings.GetBoolSetting("realenginehandling"))
             {
-                oldm1Speed-=5;
+                m1targetSpeed = GeneralHelpers.MapIntToValue(m1speed, -100, 100, 0, 200);
+                m2targetSpeed = GeneralHelpers.MapIntToValue(m2speed, -100, 100, 0, 200);
+                oldm1Speed = VariableStorage.ViewModel.LeftMotorSpeed;
+                oldm2Speed = VariableStorage.ViewModel.RightMotorSpeed;
+                if (m1targetSpeed > oldm1Speed)
+                {
+                    oldm1Speed += 5;
+                }
+                else if (m1targetSpeed < oldm1Speed)
+                {
+                    oldm1Speed -= 5;
+                }
+                if (m2targetSpeed > oldm2Speed)
+                {
+                    oldm2Speed += 5;
+                }
+                else if (m2targetSpeed < oldm2Speed)
+                {
+                    oldm2Speed -= 5;
+                }
             }
-            if (m2targetSpeed > oldm2Speed)
-            {
-                oldm2Speed+=5;
-            }
-            else if (m2targetSpeed < oldm2Speed)
-            {
-                oldm2Speed-=5;
-            }
-
-            
-
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 VariableStorage.ViewModel.LeftMotorSpeed = oldm1Speed;

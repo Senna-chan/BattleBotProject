@@ -29,10 +29,12 @@ namespace BattleBotClientWin10IoT.Views
         private void SetupSettings()
         {
             var firstrun = Settings.GetStringSetting("firstrun");
-            if (firstrun == string.Empty)
+            if (firstrun != string.Empty)
             {
                 Settings.SaveSetting("firstrun", "false");
                 Settings.SaveSetting("waittime", 30);
+                Settings.SaveSetting("realenginehandling",true);
+                Settings.SaveSetting("debug",true);
             }
         }
 
@@ -70,6 +72,11 @@ namespace BattleBotClientWin10IoT.Views
                     if (counter == 0)
                     {
                         VariableStorage.ViewModel.CameraStatus = "Camera not found";
+                        if (Settings.GetBoolSetting("debug"))
+                        {
+                            shouldConnectToCamera = false;
+                            continue;
+                        }
                         var dialog =
                             new MessageDialog("Could not find the camera. Do you want to continue without camera?");
 
@@ -106,6 +113,13 @@ namespace BattleBotClientWin10IoT.Views
 
                 if (counter == 0)
                 {
+                    if (Settings.GetBoolSetting("debug"))
+                    {
+                        VariableStorage.ViewModel.EspStatus = "Esp found on: 127.0.0.1 in Testing mode";
+                        VariableStorage.EspAddress = IPAddress.Parse("127.0.0.1");
+                        connectedToEsp = true;
+                        continue;
+                    }
                     var dialog = new MessageDialog("I can't seem to find the robot, please check the wifi and wires and try again.\r\nOr are you testing this?");
 
                     dialog.Commands.Add(new UICommand("Try again") { Id = 0 });

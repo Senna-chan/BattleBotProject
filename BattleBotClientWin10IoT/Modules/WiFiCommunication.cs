@@ -102,7 +102,7 @@ namespace BattleBotClientWin10IoT.Modules
             BattleBotConnection.Dispose();
         }
 
-        private void Send(string command)
+        public void Send(string command)
         {
             BattleBotConnection.Client.Send(Encoding.ASCII.GetBytes(command));
         }
