@@ -28,7 +28,7 @@ int counter = 0;
 int noBytes; // Holds the amount of bytes read by either the UDP server or the Serial UART
 boolean clientConnected = false;
 
-SoftwareSerial SerialArd = SoftwareSerial(D7, D8);
+SoftwareSerial SerialArd = SoftwareSerial(D5,D6);
 WiFiUDP server;
 IPAddress clientIP;
 IPAddress serverIP;

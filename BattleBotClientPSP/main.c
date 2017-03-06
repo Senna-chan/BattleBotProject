@@ -55,9 +55,9 @@ static unsigned int __attribute__((aligned(16))) list[262144];
 int socket_desc; // This is the socket
 struct sockaddr_in server; // Speaks for itself
 char *message; // Speaks for itself
-char *ip;
+char *ip[20];
 
-char tempip[20];
+char *tempip;
 
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
@@ -406,13 +406,13 @@ void connectToIP() {
 	switch (ipToChoose)
 	{
 	case 1:
-		ip = config.ip1;
+		strcpy(ip, config.ip1);
 		break;
 	case 2:
-		ip = config.ip2;
+		strcpy(ip, config.ip2);
 		break;
 	case 3:
-		ip = config.ip3;
+		strcpy(ip, config.ip3);
 		break;
 	case 4:;
 		int oldButton = 0;
@@ -528,7 +528,7 @@ void connectToIP() {
 			}
 			oldButton = pad.Buttons;
 		}
-		snprintf(ip, 20, "%i.%i.%i.%i", config.ipp1, config.ipp2, config.ipp3, config.ipp4);
+		sprintf(ip, "%i.%i.%i.%i", config.ipp1, config.ipp2, config.ipp3, config.ipp4);
 		break;
 	default:
 		break;
@@ -545,9 +545,10 @@ void readJson()
 	int r;
 	jsmn_parser p;
 	char *json_str;
-	jsmntok_t t[128]; /* We expect no more than 128 tokens */
+	jsmntok_t t[512]; /* We expect no more than 512 tokens */
 	FILE *jsonFile = fopen("config.json", "r");
 	char *strbuffer[20];
+	strbuffer[0] = "\0";
 	if (jsonFile == NULL)
 	{
 		PrintError("The config file is not found!");
@@ -568,13 +569,15 @@ void readJson()
 	jsmn_init(&p);
 	r = jsmn_parse(&p, json_str, strlen(json_str), t, sizeof(t) / sizeof(t[0]));
 	if (r < 0) {
-		printf("Failed to parse JSON: %d\n", r);
+		PrintError("Failed to parse JSON: %d", r);
+		delay(1000);
 		return;
 	}
 
 	/* Assume the top-level element is an object */
 	if (r < 1 || t[0].type != JSMN_OBJECT) {
-		printf("Object expected\n");
+		PrintError("Object expected");
+		delay(1000);
 		return;
 	}
 	for (i = 1; i < r; i++) {
@@ -584,6 +587,7 @@ void readJson()
 		}
 		else if (jsoneq(json_str, &t[i], "ip2") == 0) {
 			sprintf(config.ip2, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			//sprintf(*config.ip2, "%s", "192.168.1.100");
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "ip3") == 0) {
@@ -591,9 +595,14 @@ void readJson()
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "cameraEnabled") == 0) {
-			sprintf(strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
-			config.cameraEnabled = atoi(strbuffer);
+			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.cameraEnabled = atoi(*strbuffer);
 			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "waittime") == 0)
+		{
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.waittime = atoi(*strbuffer);
 		}
 		else if (jsoneq(json_str, &t[i], "customip") == 0) {
 			int found = 0;
@@ -603,20 +612,20 @@ void readJson()
 			}
 			for (j = 0; j < t[i + 1].size; j++) {
 				jsmntok_t *g = &t[i + j + 2];
-				sprintf(strbuffer, "%.*s", g->end - g->start, json_str + g->start);
+				sprintf(*strbuffer, "%.*s", g->end - g->start, json_str + g->start);
 				switch (found)
 				{
 				case 0:
-					config.ipp1 = atoi(strbuffer);
+					config.ipp1 = atoi(*strbuffer);
 					break;
 				case 1:
-					config.ipp2 = atoi(strbuffer);
+					config.ipp2 = atoi(*strbuffer);
 					break;
 				case 2:
-					config.ipp3 = atoi(strbuffer);
+					config.ipp3 = atoi(*strbuffer);
 					break;
 				case 3:
-					config.ipp4 = atoi(strbuffer);
+					config.ipp4 = atoi(*strbuffer);
 					break;
 				default:
 					break;
@@ -624,11 +633,6 @@ void readJson()
 				found++;
 			}
 			i += t[i + 1].size + 1;
-		}
-		else if (jsoneq(json_str, &t[i], "waittime") == 0)
-		{
-			sprintf(strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
-			config.waittime = atoi(strbuffer);
 		}
 		else {
 			i++; // Unexcepted key. We just ignore that.
@@ -642,9 +646,9 @@ void writeJson()
 	char jsonString[512];
 	FILE *jsonFile = fopen("config.json", "r");
 	jwOpen(buffer, sizeof(buffer), JW_OBJECT, JW_PRETTY);
-	jwObj_string("ip1", config.ip1);
-	jwObj_string("ip2", config.ip2);
-	jwObj_int("ip3", config.ip3);
+	jwObj_string("ip1", *config.ip1);
+	jwObj_string("ip2", *config.ip2);
+	jwObj_string("ip3", *config.ip3);
 	jwObj_bool("cameraEnabled", config.cameraEnabled);
 	jwObj_array("customip");
 	jwArr_int(config.ipp1);
@@ -714,8 +718,8 @@ int main(int argc, char *argv[])
 			sceKernelExitGame();
 			return 0;
 		}
-
-		server.sin_addr.s_addr = inet_addr(ip);
+		tempip = ip;
+		server.sin_addr.s_addr = inet_addr(tempip);
 		server.sin_family = AF_INET;
 		server.sin_port = htons(20010);
 
@@ -776,6 +780,11 @@ int main(int argc, char *argv[])
 		buf2[0] = '\0';
 		char temp[10];
 		temp[0] = '\0';
+
+		int lmTargetSpeed = 0;
+		int rmTargetSpeed = 0;
+		int lmOldSpeed = 0;
+		int rmOldSpeed = 0;
 
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
@@ -973,12 +982,22 @@ int main(int argc, char *argv[])
 			}
 			else if (!rPressed)// Motor
 			{
-				speed = map(aY, -100, 100, 0, 200);
+				if (aY != 0) {
+					speed = map(aY, -100, 100, mapMin, mapMax);
+				}
+				else {
+					speed = 100;
+				}
 				if (aX > 0) {
 					wheelpos1 = map(aX, 0, 100, 0, turnmapMax);
 				}
 				else if (aX < 0) {
 					wheelpos2 = map(aX, 0, -100, 0, turnmapMax);
+				}
+				else
+				{
+					wheelpos1 = 0;
+					wheelpos2 = 0;
 				}
 				PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Normal");
 			}
@@ -997,8 +1016,12 @@ int main(int argc, char *argv[])
 			PrintText(10, 110, ColorWhite, "Wheelpos1:      %i", wheelpos1);
 			PrintText(10, 120, ColorWhite, "Wheelpos2:      %i", wheelpos2);
 
-
-			if (speed == 100)
+			if (aY == 0 && aX == 0)
+			{
+				lmSpeed = 100;
+				rmSpeed = 100;
+			}
+			else if (speed == 100)
 			{
 				if (wheelpos1 > 0)
 				{
@@ -1021,14 +1044,35 @@ int main(int argc, char *argv[])
 				lmSpeed = speed + wheelpos1;
 				rmSpeed = speed + wheelpos2;
 			}
+
+			
+			if(true) // TODO: Make a config part for this
+			{
+				if(lmOldSpeed < lmSpeed)
+				{
+					lmOldSpeed += 5;
+				}
+				else if(lmOldSpeed > lmSpeed)
+				{
+					lmOldSpeed -= 5;
+				}
+				if (rmOldSpeed < rmSpeed)
+				{
+					rmOldSpeed += 5;
+				}
+				else if (rmOldSpeed > rmSpeed)
+				{
+					rmOldSpeed -= 5;
+				}
+			}
 			else
 			{
-				lmSpeed = 100;
-				rmSpeed = 100;
+				lmOldSpeed = lmSpeed;
+				rmOldSpeed = rmSpeed;
 			}
 
 			char mMessage[30];
-			snprintf(mMessage, sizeof(mMessage), "DC:%i,%i:%i,%i", lmSpeed, rmSpeed, servoX, servoY);
+			snprintf(mMessage, sizeof(mMessage), "DC:%i,%i:%i,%i", lmOldSpeed, rmOldSpeed, servoX, servoY);
 			if (sceNetInetSend(socket_desc, mMessage, strlen(mMessage), 0) < 0)
 			{
 				PrintError("Send failed");

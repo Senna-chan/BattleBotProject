@@ -91,7 +91,8 @@ namespace BattleBotClientWin10IoT.Modules
             while (!CancelSending.Token.IsCancellationRequested)
             {
                 SendDriveCommand();
-                CancelSending.Token.WaitHandle.WaitOne(Settings.GetIntSetting("waittime"));
+                await Task.Delay(30);
+                //CancelSending.Token.WaitHandle.WaitOne(30);
             }
         }
 
