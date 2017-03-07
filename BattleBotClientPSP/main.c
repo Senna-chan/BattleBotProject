@@ -33,6 +33,8 @@ PSP_MODULE_INFO("Battlebot Client PSP", 0, 1, 1);
 #define RGB(r, g, b) ((r)|((g)<<8)|((b)<<16))
 #define true 1
 #define false 0
+
+void writeJson();
 int ColorRed = RGB(255, 0, 0); // Red
 int ColorBlue = RGB(0, 0, 255); // Blue
 int ColorGreen = RGB(0, 255, 0); // Green
@@ -77,6 +79,10 @@ typedef struct
 	int ipp4;
 	int waittime;
 	int cameraEnabled;
+	int realengineperformance;
+	int getmotordata;
+	int getahrsdata;
+	int getgpsdata;
 } configuration;
 configuration config;
 
@@ -257,6 +263,7 @@ void QuitScreen(int Connected)
 				delay(250);
 				message = "client:psp:disconnected";
 				sceNetInetSend(socket_desc, message, strlen(message), 0);
+				writeJson();
 				sceNetInetClose(socket_desc);
 				netTerm();
 				sceKernelExitGame();
@@ -301,7 +308,7 @@ void ConfigScreen()
 		sceCtrlPeekBufferPositive(&pad, 1);
 		if (pad.Buttons != 0)
 		{
-			if (pad.Buttons & PSP_CTRL_CIRCLE) {
+			if (pad.Buttons & PSP_CTRL_CIRCLE || pad.Buttons & PSP_CTRL_LTRIGGER) {
 				break;
 			}
 			if (pad.Buttons & PSP_CTRL_RTRIGGER)
@@ -313,7 +320,6 @@ void ConfigScreen()
 					if (pad.Buttons != 0) {
 						switch (index) {
 						case 0:
-							PrintText(10, 10, ColorBlue, "==>");
 							if (pad.Buttons & PSP_CTRL_LEFT && !oldButton)
 							{
 								if (config.waittime > 10)
@@ -326,17 +332,32 @@ void ConfigScreen()
 							}
 							break;
 						case 1:
-							PrintText(10, 40, ColorBlue, "==>");
 							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
 								config.cameraEnabled = !config.cameraEnabled;
 							break;
-						}
-						if(pad.Buttons & PSP_CTRL_UP && !oldButton)
-						{
-							if (index == 1) continue;
-							index++;
+						case 2:
+							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
+								config.realengineperformance = !config.realengineperformance;
+							break;
+						case 3:
+							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
+								config.getmotordata = !config.getmotordata;
+							break;
+						case 4:
+							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
+								config.getahrsdata = !config.getahrsdata;
+							break;
+						case 5:
+							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
+								config.getgpsdata = !config.getgpsdata;
+							break;
 						}
 						if(pad.Buttons & PSP_CTRL_DOWN && !oldButton)
+						{
+							if (index == 6) continue;
+							index++;
+						}
+						if(pad.Buttons & PSP_CTRL_UP && !oldButton)
 						{
 							if (index == 0) continue;
 							index--;
@@ -349,9 +370,14 @@ void ConfigScreen()
 						{
 							QuitScreen(true);
 						}
+
+						PrintText(10, index * 10, ColorBlue, "==>");
 						PrintText(30, 10, ColorWhite, "Time between transmitting data:     (%i)", config.waittime);
-						PrintText(30, 20, ColorWhite, "You might want to change this if the RC does not respond well");
-						PrintText(30, 40, ColorWhite, "Camera enabled:                     (%s)", config.cameraEnabled ? "Yes" : "No");
+						PrintText(30, 20, ColorWhite, "Camera enabled:                     (%s)", config.cameraEnabled ? "Yes" : "No");
+						PrintText(30, 30, ColorWhite, "Acceleration/Decelaration?:         (%s)", config.realengineperformance ? "Enabled" : "Disabled");
+						PrintText(30, 40, ColorWhite, "Recieve motor data?:			       (%s)", config.getmotordata ? "Enabled" : "Disabled");
+						PrintText(30, 50, ColorWhite, "Recieve AHRS data?:		           (%s)", config.getahrsdata ? "Enabled" : "Disabled");
+						PrintText(30, 60, ColorWhite, "Recieve gps data?:		           (%s)", config.getgpsdata ? "Enabled" : "Disabled");
 						PrintToScreen(ColorBlack);
 					}
 					oldButton = pad.Buttons;
@@ -599,6 +625,26 @@ void readJson()
 			config.cameraEnabled = atoi(*strbuffer);
 			i++;
 		}
+		else if (jsoneq(json_str, &t[i], "realengineperformance") == 0) {
+			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.realengineperformance = atoi(*strbuffer);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "getmotordata") == 0) {
+			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.getmotordata = atoi(*strbuffer);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "getahrsdata") == 0) {
+			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.getahrsdata = atoi(*strbuffer);
+			i++;
+		}
+		else if (jsoneq(json_str, &t[i], "getgpsdata") == 0) {
+			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			config.getgpsdata = atoi(*strbuffer);
+			i++;
+		}
 		else if (jsoneq(json_str, &t[i], "waittime") == 0)
 		{
 			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
@@ -644,31 +690,27 @@ void writeJson()
 {
 	char buffer[512];
 	char jsonString[512];
-	FILE *jsonFile = fopen("config.json", "r");
+	int jsonFile = sceIoOpen("config.json", PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
 	jwOpen(buffer, sizeof(buffer), JW_OBJECT, JW_PRETTY);
-	jwObj_string("ip1", *config.ip1);
-	jwObj_string("ip2", *config.ip2);
-	jwObj_string("ip3", *config.ip3);
-	jwObj_bool("cameraEnabled", config.cameraEnabled);
-	jwObj_array("customip");
-	jwArr_int(config.ipp1);
-	jwArr_int(config.ipp2);
-	jwArr_int(config.ipp3);
-	jwArr_int(config.ipp4);
-	jwEnd();
-	jwObj_int("waittime", config.waittime);
+		jwObj_string("ip1", config.ip1);
+		jwObj_string("ip2", config.ip2);
+		jwObj_string("ip3", config.ip3);
+		jwObj_bool("cameraEnabled", config.cameraEnabled);
+		jwObj_bool("realengineperformance", config.realengineperformance);
+		jwObj_array("customip");
+			jwArr_int(config.ipp1);
+			jwArr_int(config.ipp2);
+			jwArr_int(config.ipp3);
+			jwArr_int(config.ipp4);
+		jwEnd();
+		jwObj_int("motor", config.getmotordata);
+		jwObj_int("ahrs", config.getahrsdata);
+		jwObj_int("gps", config.getgpsdata);
+		jwObj_int("waittime", config.waittime);
 	jwClose();
 
-	char *t;
-	for (t = buffer + strlen(buffer); --t >= buffer; )
-		if (*t == '}')
-			*t = '\0';
-		else
-			break;
-
-	strcpy(jsonString, t);
-	fwrite(jsonString, sizeof(char), sizeof(jsonString), jsonFile);
-	fclose(jsonFile);
+	sceIoWrite(jsonFile, buffer, sizeof(buffer));
+	sceIoClose(jsonFile);
 }
 
 int main(int argc, char *argv[])
@@ -806,6 +848,7 @@ int main(int argc, char *argv[])
 			PrintText(150, 110, ColorWhite, "Restarting in 2 seconds");
 			PrintToScreen(ColorBlack);
 			delay(2000);
+			PrintToScreen(ColorBlack);
 			continue;
 		}
 
@@ -949,8 +992,8 @@ int main(int argc, char *argv[])
 			if (onHold)
 			{
 				speed = 100;
-				wheelpos1 = 100;
-				wheelpos2 = 100;
+				wheelpos1 = 0;
+				wheelpos2 = 0;
 			}
 			else if(cruiseControll)
 			{
@@ -1044,9 +1087,8 @@ int main(int argc, char *argv[])
 				lmSpeed = speed + wheelpos1;
 				rmSpeed = speed + wheelpos2;
 			}
-
 			
-			if(true) // TODO: Make a config part for this
+			if(config.realengineperformance)
 			{
 				if(lmOldSpeed < lmSpeed)
 				{
