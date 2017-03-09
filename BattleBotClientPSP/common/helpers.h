@@ -1,6 +1,7 @@
 #ifndef COMMON_HELPERS_H
 #define COMMON_HELPERS_H
 
+char *trimwhitespace(char *str);
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s);
 int StringStartsWith(const char *pre, const char *str);
 char* remove_all_chars(char* str, char c);

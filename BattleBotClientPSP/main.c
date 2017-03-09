@@ -33,6 +33,7 @@ PSP_MODULE_INFO("Battlebot Client PSP", 0, 1, 1);
 #define RGB(r, g, b) ((r)|((g)<<8)|((b)<<16))
 #define true 1
 #define false 0
+#define BETWEEN(value, min, max) (value < max && value > min)
 
 void writeJson();
 int ColorRed = RGB(255, 0, 0); // Red
@@ -229,7 +230,7 @@ void PrintText(int x, int y, int color, const char* format, ...) {
 void PrintError(const char* format, ...) {
 	va_list fmtargs;
 	char buffer[1024];
-	
+
 	va_start(fmtargs, format);
 	vsnprintf(buffer, sizeof(buffer) - 1, format, fmtargs);
 	va_end(fmtargs);
@@ -255,7 +256,7 @@ void QuitScreen(int Connected)
 		sceCtrlPeekBufferPositive(&pad, 1);
 		if (pad.Buttons != 0)
 		{
-			if(pad.Buttons & PSP_CTRL_CROSS)
+			if (pad.Buttons & PSP_CTRL_CROSS)
 			{
 				clearScreen(ColorBlack);
 				PrintText(170, 125, ColorWhite, "Bye Bye");
@@ -268,7 +269,7 @@ void QuitScreen(int Connected)
 				netTerm();
 				sceKernelExitGame();
 			}
-			if(pad.Buttons & PSP_CTRL_CIRCLE)
+			if (pad.Buttons & PSP_CTRL_CIRCLE)
 			{
 				message = "client:psp:continued";
 				sceNetInetSend(socket_desc, message, strlen(message), 0);
@@ -352,12 +353,12 @@ void ConfigScreen()
 								config.getgpsdata = !config.getgpsdata;
 							break;
 						}
-						if(pad.Buttons & PSP_CTRL_DOWN && !oldButton)
+						if (pad.Buttons & PSP_CTRL_DOWN && !oldButton)
 						{
 							if (index == 6) continue;
 							index++;
 						}
-						if(pad.Buttons & PSP_CTRL_UP && !oldButton)
+						if (pad.Buttons & PSP_CTRL_UP && !oldButton)
 						{
 							if (index == 0) continue;
 							index--;
@@ -371,13 +372,13 @@ void ConfigScreen()
 							QuitScreen(true);
 						}
 
-						PrintText(10, index * 10, ColorBlue, "==>");
+						PrintText(10, index * 10 + 10, ColorBlue, "==>");
 						PrintText(30, 10, ColorWhite, "Time between transmitting data:     (%i)", config.waittime);
 						PrintText(30, 20, ColorWhite, "Camera enabled:                     (%s)", config.cameraEnabled ? "Yes" : "No");
 						PrintText(30, 30, ColorWhite, "Acceleration/Decelaration?:         (%s)", config.realengineperformance ? "Enabled" : "Disabled");
-						PrintText(30, 40, ColorWhite, "Recieve motor data?:			       (%s)", config.getmotordata ? "Enabled" : "Disabled");
-						PrintText(30, 50, ColorWhite, "Recieve AHRS data?:		           (%s)", config.getahrsdata ? "Enabled" : "Disabled");
-						PrintText(30, 60, ColorWhite, "Recieve gps data?:		           (%s)", config.getgpsdata ? "Enabled" : "Disabled");
+						PrintText(30, 40, ColorWhite, "Recieve motor data?:                (%s)", config.getmotordata ? "Enabled" : "Disabled");
+						PrintText(30, 50, ColorWhite, "Recieve AHRS data?:                 (%s)", config.getahrsdata ? "Enabled" : "Disabled");
+						PrintText(30, 60, ColorWhite, "Recieve gps data?:                  (%s)", config.getgpsdata ? "Enabled" : "Disabled");
 						PrintToScreen(ColorBlack);
 					}
 					oldButton = pad.Buttons;
@@ -621,27 +622,27 @@ void readJson()
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "cameraEnabled") == 0) {
-			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.cameraEnabled = atoi(*strbuffer);
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "realengineperformance") == 0) {
-			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.realengineperformance = atoi(*strbuffer);
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "getmotordata") == 0) {
-			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.getmotordata = atoi(*strbuffer);
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "getahrsdata") == 0) {
-			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.getahrsdata = atoi(*strbuffer);
 			i++;
 		}
 		else if (jsoneq(json_str, &t[i], "getgpsdata") == 0) {
-			sprintf(*strbuffer,"%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
+			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.getgpsdata = atoi(*strbuffer);
 			i++;
 		}
@@ -689,26 +690,24 @@ void readJson()
 void writeJson()
 {
 	char buffer[512];
-	char jsonString[512];
 	int jsonFile = sceIoOpen("config.json", PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
 	jwOpen(buffer, sizeof(buffer), JW_OBJECT, JW_PRETTY);
-		jwObj_string("ip1", config.ip1);
-		jwObj_string("ip2", config.ip2);
-		jwObj_string("ip3", config.ip3);
-		jwObj_bool("cameraEnabled", config.cameraEnabled);
-		jwObj_bool("realengineperformance", config.realengineperformance);
-		jwObj_array("customip");
-			jwArr_int(config.ipp1);
-			jwArr_int(config.ipp2);
-			jwArr_int(config.ipp3);
-			jwArr_int(config.ipp4);
-		jwEnd();
-		jwObj_int("motor", config.getmotordata);
-		jwObj_int("ahrs", config.getahrsdata);
-		jwObj_int("gps", config.getgpsdata);
-		jwObj_int("waittime", config.waittime);
+	jwObj_string("ip1", config.ip1);
+	jwObj_string("ip2", config.ip2);
+	jwObj_string("ip3", config.ip3);
+	jwObj_int("cameraEnabled", config.cameraEnabled);
+	jwObj_int("realengineperformance", config.realengineperformance);
+	jwObj_array("customip");
+	jwArr_int(config.ipp1);
+	jwArr_int(config.ipp2);
+	jwArr_int(config.ipp3);
+	jwArr_int(config.ipp4);
+	jwEnd();
+	jwObj_int("motor", config.getmotordata);
+	jwObj_int("ahrs", config.getahrsdata);
+	jwObj_int("gps", config.getgpsdata);
+	jwObj_int("waittime", config.waittime);
 	jwClose();
-
 	sceIoWrite(jsonFile, buffer, sizeof(buffer));
 	sceIoClose(jsonFile);
 }
@@ -722,11 +721,11 @@ int main(int argc, char *argv[])
 	sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
 	sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
 
-	setupGu();
-	netInit();
-	netDialog();
-	
-	initGraphics();
+	setupGu(); // Setup fancy graphics
+	netInit(); // Setup network
+	netDialog(); // Connect to a network psp style
+
+	initGraphics(); // setup normal graphics
 	pspDebugScreenInit();
 	pspDebugScreenSetXY(0, 0);
 
@@ -736,10 +735,10 @@ int main(int argc, char *argv[])
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
 	readJson();
-	
-	
+
+
 	while (isRunning()) { // The main loop to initialize everything
-		if(resumedfromsuspend == true)// Lets hope this works
+		if (resumedfromsuspend == true)// Lets hope this works
 		{
 			netTerm();
 			sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
@@ -774,7 +773,7 @@ int main(int argc, char *argv[])
 			netTerm();
 			sceKernelExitGame();
 		}
-		int timeout = 20000; // in microseconds
+		int timeout = 1s0000; // in microseconds
 		int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 		if (err != 0) {
 			PrintError("set SO_RCVTIMEO failed");
@@ -863,7 +862,7 @@ int main(int argc, char *argv[])
 		// Beginning loop
 		while (running) // This is the main loop that sends the controller data
 		{
-			if(GetPowerStatus() > 1)
+			if (GetPowerStatus() > 1)
 			{
 				resumedfromsuspend = 1;
 				break;
@@ -880,13 +879,13 @@ int main(int argc, char *argv[])
 			{
 				PrintError("BATTERY TO LOW");
 				PrintText(150, 150, ColorRed, "Battery is to low. Shutting down to prevent unexpected shutdown");
-				
+
 				message = "DC:100,100:0,0";
 				sceNetInetSend(socket_desc, message, strlen(message), 0);
-				
+
 				message = "client:psp:disconnected";
 				sceNetInetSend(socket_desc, message, strlen(message), 0);
-				
+
 				PrintToScreen(ColorBlack);
 
 				delay(2000);
@@ -995,15 +994,15 @@ int main(int argc, char *argv[])
 				wheelpos1 = 0;
 				wheelpos2 = 0;
 			}
-			else if(cruiseControll)
+			else if (cruiseControll)
 			{
 				speed = speed;
-				if(aX > 0)
+				if (aX > 0)
 				{
 					wheelpos1 = map(aX, 0, 100, 0, turnmapMax);
 					wheelpos2 = 0;
 				}
-				else if(aX < 0)
+				else if (aX < 0)
 				{
 					wheelpos1 = 0;
 					wheelpos2 = map(aX, 0, -100, 0, turnmapMax);
@@ -1013,7 +1012,7 @@ int main(int argc, char *argv[])
 					wheelpos1 = 0;
 					wheelpos2 = 0;
 				}
-				PrintText(10, 20, ColorWhite, "Drive mode:     %s" , "Cruise controlled");
+				PrintText(10, 20, ColorWhite, "Drive mode:     %s", "Cruise controlled");
 			}
 			else if (rPressed)// Servo
 			{
@@ -1053,8 +1052,8 @@ int main(int argc, char *argv[])
 			PrintText(10, 70, ColorWhite, "PowerStatus:    %i", GetPowerStatus());
 
 
-			PrintText(10, 80, ColorWhite,  "lmSpeed:        %i", lmSpeed);
-			PrintText(10, 90, ColorWhite,  "rmSpeed:        %i", rmSpeed);
+			PrintText(10, 80, ColorWhite, "lmSpeed:        %i", lmSpeed);
+			PrintText(10, 90, ColorWhite, "rmSpeed:        %i", rmSpeed);
 			PrintText(10, 100, ColorWhite, "Speed:          %i", speed);
 			PrintText(10, 110, ColorWhite, "Wheelpos1:      %i", wheelpos1);
 			PrintText(10, 120, ColorWhite, "Wheelpos2:      %i", wheelpos2);
@@ -1087,18 +1086,26 @@ int main(int argc, char *argv[])
 				lmSpeed = speed + wheelpos1;
 				rmSpeed = speed + wheelpos2;
 			}
-			
-			if(config.realengineperformance)
+
+			if (config.realengineperformance)
 			{
-				if(lmOldSpeed < lmSpeed)
+				if (BETWEEN(lmOldSpeed, lmSpeed - 3, lmSpeed + 3))
+				{
+					lmOldSpeed = lmSpeed;
+				}
+				else if (lmOldSpeed < lmSpeed)
 				{
 					lmOldSpeed += 5;
 				}
-				else if(lmOldSpeed > lmSpeed)
+				else if (lmOldSpeed > lmSpeed)
 				{
 					lmOldSpeed -= 5;
 				}
-				if (rmOldSpeed < rmSpeed)
+				if (BETWEEN(rmOldSpeed, rmSpeed - 3, rmSpeed + 3))
+				{
+					rmOldSpeed = rmSpeed;
+				}
+				else if (rmOldSpeed < rmSpeed)
 				{
 					rmOldSpeed += 5;
 				}
@@ -1122,100 +1129,100 @@ int main(int argc, char *argv[])
 				delay(waittime - 10);
 				running = isRunning();
 			}
-			
-//			char data_type[10];
-//			char data_data[255];
-//			char *temperature[10];
-//			char *altitudedof[10];
-//			char *altitudegps[10];
-//			char *headingdof[10];
-//			char *headinggps[10];
-//			char *roll[10];
-//			char *pitch[10];
-//			char *latitude[10];
-//			char *longitude[10];
-//			char *speedgps[10];
-//			char *cell1[10];
-//			char *cell2[10];
-//			char *cell3[10];
-//			char *cells[10];
-//			char *excecutetime[10];
-//			temperature[0]	  = '\0' ;
-//			altitudedof[0]	  = '\0' ;
-//			altitudegps[0]	  = '\0' ;
-//			headingdof[0]	  = '\0' ;
-//			headinggps[0]	  = '\0' ;
-//			roll[0]			  = '\0' ;
-//			pitch[0]		  = '\0' ;
-//			latitude[0]		  = '\0' ;
-//			longitude[0]	  = '\0' ;
-//			speedgps[0]		  = '\0' ;
-//			cell1[0]		  = '\0' ;
-//			cell2[0]		  = '\0' ;
-//			cell3[0]		  = '\0' ;
-//			cells[0]		  = '\0' ;
-//			excecutetime[0]	  = '\0' ;
 
-//			int k, j;
-//			for (k = 0; k < 3; k++) {
-//				int colloncounter = 0;
-//				buf1[0] = '\0';
-//				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-//				if (buf1[0] == '\0') { continue; } // We didn't recieve data
-//				for(j = 0; j <= sizeof(buf1); j++)
-//				{
-//					char recieved_char = buf1[j];
-//					if (buf1[j] == ':')
-//					{
-//						colloncounter++;
-//						continue;
-//					}
-//					if (colloncounter == 0)
-//					{
-//						strncat(data_type, &recieved_char, 1);
-//					}
-//					else if (colloncounter == 1)
-//					{
-//						strncat(data_data, &recieved_char, 1);
-//					}
-//				} // end for
-//				if (!strcmp(data_type, "ahrs"))
-//				{
-//					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
-//				}
-//				else if (!strcmp(data_type, "gps"))
-//				{
-//					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
-//				}
-//				else if (!strcmp(data_type, "lipo"))
-//				{
-//					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
-//				}
-//			}// end for
-//
-//			int SensorDataPos = 50;
-//
-//			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
-//			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
-//			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
-//			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
-//			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
-//			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
-//
-//			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
-//			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
-//			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
-//			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
-//			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
-//
-//			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
-//			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
-//			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
+			//			char data_type[10];
+			//			char data_data[255];
+			//			char *temperature[10];
+			//			char *altitudedof[10];
+			//			char *altitudegps[10];
+			//			char *headingdof[10];
+			//			char *headinggps[10];
+			//			char *roll[10];
+			//			char *pitch[10];
+			//			char *latitude[10];
+			//			char *longitude[10];
+			//			char *speedgps[10];
+			//			char *cell1[10];
+			//			char *cell2[10];
+			//			char *cell3[10];
+			//			char *cells[10];
+			//			char *excecutetime[10];
+			//			temperature[0]	  = '\0' ;
+			//			altitudedof[0]	  = '\0' ;
+			//			altitudegps[0]	  = '\0' ;
+			//			headingdof[0]	  = '\0' ;
+			//			headinggps[0]	  = '\0' ;
+			//			roll[0]			  = '\0' ;
+			//			pitch[0]		  = '\0' ;
+			//			latitude[0]		  = '\0' ;
+			//			longitude[0]	  = '\0' ;
+			//			speedgps[0]		  = '\0' ;
+			//			cell1[0]		  = '\0' ;
+			//			cell2[0]		  = '\0' ;
+			//			cell3[0]		  = '\0' ;
+			//			cells[0]		  = '\0' ;
+			//			excecutetime[0]	  = '\0' ;
+
+			//			int k, j;
+			//			for (k = 0; k < 3; k++) {
+			//				int colloncounter = 0;
+			//				buf1[0] = '\0';
+			//				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+			//				if (buf1[0] == '\0') { continue; } // We didn't recieve data
+			//				for(j = 0; j <= sizeof(buf1); j++)
+			//				{
+			//					char recieved_char = buf1[j];
+			//					if (buf1[j] == ':')
+			//					{
+			//						colloncounter++;
+			//						continue;
+			//					}
+			//					if (colloncounter == 0)
+			//					{
+			//						strncat(data_type, &recieved_char, 1);
+			//					}
+			//					else if (colloncounter == 1)
+			//					{
+			//						strncat(data_data, &recieved_char, 1);
+			//					}
+			//				} // end for
+			//				if (!strcmp(data_type, "ahrs"))
+			//				{
+			//					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
+			//				}
+			//				else if (!strcmp(data_type, "gps"))
+			//				{
+			//					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
+			//				}
+			//				else if (!strcmp(data_type, "lipo"))
+			//				{
+			//					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
+			//				}
+			//			}// end for
+			//
+			//			int SensorDataPos = 50;
+			//
+			//			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
+			//			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
+			//			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
+			//			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
+			//			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
+			//			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
+			//
+			//			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
+			//			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
+			//			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
+			//			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
+			//			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
+			//
+			//			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
+			//			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
+			//			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
 			flipScreen();
 			delay(waittime - 10);
 			running = isRunning();
 		}
-		if(resumedfromsuspend == 1)
+		if (resumedfromsuspend == 1)
 		{
 			continue;
 		}

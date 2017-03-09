@@ -377,6 +377,13 @@ void HandleArduinoSerialData()
 				Debug.print("The current in motor ");
 				Debug.print(m);
 				Debug.println(" is to high");
+				/*if (clientConnected) {
+					server.beginPacket(server.remoteIP(), server.remotePort());
+					server.write(STRERROR);
+					server.write(":");
+					server.write();
+					if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
+				}*/
 			}
 			if (p == MOTORFAULT)
 			{

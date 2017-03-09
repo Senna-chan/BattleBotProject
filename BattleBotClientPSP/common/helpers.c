@@ -3,6 +3,29 @@
 #include <string.h>
 #include <assert.h>
 #include "jsmn.h"
+#include <ctype.h>
+
+
+char *trimwhitespace(char *str)
+{
+	char *end;
+
+	// Trim leading space
+	while (isspace((unsigned char)*str)) str++;
+
+	if (*str == 0)  // All spaces?
+		return str;
+	int bracketFound = 0;
+	// Trim trailing space
+	end = str + strlen(str) - 1;
+	while (end > str && *end != '\0') end--;
+	
+
+	// Write new null terminator
+	*(end + 1) = 0;
+
+	return str;
+}
 
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 	if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
