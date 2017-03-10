@@ -115,65 +115,65 @@ void MoveMotors()
 {
 	M1Current = Motors.getM1CurrentMilliamps() / 1000;
 	M2Current = Motors.getM2CurrentMilliamps() / 1000;
-	//if (!Motors.getM1Fault()) {// Check if there is a fault in the motor driver on M1
-	if (M1Current < 16)
-	{ // Check if the current isn't to high
-		Motors.setM1Speed(DC1MotorSpeed);
+	if (!Motors.getM1Fault()) {// Check if there is a fault in the motor driver on M1
+		if (M1Current < 16)
+		{ // Check if the current isn't to high
+			Motors.setM1Speed(DC1MotorSpeed);
+		}
+		else
+		{
+			Serial.println("Warning: Motor 1 current is to high");
+			if (Serial3.availableForWrite())
+			{
+				Serial3.write(ESPMOTORDIAG);
+				Serial3.write(MOTOR1);
+				Serial3.write(CURRENTWARNING);
+				Serial3.write(MESSAGEEND);
+			}
+			Motors.setBrakes(0, 0);
+		}
 	}
 	else
 	{
-		Serial.println("Warning: Motor 1 current is to high");
-		if (Serial3.availableForWrite())
-		{
+		Serial.println("Warning: Motor 1 has a fault");
+
+		if (Serial3.availableForWrite()) {
 			Serial3.write(ESPMOTORDIAG);
 			Serial3.write(MOTOR1);
-			Serial3.write(CURRENTWARNING);
+			Serial3.write(MOTORFAULT);
 			Serial3.write(MESSAGEEND);
 		}
 		Motors.setBrakes(0, 0);
 	}
-	//	}
-	//	else
-	//	{
-	//		Serial.println("Warning: Motor 1 has a fault");
-	//
-	//		if (Serial3.availableForWrite()) {
-	//			Serial3.write(ESPMOTORDIAG);
-	//			Serial3.write(MOTOR1); 
-	//			Serial3.write(MOTORFAULT); 
-	//			Serial3.write(MESSAGEEND);
-	//		}
-	//		Motors.setBrakes(0, 0);
-	//	}
-	//	if (!Motors.getM2Fault()) {// Check if there is a fault in the motor driver on M1
-	if (M2Current < 16)
-	{ // Check if the current isn't to high
-		Motors.setM2Speed(DC2MotorSpeed);
+	if (!Motors.getM2Fault()) {// Check if there is a fault in the motor driver on M1
+		if (M2Current < 16)
+		{ // Check if the current isn't to high
+			Motors.setM2Speed(DC2MotorSpeed);
+		}
+		else
+		{
+			Serial.println("Warning: Motor 2 current is to high");
+			if (Serial3.availableForWrite())
+			{
+				Serial3.write(ESPMOTORDIAG);
+				Serial3.write(MOTOR2);
+				Serial3.write(CURRENTWARNING);
+				Serial3.write(MESSAGEEND);
+			}
+			Motors.setBrakes(0, 0);
+		}
 	}
 	else
 	{
-		Serial.println("Warning: Motor 2 current is to high");
-		if (Serial3.availableForWrite())
-		{
+		Serial.println("Warning: Motor 2 has a fault");
+		if (Serial3.availableForWrite()) {
 			Serial3.write(ESPMOTORDIAG);
 			Serial3.write(MOTOR2);
-			Serial3.write(CURRENTWARNING);
+			Serial3.write(MOTORFAULT);
 			Serial3.write(MESSAGEEND);
 		}
 		Motors.setBrakes(0, 0);
 	}
-	//	}
-	//	else
-	//	{
-	//		Serial.println("Warning: Motor 2 has a fault");
-	//		if (Serial3.availableForWrite()) {
-	//			Serial3.write(ESPMOTORDIAG);
-	//			Serial3.write(MOTOR2);
-	//			Serial3.write(MOTORFAULT); 
-	//			Serial3.write(MESSAGEEND);
-	//		}
-	//		Motors.setBrakes(0, 0);
-	//	}
 }
 #pragma region ReadSerialData
 bool EndMessage()

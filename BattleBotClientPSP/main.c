@@ -773,7 +773,7 @@ int main(int argc, char *argv[])
 			netTerm();
 			sceKernelExitGame();
 		}
-		int timeout = 1s0000; // in microseconds
+		int timeout = 5000; // in microseconds
 		int err = sceNetInetSetsockopt(socket_desc, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 		if (err != 0) {
 			PrintError("set SO_RCVTIMEO failed");
@@ -822,8 +822,6 @@ int main(int argc, char *argv[])
 		char temp[10];
 		temp[0] = '\0';
 
-		int lmTargetSpeed = 0;
-		int rmTargetSpeed = 0;
 		int lmOldSpeed = 0;
 		int rmOldSpeed = 0;
 
@@ -1130,96 +1128,120 @@ int main(int argc, char *argv[])
 				running = isRunning();
 			}
 
-			//			char data_type[10];
-			//			char data_data[255];
-			//			char *temperature[10];
-			//			char *altitudedof[10];
-			//			char *altitudegps[10];
-			//			char *headingdof[10];
-			//			char *headinggps[10];
-			//			char *roll[10];
-			//			char *pitch[10];
-			//			char *latitude[10];
-			//			char *longitude[10];
-			//			char *speedgps[10];
-			//			char *cell1[10];
-			//			char *cell2[10];
-			//			char *cell3[10];
-			//			char *cells[10];
-			//			char *excecutetime[10];
-			//			temperature[0]	  = '\0' ;
-			//			altitudedof[0]	  = '\0' ;
-			//			altitudegps[0]	  = '\0' ;
-			//			headingdof[0]	  = '\0' ;
-			//			headinggps[0]	  = '\0' ;
-			//			roll[0]			  = '\0' ;
-			//			pitch[0]		  = '\0' ;
-			//			latitude[0]		  = '\0' ;
-			//			longitude[0]	  = '\0' ;
-			//			speedgps[0]		  = '\0' ;
-			//			cell1[0]		  = '\0' ;
-			//			cell2[0]		  = '\0' ;
-			//			cell3[0]		  = '\0' ;
-			//			cells[0]		  = '\0' ;
-			//			excecutetime[0]	  = '\0' ;
+			char data_type[10];
+			char data_data[100];
+			char data_parameters[100];
+			char *temperature[10];
+			char *altitudedof[10];
+			char *altitudegps[10];
+			char *headingdof[10];
+			char *headinggps[10];
+			char *roll[10];
+			char *pitch[10];
+			char *latitude[10];
+			char *longitude[10];
+			char *speedgps[10];
+			char *cell1[10];
+			char *cell2[10];
+			char *cell3[10];
+			char *cells[10];
+			char *excecutetime[10];
+			int *m1current = 0;
+			int *m2current = 0;
+			temperature[0]	  = '\0' ;
+			altitudedof[0]	  = '\0' ;
+			altitudegps[0]	  = '\0' ;
+			headingdof[0]	  = '\0' ;
+			headinggps[0]	  = '\0' ;
+			roll[0]			  = '\0' ;
+			pitch[0]		  = '\0' ;
+			latitude[0]		  = '\0' ;
+			longitude[0]	  = '\0' ;
+			speedgps[0]		  = '\0' ;
+			cell1[0]		  = '\0' ;
+			cell2[0]		  = '\0' ;
+			cell3[0]		  = '\0' ;
+			cells[0]		  = '\0' ;
+			excecutetime[0]	  = '\0' ;
+			int motorProblem = false;
 
-			//			int k, j;
-			//			for (k = 0; k < 3; k++) {
-			//				int colloncounter = 0;
-			//				buf1[0] = '\0';
-			//				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
-			//				if (buf1[0] == '\0') { continue; } // We didn't recieve data
-			//				for(j = 0; j <= sizeof(buf1); j++)
-			//				{
-			//					char recieved_char = buf1[j];
-			//					if (buf1[j] == ':')
-			//					{
-			//						colloncounter++;
-			//						continue;
-			//					}
-			//					if (colloncounter == 0)
-			//					{
-			//						strncat(data_type, &recieved_char, 1);
-			//					}
-			//					else if (colloncounter == 1)
-			//					{
-			//						strncat(data_data, &recieved_char, 1);
-			//					}
-			//				} // end for
-			//				if (!strcmp(data_type, "ahrs"))
-			//				{
-			//					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
-			//				}
-			//				else if (!strcmp(data_type, "gps"))
-			//				{
-			//					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
-			//				}
-			//				else if (!strcmp(data_type, "lipo"))
-			//				{
-			//					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
-			//				}
-			//			}// end for
-			//
-			//			int SensorDataPos = 50;
-			//
-			//			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
-			//			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
-			//			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
-			//			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
-			//			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
-			//			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
-			//
-			//			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
-			//			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
-			//			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
-			//			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
-			//			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
-			//
-			//			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
-			//			PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
-			//			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
+			int k, j;
+			for (k = 0; k < 4; k++) {
+				int colloncounter = 0;
+				buf1[0] = '\0';
+				sceNetInetRecvfrom(socket_desc, buf1, 255, 0, (struct sockaddr *)&server, &server_addr_len);
+				if (buf1[0] == '\0')  continue;  // We didn't recieve data
+				for(j = 0; j <= sizeof(buf1); j++)
+				{
+					char recieved_char = buf1[j];
+					if (buf1[j] == ':')
+					{
+						colloncounter++;
+						continue;
+					}
+					if (colloncounter == 0)
+					{
+						strncat(data_type, &recieved_char, 1);
+					}
+					else if (colloncounter == 1)
+					{
+						strncat(data_data, &recieved_char, 1);
+					}
+					else if(colloncounter == 2)
+					{
+						strncat(data_parameters, &recieved_char, 1);
+					}
+				} // end for
+				if (!strcmp(data_type, STRAHRS) && config.getahrsdata)
+				{
+					scanf(data_data, "%f,%f,%f,%f,%f", temperature, altitudedof, roll, pitch, headingdof);
+				}
+				else if (!strcmp(data_type, STRGPS) && config.getgpsdata)
+				{
+					scanf(data_data, "%f,%f,%f,%f,%f", latitude, longitude, altitudegps, speedgps, headinggps);
+				}
+				else if (!strcmp(data_type, STRLIPO))
+				{
+					scanf(data_data, "%f,%f,%f,%f,%f", cell1, cell2, cell3, cells, excecutetime);
+				}
+				else if(!strcmp(data_type, STRMOTORDIAG) && config.getmotordata)
+				{
+					scanf(data_data, "%d,%d", m1current, m2current);
+				}
+				else if(!strcmp(data_type, STRERROR))
+				{
+					if(atoi(&data_data[0]) == COMMOTOR)
+					{
+						motorProblem = true; // TODO: Maybe make this more advanced. IDK
+					}
+				}
+			}// end for
+			
+			int SensorDataPos = 150;
+			
+			PrintText(10, SensorDataPos + 10, ColorGray, "10 DOF Data");
+			PrintText(10, SensorDataPos + 20, ColorBlue, "Temp:            %s", temperature);
+			PrintText(10, SensorDataPos + 30, ColorBlue, "Altitude:        %s", altitudedof);
+			PrintText(10, SensorDataPos + 40, ColorBlue, "Roll:            %s", roll);
+			PrintText(10, SensorDataPos + 50, ColorBlue, "Pitch:           %s", pitch);
+			PrintText(10, SensorDataPos + 60, ColorBlue, "Heading:         %s", headingdof);
+			
+			PrintText(10, SensorDataPos + 80, ColorGray, "GPS Data");
+			PrintText(10, SensorDataPos + 90,  ColorBlue, "Longitude:       %s", longitude);
+			PrintText(10, SensorDataPos + 100, ColorBlue, "Latitude:        %s", latitude);
+			PrintText(10, SensorDataPos + 120, ColorBlue, "Altitude:        %s", altitudegps);
+			PrintText(10, SensorDataPos + 130, ColorBlue, "Heading:         %s", headinggps);
+			
+			PrintText(10, SensorDataPos + 160, ColorGray, "Misc Data");
+			//PrintText(10, SensorDataPos + 170, atof(*cells) < 10 ? ColorRed : ColorGreen, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
+			PrintText(10, SensorDataPos + 170, ColorBlue, "Lipo Values:   %f,%f,%f:%f", cell1, cell2, cell3, cells);
+			PrintText(10, SensorDataPos + 180, ColorBlue, "ESP Proc time:   %s", excecutetime);
+
+			PrintText(10, SensorDataPos + 200, ColorGray, "Diagnostics");
+			PrintText(10, SensorDataPos + 210, motorProblem ? ColorRed : ColorGreen, motorProblem ? "Motors have a problem" : "Motor current (lm,rm):  %i,%i", m1current, m2current);
+
 			flipScreen();
-			delay(waittime - 10);
+			//delay(waittime - 10);
 			running = isRunning();
 		}
 		if (resumedfromsuspend == 1)

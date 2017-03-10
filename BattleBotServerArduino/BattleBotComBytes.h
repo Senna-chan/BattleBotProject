@@ -44,8 +44,10 @@
 // String Data
 const char *STRGENERAL		=	"gen";
 const char *STRMOTOR		=	"dc";
+const char *STRMOTORDIAG	=	"md";
 const char *STRLIPO			=	"lipo";
 const char *STRCLIENT		=	"client";
+const char *STRGPS			=	"gps";
 const char *STRERROR		=	"error";
 const char *STRAHRS			=	"ahrs";
 const char *STRDEBUG		=	"debug";

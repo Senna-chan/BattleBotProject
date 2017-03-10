@@ -369,26 +369,28 @@ void HandleArduinoSerialData()
 	byte c = SerialArd.read();
 	if(c == ESPMOTORDIAG)
 	{
-		byte m = SerialArd.read();
-		byte p = SerialArd.read();
+		byte m = SerialArd.read(); // motor
+		byte p = SerialArd.read(); // problem
 		if (SerialArd.read() == MESSAGEEND) {
 			if (p == CURRENTWARNING)
 			{
 				Debug.print("The current in motor ");
 				Debug.print(m);
 				Debug.println(" is to high");
-				/*if (clientConnected) {
-					server.beginPacket(server.remoteIP(), server.remotePort());
-					server.write(STRERROR);
-					server.write(":");
-					server.write();
-					if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
-				}*/
 			}
 			if (p == MOTORFAULT)
 			{
 				Debug.print("A fault occured in motor ");
 				Debug.println(m);
+			}
+			if (clientConnected) {
+				server.beginPacket(server.remoteIP(), server.remotePort());
+				server.write(STRERROR);
+				server.write(":");
+				server.write(COMMOTOR);
+				server.write(":");
+				server.write(p + "" + m);
+				if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
 			}
 		}
 	}
@@ -398,6 +400,18 @@ void HandleArduinoSerialData()
 		if(what == ESPGENREADYACK)
 		{
 			digitalWrite(ESPREADYPIN, LOW);
+		}
+	}
+	else if(c == ESPMOTORSTAT)
+	{
+		byte m1current = SerialArd.read();
+		byte m2current = SerialArd.read();
+		if (clientConnected) {
+			server.beginPacket(server.remoteIP(), server.remotePort());
+			server.write(STRMOTORDIAG);
+			server.write(":");
+			server.write(m1current + ","+m2current);
+			if (!server.endPacket()) Debug.println("ERROR SENDING PACKAGE");
 		}
 	}
 }
