@@ -34,7 +34,7 @@ namespace BattleBotClientWin10IoT.Views
                 Settings.SaveSetting("firstrun", "false");
                 Settings.SaveSetting("waittime", 30);
                 Settings.SaveSetting("realenginehandling",true);
-                Settings.SaveSetting("debug",true);
+                Settings.SaveSetting("debug",false);
             }
         }
 

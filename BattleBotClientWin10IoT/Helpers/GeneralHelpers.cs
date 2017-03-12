@@ -12,5 +12,15 @@ namespace BattleBotClientWin10IoT.Helpers
         {
             return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
         }
+
+        public static bool Between(int value, int min, int max)
+        {
+            return (value < max && value > min);
+        }
+        public static bool IsBetween<T>(this T item, T start, T end)
+        {
+            return Comparer<T>.Default.Compare(item, start) >= 0
+                && Comparer<T>.Default.Compare(item, end) <= 0;
+        }
     }
 }

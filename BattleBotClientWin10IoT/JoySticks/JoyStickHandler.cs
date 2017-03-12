@@ -1,6 +1,7 @@
 ﻿using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace BattleBotClientWin10IoT.JoySticks
         public IJoyStickInterface CJoyStick;
         public DeviceInformationCollection BluetoothDevices { get; set; }
         private CancellationTokenSource CancelPolling = new CancellationTokenSource();
-        private int m1targetSpeed = 0;
-        private int m2targetSpeed = 0;
+        private int lmTargetSpeed = 0;
+        private int rmTargetSpeed = 0;
 
         public void PollController()
         {
@@ -74,79 +75,88 @@ namespace BattleBotClientWin10IoT.JoySticks
             var turnGearValue = 100 / 4 * VariableStorage.ViewModel.TurnGear;
             var speed = GeneralHelpers.MapIntToValue(CJoyStick.GetSpeedAxisPosition(), -100, 100, speedGearValue * -1, speedGearValue);
             int wheelpos = GeneralHelpers.MapIntToValue(CJoyStick.GetTurnAxisPosition(), -100, 100, turnGearValue * -1, turnGearValue);
-            int m1speed = speed;
-            int m2speed = speed;
+            int lmSpeed = speed;
+            int rmSpeed = speed;
             
             if (speed == 0)
             {
                 if (wheelpos > 0)
                 {
-                    m1speed = wheelpos;
-                    m2speed = wheelpos * -1;
+                    lmSpeed -= wheelpos;
+                    rmSpeed += wheelpos;
                 }
                 else if (wheelpos < 0)
                 {
-                    m1speed = wheelpos * -1;
-                    m2speed = wheelpos;
+                    lmSpeed -= wheelpos;
+                    rmSpeed += wheelpos;
                 }
             }
             else if (speed > 0)
             {
                 if (wheelpos < 0)
                 {
-                    m1speed -= (wheelpos * -1);
+                    lmSpeed -= (wheelpos);
                 }
                 else if (wheelpos > 0)
                 {
-                    m2speed -= wheelpos;
+                    rmSpeed -= (wheelpos * -1);
                 }
             }
             else if (speed < 0)
             {
                 if (wheelpos < 0)
                 {
-                    m2speed -= (wheelpos * -1);
+                    rmSpeed -= (wheelpos * -1);
                 }
                 else if (wheelpos > 0)
                 {
-                    m1speed -= wheelpos;
+                    lmSpeed -= wheelpos;
                 }
             }
-            int oldm1Speed = 100;
-            int oldm2Speed = 100;
+            int oldlmSpeed = 100;
+            int oldrmSpeed = 100;
             if (!Settings.GetBoolSetting("realenginehandling"))
             {
-                oldm1Speed = GeneralHelpers.MapIntToValue(m1speed, -100, 100, 0, 200);
-                oldm2Speed = GeneralHelpers.MapIntToValue(m2speed, -100, 100, 0, 200);
+                oldlmSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
+                oldrmSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
             }
             else if (Settings.GetBoolSetting("realenginehandling"))
             {
-                m1targetSpeed = GeneralHelpers.MapIntToValue(m1speed, -100, 100, 0, 200);
-                m2targetSpeed = GeneralHelpers.MapIntToValue(m2speed, -100, 100, 0, 200);
-                oldm1Speed = VariableStorage.ViewModel.LeftMotorSpeed;
-                oldm2Speed = VariableStorage.ViewModel.RightMotorSpeed;
-                if (m1targetSpeed > oldm1Speed)
+                lmTargetSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
+                rmTargetSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
+                oldlmSpeed = VariableStorage.ViewModel.LeftMotorSpeed;
+                oldrmSpeed = VariableStorage.ViewModel.RightMotorSpeed;
+
+                if (lmTargetSpeed > oldlmSpeed)
                 {
-                    oldm1Speed += 5;
+                    oldlmSpeed += 5;
                 }
-                else if (m1targetSpeed < oldm1Speed)
+                else if (lmTargetSpeed < oldlmSpeed)
                 {
-                    oldm1Speed -= 5;
+                    oldlmSpeed -= 5;
                 }
-                if (m2targetSpeed > oldm2Speed)
+                else if (lmTargetSpeed.IsBetween(oldlmSpeed - 3, oldlmSpeed + 3))
                 {
-                    oldm2Speed += 5;
+                    oldlmSpeed = lmTargetSpeed;
                 }
-                else if (m2targetSpeed < oldm2Speed)
+                if (rmTargetSpeed > oldrmSpeed)
                 {
-                    oldm2Speed -= 5;
+                    oldrmSpeed += 5;
+                }
+                else if (rmTargetSpeed < oldrmSpeed)
+                {
+                    oldrmSpeed -= 5;
+                }
+                else if (rmTargetSpeed.IsBetween(oldrmSpeed - 3, oldrmSpeed + 3))
+                {
+                    oldrmSpeed = rmTargetSpeed;
                 }
             }
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                VariableStorage.ViewModel.LeftMotorSpeed = oldm1Speed;
-                VariableStorage.ViewModel.RightMotorSpeed = oldm2Speed;
-            }).GetAwaiter().GetResult(); ;
+                VariableStorage.ViewModel.LeftMotorSpeed = oldlmSpeed;
+                VariableStorage.ViewModel.RightMotorSpeed = oldrmSpeed;
+            }).GetAwaiter().GetResult();
         }
 
         public int GetPanValue()
@@ -206,6 +216,5 @@ namespace BattleBotClientWin10IoT.JoySticks
                 CJoyStick = new PiJoystick();
             }
         }
-
     }
 }
