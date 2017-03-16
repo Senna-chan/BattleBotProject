@@ -2,9 +2,9 @@
 This code is for the ESP8266 that is gonna handle the wifi connection for the Arduino Mega
 */
 
-#include <Wire.h>
 #include <SoftwareSerial.h>
 #include <RemoteDebug.h>
+#include <Wire.h>
 #include <ESP8266mDNS.h>
 #include "PinOuts.h"
 #include <ESP8266WiFi.h>
@@ -46,11 +46,11 @@ void setupOTA()
 {
 	Serial.println("Setting up ArduinoOTA");
 	// Port defaults to 8266
-	// ArduinoOTA.setPort(8266);
+	ArduinoOTA.setPort(8266);
 
 	ArduinoOTA.setHostname(mdnsName);
 
-	// ArduinoOTA.setPassword("admin");
+	//ArduinoOTA.setPassword("admin");
 
 	ArduinoOTA.setPasswordHash("4453c907975672a2a27bcacd1ee850b8");
 
@@ -82,6 +82,8 @@ void setupOTA()
 			else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
 			else if (error == OTA_END_ERROR) Serial.println("End Failed");
 		});
+
+	ArduinoOTA.begin();
 	Serial.println("ArduinoOTA started");
 }
 
@@ -134,17 +136,17 @@ void setup()
 		counter++;
 	}
 	Serial.println();
-	if (!MDNS.begin(mdnsName))
+	if (!serverIP)
+	{
+		serverIP = WiFi.localIP();
+	}
+	if (!MDNS.begin(mdnsName, serverIP))
 	{
 		Serial.println("Error setting up MDNS responder!");
 	}
 	else
 	{
 		Serial.println("No errors setting up mDNS");
-	}
-	if(!serverIP)
-	{
-		serverIP = WiFi.localIP();
 	}
 	Serial.println("mDNS responder started");
 	MDNS.addService("telnet", "tcp", 23);
@@ -350,7 +352,7 @@ void HandleUDPData(byte Packet[])
 	arguments.toCharArray(arguments1, sizeof(arguments));
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	if (Debug.ative(Debug.VERBOSE)) {
+	if (Debug.isActive(Debug.VERBOSE)) {
 		Debug.print("Commandtype: ");
 		Debug.println(commandType);
 		Debug.print("Command: ");
@@ -426,7 +428,7 @@ void loop()
 	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		if (Debug.ative(Debug.VERBOSE)) {
+		if (Debug.isActive(Debug.VERBOSE)) {
 			Debug.print(millis() / 1000);
 			Debug.print(":Packet of ");
 			Debug.print(noBytes);

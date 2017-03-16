@@ -14,9 +14,9 @@
 #define __ESP8266_ESP8266__
 #define __ets__
 #define ICACHE_FLASH
-#define F_CPU 160000000L
+#define F_CPU 80000000L
 #define LWIP_OPEN_SRC
-#define ARDUINO 106013
+#define ARDUINO 10801
 #define ARDUINO_ESP8266_NODEMCU
 #define ARDUINO_ARCH_ESP8266
 #define ESP8266
