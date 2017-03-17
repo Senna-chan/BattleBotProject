@@ -1,7 +1,7 @@
 ﻿using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Interfaces;
+using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +14,7 @@ namespace BattleBotClientWin10IoT.JoySticks
 {
     class JoyStickHandler
     {
-        public IJoyStickInterface CJoyStick;
-        public DeviceInformationCollection BluetoothDevices { get; set; }
+        private IJoyStickInterface CJoyStick;
         private CancellationTokenSource CancelPolling = new CancellationTokenSource();
         private int lmTargetSpeed = 0;
         private int rmTargetSpeed = 0;
@@ -77,7 +76,7 @@ namespace BattleBotClientWin10IoT.JoySticks
             int wheelpos = GeneralHelpers.MapIntToValue(CJoyStick.GetTurnAxisPosition(), -100, 100, turnGearValue * -1, turnGearValue);
             int lmSpeed = speed;
             int rmSpeed = speed;
-            
+
             if (speed == 0)
             {
                 if (wheelpos > 0)
@@ -173,38 +172,56 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             if (VariableStorage.DeviceFormFactor == DeviceFormFactorType.Desktop)
             {
-                if (BluetoothDevices != null && BluetoothDevices.Count > 1)
+                int? foundPort = null;
+                for (var i = 0; i < 5; i++)
                 {
-                    Debug.WriteLine("We got some bluetooth devices");
-                    CJoyStick = new PS4JoyStick();
+                    bool controllerConnection = Joystick.GetState(i).IsConnected;
+                    if (controllerConnection)
+                    {
+                        foundPort = i;
+                        break;
+                    }
+                }
+                if (foundPort.HasValue)
+                {
+                    Debug.WriteLine("We got a joystick?");
+                    CJoyStick = new PS4JoyStick(foundPort.Value);
                 }
                 else
                 {
-                    var dialog = new Windows.UI.Popups.MessageDialog("Could not find a PS4 controller. Are you just testing?");
+                    var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Are you just testing?");
 
-                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("No. Connect to PS4 contoller") { Id = 1 });
+                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("No. Connect to contoller") { Id = 1 });
                     dialog.Commands.Add(new Windows.UI.Popups.UICommand("I'm testing") { Id = 0 });
 
                     var result = await dialog.ShowAsync();
-                    if ((int) result.Id == 0)
+                    if ((int)result.Id == 0)
                     {
                         VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard joystick";
                         CJoyStick = new KeyboardJoystick();
                     }
                     else
                     {
-                        if (BluetoothDevices != null && BluetoothDevices.Count > 1)
+                        for (var i = 0; i < 5; i++)
                         {
-                            Debug.WriteLine("We got some bluetooth devices");
-                            CJoyStick = new PS4JoyStick();
+                            if (Joystick.GetCapabilities(0).IsConnected)
+                            {
+                                foundPort = i;
+                                break;
+                            }
+                        }
+                        if (foundPort.HasValue)
+                        {
+                            Debug.WriteLine("We got some controllers");
+                            CJoyStick = new PS4JoyStick(foundPort.Value);
                         }
                         else
                         {
-                            dialog = new Windows.UI.Popups.MessageDialog("Still no PS4 controller. Bye");
+                            dialog = new Windows.UI.Popups.MessageDialog("Still no controller. Bye");
                             dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok"));
                             await dialog.ShowAsync();
-                            VariableStorage.JoyStick.StopPollingController();
-                            VariableStorage.BattleBotCommunication.StopCommunication();
+                            //VariableStorage.JoyStick.StopPollingController();
+                            //VariableStorage.BattleBotCommunication.StopCommunication();
                             Application.Current.Exit();
                         }
 

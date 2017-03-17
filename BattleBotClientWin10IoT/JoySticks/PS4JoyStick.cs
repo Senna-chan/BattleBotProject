@@ -1,16 +1,29 @@
 ﻿using System;
 using BattleBotClientWin10IoT.Interfaces;
+using Microsoft.Xna.Framework.Input;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
     class PS4JoyStick : IJoyStickInterface
     {
+
+        public JoyStickTypes JoystickType => JoyStickTypes.PSController;
         public int SpeedAxis { get; set; }
         public int TurnAxis { get; set; }
-        
+        public int PanAxis { get; set; }
+        public int TiltAxis { get; set; }
+        private ButtonState[] _oldButtons;
+        private JoystickHat[] _oldHat;
+        private JoystickState joystick;
+        public PS4JoyStick(int joystickPort)
+        {
+            joystick = Joystick.GetState(joystickPort);
+        }
         public void GetControllerData()
         {
-            throw new NotImplementedException();
+            var axis = joystick.Axes;
+            var buttons = joystick.Buttons;
+            var hat = joystick.Hats;
         }
 
         public int GetSpeedAxisPosition()
@@ -58,13 +71,10 @@ namespace BattleBotClientWin10IoT.JoySticks
             throw new NotImplementedException();
         }
 
-        public int PanAxis { get; set; }
-        public int TiltAxis { get; set; }
         public void PopulateOldButtons()
         {
-            throw new NotImplementedException();
+            _oldButtons = joystick.Buttons;
+            _oldHat = joystick.Hats;
         }
-
-        public JoyStickTypes JoystickType => JoyStickTypes.PSController;
     }
 }
