@@ -6,14 +6,15 @@
 
 // the setup function runs once when you press reset or power the board
 
+#include <TimedAction.h>
 #include <Adafruit_BMP085_U.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_L3GD20_U.h>
 #include <Adafruit_LSM303_U.h>
 #include <MahonyAHRS.h>
 #include <Servo.h>
-#include <ThreadController.h>
-#include <TimerOne.h>
+//#include <ThreadController.h>
+//#include <TimerOne.h>
 #include "BattleBotComBytes.h"
 #include <DualVNH5019MotorShieldMega.h>
 
@@ -41,19 +42,22 @@ Adafruit_BMP085_Unified       bmp(18001);
 
 float seaLevelPressure, altitude, temperature;
 byte M1Current, M2Current;
-ThreadController threadController = ThreadController();
-Thread dofthread = Thread();
-Thread connectionThread = Thread();
+
+//ThreadController threadController = ThreadController();
+//Thread dofthread = Thread();
+//Thread connectionThread = Thread();
+
 volatile int timeSinceLastReceivedMotorData = 0;
 unsigned long previousMillis = millis();
 unsigned long currentMillis = millis();
 bool clientConnected;
 byte buffer[10];
 
-void timerCallback()
-{
-	threadController.run();
-}
+//void timerCallback()
+//{
+//	threadController.run();
+//}
+
 
 float mag_offsets[3] = { -7.07F, 9.55F, -28.22F };
 
@@ -65,61 +69,59 @@ float mag_field_strength = 54.82F;
 
 Mahony filter;
 
+
+
+
+float roll, heading, pitch;
+
 void getDofData()
 {
-	noInterrupts();
-	if (true)
-	{
-		sensors_event_t gyro_event;
-		sensors_event_t accel_event;
-		sensors_event_t mag_event;
-		sensors_event_t bmp_event;
-		// Get new data samples
-		gyro.getEvent(&gyro_event);
-		accel.getEvent(&accel_event);
-		mag.getEvent(&mag_event);
-		bmp.getEvent(&bmp_event);
+	sensors_event_t gyro_event;
+	sensors_event_t accel_event;
+	sensors_event_t mag_event;
+	sensors_event_t bmp_event;
+	// Get new data samples
+	gyro.getEvent(&gyro_event);
+	accel.getEvent(&accel_event);
+	mag.getEvent(&mag_event);
+	bmp.getEvent(&bmp_event);
 
-		// Apply mag offset compensation (base values in uTesla)
-		float x = mag_event.magnetic.x - mag_offsets[0];
-		float y = mag_event.magnetic.y - mag_offsets[1];
-		float z = mag_event.magnetic.z - mag_offsets[2];
+	// Apply mag offset compensation (base values in uTesla)
+	float x = mag_event.magnetic.x - mag_offsets[0];
+	float y = mag_event.magnetic.y - mag_offsets[1];
+	float z = mag_event.magnetic.z - mag_offsets[2];
 
-		// Apply mag soft iron error compensation
-		float mx = x * mag_softiron_matrix[0][0] + y * mag_softiron_matrix[0][1] + z * mag_softiron_matrix[0][2];
-		float my = x * mag_softiron_matrix[1][0] + y * mag_softiron_matrix[1][1] + z * mag_softiron_matrix[1][2];
-		float mz = x * mag_softiron_matrix[2][0] + y * mag_softiron_matrix[2][1] + z * mag_softiron_matrix[2][2];
+	// Apply mag soft iron error compensation
+	float mx = x * mag_softiron_matrix[0][0] + y * mag_softiron_matrix[0][1] + z * mag_softiron_matrix[0][2];
+	float my = x * mag_softiron_matrix[1][0] + y * mag_softiron_matrix[1][1] + z * mag_softiron_matrix[1][2];
+	float mz = x * mag_softiron_matrix[2][0] + y * mag_softiron_matrix[2][1] + z * mag_softiron_matrix[2][2];
 
-		// The filter library expects gyro data in degrees/s, but adafruit sensor
-		// uses rad/s so we need to convert them first (or adapt the filter lib
-		// where they are being converted)
-		float gx = gyro_event.gyro.x * 57.2958F;
-		float gy = gyro_event.gyro.y * 57.2958F;
-		float gz = gyro_event.gyro.z * 57.2958F;
+	// The filter library expects gyro data in degrees/s, but adafruit sensor
+	// uses rad/s so we need to convert them first (or adapt the filter lib
+	// where they are being converted)
+	float gx = gyro_event.gyro.x * 57.2958F;
+	float gy = gyro_event.gyro.y * 57.2958F;
+	float gz = gyro_event.gyro.z * 57.2958F;
+	// Update the filter
+	filter.update(gx, gy, gz,
+		accel_event.acceleration.x, accel_event.acceleration.y, accel_event.acceleration.z,
+		mx, my, mz);
 
-		// Update the filter
-		filter.update(gx, gy, gz,
-			accel_event.acceleration.x, accel_event.acceleration.y, accel_event.acceleration.z,
-			mx, my, mz);
+	roll = filter.getRoll();
+	pitch = filter.getPitch();
+	heading = filter.getYaw();
 
-		// Print the orientation filter output
-		float roll = filter.getRoll();
-		float pitch = filter.getPitch();
-		float heading = filter.getYaw();
-		Serial.print(millis());
-		Serial.print(" - Orientation: ");
-		Serial.print(heading);
-		Serial.print(" ");
-		Serial.print(pitch);
-		Serial.print(" ");
-		Serial.println(roll);
-	}
-	interrupts();
+	Serial.print(millis());
+	Serial.print(" - Orientation: ");
+	Serial.print(heading);
+	Serial.print(" ");
+	Serial.print(pitch);
+	Serial.print(" ");
+	Serial.println(roll);
 }
 
 void connectionHandler() // This is to make sure the tank doesn't go haywire when the ESP stops working
 {
-	Serial.println(123);
 	if (currentMillis - previousMillis > 50 && clientConnected == true)
 	{
 		Serial.println("Didn't recieve data in time from the ESP");
@@ -133,6 +135,10 @@ void connectionHandler() // This is to make sure the tank doesn't go haywire whe
 		digitalWrite(ESPRESETPIN, LOW);
 	}
 }
+
+
+TimedAction dofThread = TimedAction(50, getDofData);
+TimedAction connectionThread = TimedAction(30, connectionHandler);
 
 
 void setup()
@@ -166,16 +172,17 @@ void setup()
 		while (1);
 	}
 	// Threading things
-	dofthread.onRun(getDofData);
-	dofthread.setInterval(100);
-	threadController.add(&dofthread);
-	connectionThread.onRun(connectionHandler);
-	connectionThread.setInterval(30);
-	threadController.add(&connectionThread);
-	Timer1.initialize(20000);
-	Timer1.attachInterrupt(timerCallback);
+//	dofthread.onRun(getDofData);
+//	dofthread.setInterval(100);
+//	threadController.add(&dofthread);
+//	connectionThread.onRun(connectionHandler);
+//	connectionThread.setInterval(30);
+//	threadController.add(&connectionThread);
+//	Timer1.initialize(20000);
+//	Timer1.attachInterrupt(timerCallback);
+//	Timer1.start();
 	// Threading things done
-	filter.begin(10);
+	filter.begin(20);
 	panServo.attach(PANSERVOPIN);
 	tiltServo.attach(TILTSERVOPIN);
 	panServo.write(90);
@@ -183,7 +190,6 @@ void setup()
 	Motors.init();
 	Wire.begin();
 
-	Timer1.start();
 	Serial.println("Ready");
 }
 
@@ -408,4 +414,6 @@ void loop()
 		HandleESPData();
 		Serial.println();
 	}
+	dofThread.check();
+	connectionThread.check();
 }

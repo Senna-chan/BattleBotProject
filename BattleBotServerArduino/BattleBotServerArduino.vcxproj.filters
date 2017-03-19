@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="src">
-      <UniqueIdentifier>{3efd19ba-9e3b-4df5-8d57-f77b4cb32aa0}</UniqueIdentifier>
+      <UniqueIdentifier>{7ab08d36-2a25-4b26-b37f-ac2e4d464420}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

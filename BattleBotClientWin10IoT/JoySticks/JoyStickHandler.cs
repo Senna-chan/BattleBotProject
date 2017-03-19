@@ -1,14 +1,15 @@
 ﻿using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Interfaces;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Devices.Enumeration;
+using Windows.Gaming.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Microsoft.Xna.Framework.Input;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
@@ -175,7 +176,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                 int? foundPort = null;
                 for (var i = 0; i < 5; i++)
                 {
-                    bool controllerConnection = Joystick.GetState(i).IsConnected;
+                    bool controllerConnection = GamePad.GetState(i).IsConnected;
                     if (controllerConnection)
                     {
                         foundPort = i;
