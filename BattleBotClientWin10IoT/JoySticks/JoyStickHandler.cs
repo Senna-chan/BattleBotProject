@@ -176,7 +176,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                 int? foundPort = null;
                 for (var i = 0; i < 5; i++)
                 {
-                    bool controllerConnection = GamePad.GetState(i).IsConnected;
+                    bool controllerConnection = Joystick.GetState(i).IsConnected;
                     if (controllerConnection)
                     {
                         foundPort = i;
@@ -190,15 +190,15 @@ namespace BattleBotClientWin10IoT.JoySticks
                 }
                 else
                 {
-                    var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Are you just testing?");
+                    var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Do you want to use a keyboard as joystick?");
 
-                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("No. Connect to contoller") { Id = 1 });
-                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("I'm testing") { Id = 0 });
+                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("No, onnect to contoller") { Id = 1 });
+                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes, use my keyboard") { Id = 0 });
 
                     var result = await dialog.ShowAsync();
                     if ((int)result.Id == 0)
                     {
-                        VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard joystick";
+                        VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard";
                         CJoyStick = new KeyboardJoystick();
                     }
                     else

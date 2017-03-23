@@ -30,7 +30,7 @@ namespace BattleBotClientWin10IoT.Modules
         private byte[] asyncBuffer = new byte[200];
 
         private CancellationTokenSource CancelRecieving = new CancellationTokenSource();
-        private CancellationTokenSource CancelSending   = new CancellationTokenSource();
+        private CancellationTokenSource CancelSending = new CancellationTokenSource();
         public WiFiCommunication()
         {
             BattleBotConnection = new UdpClient();
@@ -42,7 +42,7 @@ namespace BattleBotClientWin10IoT.Modules
         {
             Send("client:pc:continued"); // Now we start with communicating
             new Task(() => RecieveData(), CancelRecieving.Token, TaskCreationOptions.LongRunning).Start();
-            new Task(() => SendMotorData(), CancelSending.Token,   TaskCreationOptions.LongRunning).Start();
+            new Task(() => SendMotorData(), CancelSending.Token, TaskCreationOptions.LongRunning).Start();
         }
 
         private void SendHandshake()
@@ -77,7 +77,7 @@ namespace BattleBotClientWin10IoT.Modules
         private async Task RecieveData()
         {
             var socketArgs = new SocketAsyncEventArgs();
-            socketArgs.SetBuffer(asyncBuffer,0,asyncBuffer.Length);
+            socketArgs.SetBuffer(asyncBuffer, 0, asyncBuffer.Length);
             while (!CancelRecieving.Token.IsCancellationRequested)
             {
                 var something = await BattleBotConnection.ReceiveAsync();

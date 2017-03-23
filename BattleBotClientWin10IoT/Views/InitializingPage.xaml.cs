@@ -33,8 +33,8 @@ namespace BattleBotClientWin10IoT.Views
             {
                 Settings.SaveSetting("firstrun", "false");
                 Settings.SaveSetting("waittime", 30);
-                Settings.SaveSetting("realenginehandling",true);
-                Settings.SaveSetting("debug",false);
+                Settings.SaveSetting("realenginehandling", true);
+                Settings.SaveSetting("debug", false);
             }
         }
 
@@ -54,7 +54,7 @@ namespace BattleBotClientWin10IoT.Views
             do
             {
                 var services = await client.List("_workstation._tcp.local.");
-                await Task.Delay(200);
+                await Task.Delay(250);
                 if (services != null && services.Length != 0)
                 {
                     foreach (var service in services)
@@ -80,11 +80,11 @@ namespace BattleBotClientWin10IoT.Views
                         var dialog =
                             new MessageDialog("Could not find the camera. Do you want to continue without camera?");
 
-                        dialog.Commands.Add(new UICommand("Yes") {Id = 0});
-                        dialog.Commands.Add(new UICommand("No, try again") {Id = 1});
+                        dialog.Commands.Add(new UICommand("Yes") { Id = 0 });
+                        dialog.Commands.Add(new UICommand("No, try again") { Id = 1 });
 
                         var result = await dialog.ShowAsync();
-                        if ((int) result.Id == 0) shouldConnectToCamera = false;
+                        if ((int)result.Id == 0) shouldConnectToCamera = false;
                     }
                     if (counter == 10)
                     {
@@ -102,9 +102,10 @@ namespace BattleBotClientWin10IoT.Views
             counter = 0;
             while (!connectedToEsp)
             {
-                
+
                 var services = await client.List("_battlebot._udp.local.");
-                if (services.Length == 1) // Assume its the camera
+                await Task.Delay(250);
+                if (services.Length == 1) // This is garantied to be the ESP
                 {
                     VariableStorage.EspAddress = services[0].Address;
                     VariableStorage.ViewModel.EspStatus = "Esp found on: " + services[0].HostAddress;
@@ -125,7 +126,7 @@ namespace BattleBotClientWin10IoT.Views
                     dialog.Commands.Add(new UICommand("Try again") { Id = 0 });
                     dialog.Commands.Add(new UICommand("I'm testing") { Id = 1 });
                     var result = await dialog.ShowAsync();
-                    if ((int) result.Id == 1)
+                    if ((int)result.Id == 1)
                     {
                         VariableStorage.ViewModel.EspStatus = "Esp found on: 127.0.0.1 in Testing mode";
                         VariableStorage.EspAddress = IPAddress.Parse("127.0.0.1");

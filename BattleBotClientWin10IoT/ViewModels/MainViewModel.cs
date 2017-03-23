@@ -7,6 +7,7 @@ namespace BattleBotClientWin10IoT.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private string _spiStatus = "Not connected";
+        private string _espStatus = "Not connected";
 
         public string SpiStatus
         {
@@ -20,7 +21,6 @@ namespace BattleBotClientWin10IoT.ViewModels
                 }
             }
         }
-        private string _espStatus = "Not connected";
 
         public string EspStatus
         {
@@ -34,7 +34,7 @@ namespace BattleBotClientWin10IoT.ViewModels
                 }
             }
         }
-        
+
 
         private string _controllerStatus = "Controller not initialized";
 
@@ -84,7 +84,7 @@ namespace BattleBotClientWin10IoT.ViewModels
         private int _turnGear = 1;
 
         public int TurnGear
-        { 
+        {
             get { return _turnGear; }
             set
             {
@@ -163,7 +163,7 @@ namespace BattleBotClientWin10IoT.ViewModels
             {
                 if (Settings.GetIntSetting("waittime") != value)
                 {
-                    Settings.SaveSetting("waittime",value);
+                    Settings.SaveSetting("waittime", value);
                     RaisePropertyChanged("WaitTime");
                 }
             }

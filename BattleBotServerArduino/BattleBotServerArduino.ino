@@ -13,8 +13,7 @@
 #include <Adafruit_LSM303_U.h>
 #include <MahonyAHRS.h>
 #include <Servo.h>
-//#include <ThreadController.h>
-//#include <TimerOne.h>
+#include <Wire.h>
 #include "BattleBotComBytes.h"
 #include <DualVNH5019MotorShieldMega.h>
 
@@ -32,6 +31,7 @@ int DC1MotorSpeed, DC2MotorSpeed, pan, tilt;
 
 DualVNH5019MotorShield Motors = DualVNH5019MotorShield(32, 34, 30, A0, 33, 35, 31, A1);
 Servo panServo, tiltServo, shootServo;
+float roll, heading, pitch;
 
 // Create sensor instances.
 Adafruit_L3GD20_Unified       gyro(20);
@@ -43,9 +43,6 @@ Adafruit_BMP085_Unified       bmp(18001);
 float seaLevelPressure, altitude, temperature;
 byte M1Current, M2Current;
 
-//ThreadController threadController = ThreadController();
-//Thread dofthread = Thread();
-//Thread connectionThread = Thread();
 
 volatile int timeSinceLastReceivedMotorData = 0;
 unsigned long previousMillis = millis();
@@ -53,17 +50,14 @@ unsigned long currentMillis = millis();
 bool clientConnected;
 byte buffer[10];
 
-//void timerCallback()
-//{
-//	threadController.run();
-//}
-
 
 float mag_offsets[3] = { -7.07F, 9.55F, -28.22F };
 
-float mag_softiron_matrix[3][3] = { { 0.955, 0.009, 0.004 },
-{ 0.009, 0.930, -0.034 },
-{ -0.004, -0.034, 1.127 } };
+float mag_softiron_matrix[3][3] = {
+	{ 0.955, 0.009, 0.004 },
+	{ 0.009, 0.930, -0.034 },
+	{ -0.004, -0.034, 1.127 } 
+};
 
 float mag_field_strength = 54.82F;
 
@@ -72,7 +66,7 @@ Mahony filter;
 
 
 
-float roll, heading, pitch;
+
 
 void getDofData()
 {
@@ -171,17 +165,6 @@ void setup()
 		Serial.println("Ooops, no BMP085 detected ... Check your wiring!");
 		while (1);
 	}
-	// Threading things
-//	dofthread.onRun(getDofData);
-//	dofthread.setInterval(100);
-//	threadController.add(&dofthread);
-//	connectionThread.onRun(connectionHandler);
-//	connectionThread.setInterval(30);
-//	threadController.add(&connectionThread);
-//	Timer1.initialize(20000);
-//	Timer1.attachInterrupt(timerCallback);
-//	Timer1.start();
-	// Threading things done
 	filter.begin(20);
 	panServo.attach(PANSERVOPIN);
 	tiltServo.attach(TILTSERVOPIN);
@@ -189,7 +172,14 @@ void setup()
 	tiltServo.write(90);
 	Motors.init();
 	Wire.begin();
-
+	Serial.println("Calibrating sensors");
+	sensors_event_t bmp_event;
+	bmp.getEvent(&bmp_event);
+	float temperature;
+	bmp.getTemperature(&temperature);
+	float altitude;
+	float rawaltitude = bmp.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA, bmp_event.pressure);
+	bmp.seaLevelForAltitude(rawaltitude, bmp_event.pressure, temperature);
 	Serial.println("Ready");
 }
 
