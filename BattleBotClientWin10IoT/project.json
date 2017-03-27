@@ -1,8 +1,7 @@
 ﻿{
   "dependencies": {
     "MahApps.Metro.IconPacks": "1.7.1",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "MonoGame.Framework.WindowsUniversal": "3.6.0.1625"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2"
   },
   "frameworks": {
     "uap10.0": {}

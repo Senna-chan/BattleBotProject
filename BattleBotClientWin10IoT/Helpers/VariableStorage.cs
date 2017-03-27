@@ -14,7 +14,7 @@ namespace BattleBotClientWin10IoT.Helpers
         public static JoyStickHandler JoyStick = new JoyStickHandler();
         public static MjpegDecoder MjpegDecoder = new MjpegDecoder();
         public static WiFiCommunication BattleBotCommunication;
-        public static MCP3008 mcp3008;
+//        public static MCP3008 mcp3008;
         public static ServiceInfo[] DiscoveredServices;
         public static IPAddress BattlebotCameraAddress;
         public static IPAddress EspAddress;

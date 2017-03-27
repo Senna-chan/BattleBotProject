@@ -9,7 +9,6 @@ using Windows.Devices.Enumeration;
 using Windows.Gaming.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Microsoft.Xna.Framework.Input;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
@@ -113,49 +112,13 @@ namespace BattleBotClientWin10IoT.JoySticks
                     lmSpeed -= wheelpos;
                 }
             }
-            int oldlmSpeed = 100;
-            int oldrmSpeed = 100;
-            if (!Settings.GetBoolSetting("realenginehandling"))
-            {
-                oldlmSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
-                oldrmSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
-            }
-            else if (Settings.GetBoolSetting("realenginehandling"))
-            {
-                lmTargetSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
-                rmTargetSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
-                oldlmSpeed = VariableStorage.ViewModel.LeftMotorSpeed;
-                oldrmSpeed = VariableStorage.ViewModel.RightMotorSpeed;
-
-                if (lmTargetSpeed > oldlmSpeed)
-                {
-                    oldlmSpeed += 5;
-                }
-                else if (lmTargetSpeed < oldlmSpeed)
-                {
-                    oldlmSpeed -= 5;
-                }
-                else if (lmTargetSpeed.IsBetween(oldlmSpeed - 3, oldlmSpeed + 3))
-                {
-                    oldlmSpeed = lmTargetSpeed;
-                }
-                if (rmTargetSpeed > oldrmSpeed)
-                {
-                    oldrmSpeed += 5;
-                }
-                else if (rmTargetSpeed < oldrmSpeed)
-                {
-                    oldrmSpeed -= 5;
-                }
-                else if (rmTargetSpeed.IsBetween(oldrmSpeed - 3, oldrmSpeed + 3))
-                {
-                    oldrmSpeed = rmTargetSpeed;
-                }
-            }
+            lmSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
+            rmSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
+            
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                VariableStorage.ViewModel.LeftMotorSpeed = oldlmSpeed;
-                VariableStorage.ViewModel.RightMotorSpeed = oldrmSpeed;
+                VariableStorage.ViewModel.LeftMotorSpeed = lmSpeed;
+                VariableStorage.ViewModel.RightMotorSpeed = rmSpeed;
             }).GetAwaiter().GetResult();
         }
 
@@ -171,67 +134,43 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public async Task ConnectToAJoystick()
         {
-            if (VariableStorage.DeviceFormFactor == DeviceFormFactorType.Desktop)
+            await Task.Delay(1000);
+            if (Gamepad.Gamepads.Count != 0)
             {
-                int? foundPort = null;
-                for (var i = 0; i < 5; i++)
+                CJoyStick = new XInputJoyStick(Gamepad.Gamepads[0]);
+                VariableStorage.ViewModel.ControllerStatus = "Connected to XInput controller";
+            }
+            else
+            {
+                var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Do you want to use a keyboard as joystick?");
+
+                dialog.Commands.Add(new Windows.UI.Popups.UICommand("No, onnect to contoller") { Id = 1 });
+                dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes, use my keyboard") { Id = 0 });
+
+                var result = await dialog.ShowAsync();
+                if ((int)result.Id == 0)
                 {
-                    bool controllerConnection = Joystick.GetState(i).IsConnected;
-                    if (controllerConnection)
-                    {
-                        foundPort = i;
-                        break;
-                    }
-                }
-                if (foundPort.HasValue)
-                {
-                    Debug.WriteLine("We got a joystick?");
-                    CJoyStick = new PS4JoyStick(foundPort.Value);
+                    VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard";
+                    CJoyStick = new KeyboardJoystick();
                 }
                 else
                 {
-                    var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Do you want to use a keyboard as joystick?");
-
-                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("No, onnect to contoller") { Id = 1 });
-                    dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes, use my keyboard") { Id = 0 });
-
-                    var result = await dialog.ShowAsync();
-                    if ((int)result.Id == 0)
+                    if (Gamepad.Gamepads.Count != 0)
                     {
-                        VariableStorage.ViewModel.ControllerStatus = "Connected to keyboard";
-                        CJoyStick = new KeyboardJoystick();
+                        CJoyStick = new XInputJoyStick(Gamepad.Gamepads[0]);
+                        VariableStorage.ViewModel.ControllerStatus = "Connected to XInput controller";
                     }
                     else
                     {
-                        for (var i = 0; i < 5; i++)
-                        {
-                            if (Joystick.GetCapabilities(0).IsConnected)
-                            {
-                                foundPort = i;
-                                break;
-                            }
-                        }
-                        if (foundPort.HasValue)
-                        {
-                            Debug.WriteLine("We got some controllers");
-                            CJoyStick = new PS4JoyStick(foundPort.Value);
-                        }
-                        else
-                        {
-                            dialog = new Windows.UI.Popups.MessageDialog("Still no controller. Bye");
-                            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok"));
-                            await dialog.ShowAsync();
-                            //VariableStorage.JoyStick.StopPollingController();
-                            //VariableStorage.BattleBotCommunication.StopCommunication();
-                            Application.Current.Exit();
-                        }
-
+                        dialog = new Windows.UI.Popups.MessageDialog("Still no controller. Bye");
+                        dialog.Commands.Add(new Windows.UI.Popups.UICommand("Ok"));
+                        await dialog.ShowAsync();
+                        //VariableStorage.JoyStick.StopPollingController();
+                        //VariableStorage.BattleBotCommunication.StopCommunication();
+                        Application.Current.Exit();
                     }
+
                 }
-            }
-            else if (VariableStorage.DeviceFormFactor == DeviceFormFactorType.IoT)
-            {
-                CJoyStick = new PiJoystick();
             }
         }
     }

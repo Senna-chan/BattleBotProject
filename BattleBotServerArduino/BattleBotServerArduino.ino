@@ -37,10 +37,7 @@ float roll, heading, pitch;
 Adafruit_L3GD20_Unified       gyro(20);
 Adafruit_LSM303_Accel_Unified accel(30301);
 Adafruit_LSM303_Mag_Unified   mag(30302);
-Adafruit_BMP085_Unified       bmp(18001);
 
-
-float seaLevelPressure, altitude, temperature;
 byte M1Current, M2Current;
 
 
@@ -73,12 +70,10 @@ void getDofData()
 	sensors_event_t gyro_event;
 	sensors_event_t accel_event;
 	sensors_event_t mag_event;
-	sensors_event_t bmp_event;
 	// Get new data samples
 	gyro.getEvent(&gyro_event);
 	accel.getEvent(&accel_event);
 	mag.getEvent(&mag_event);
-	bmp.getEvent(&bmp_event);
 
 	// Apply mag offset compensation (base values in uTesla)
 	float x = mag_event.magnetic.x - mag_offsets[0];
@@ -160,11 +155,7 @@ void setup()
 		Serial.println("Ooops, no L3M303DLHC mag detected ... Check your wiring!");
 		while (1);
 	}
-	if(!bmp.begin())
-	{
-		Serial.println("Ooops, no BMP085 detected ... Check your wiring!");
-		while (1);
-	}
+
 	filter.begin(20);
 	panServo.attach(PANSERVOPIN);
 	tiltServo.attach(TILTSERVOPIN);
@@ -172,14 +163,6 @@ void setup()
 	tiltServo.write(90);
 	Motors.init();
 	Wire.begin();
-	Serial.println("Calibrating sensors");
-	sensors_event_t bmp_event;
-	bmp.getEvent(&bmp_event);
-	float temperature;
-	bmp.getTemperature(&temperature);
-	float altitude;
-	float rawaltitude = bmp.pressureToAltitude(SENSORS_PRESSURE_SEALEVELHPA, bmp_event.pressure);
-	bmp.seaLevelForAltitude(rawaltitude, bmp_event.pressure, temperature);
 	Serial.println("Ready");
 }
 

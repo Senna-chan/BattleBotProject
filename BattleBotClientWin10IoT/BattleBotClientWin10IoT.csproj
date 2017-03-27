@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="JoySticks\XInputJoyStick.cs" />
     <Compile Include="Models\KeyHelperModel.cs" />
     <Compile Include="Modules\ESP.cs" />
     <Compile Include="Helpers\DeviceTypeHelper.cs" />
@@ -182,11 +183,10 @@
     <Reference Include="MjpegProcessor">
       <HintPath>..\ProjectLibs\IoTClient\MjpegProcessor.winmd</HintPath>
     </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\WindowsUniversal\MonoGame.Framework.dll</HintPath>
-    </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

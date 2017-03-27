@@ -5,7 +5,8 @@
         Keyboard,
         HIDDevice,
         PiHardware,
-        PSController
+        Generic,
+        XInput
     }
     interface IJoyStickInterface
     {

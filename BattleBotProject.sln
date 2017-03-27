@@ -10,19 +10,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerESP8266", "B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerArduino", "BattleBotServerArduino\BattleBotServerArduino.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TimedAction", "..\..\..\Arduino\libraries\TimedAction\TimedAction.vcxitems", "{149AB26E-BE18-4534-9E32-3E3FE00F3E94}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Wire", "..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.17\libraries\Wire\Wire.vcxitems", "{83934F8E-47FC-410F-9018-61E6553EE8DF}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Adafruit_BMP085_Unified", "..\..\..\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_Unified.vcxitems", "{53FE1105-F82C-4EB7-8F9C-A86E48D10E0F}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\..\Arduino\libraries\TimedAction\TimedAction.vcxitems*{149ab26e-be18-4534-9e32-3e3fe00f3e94}*SharedItemsImports = 9
-		..\..\..\Arduino\libraries\Adafruit_BMP085_Unified\Adafruit_BMP085_Unified.vcxitems*{53fe1105-f82c-4eb7-8f9c-a86e48d10e0f}*SharedItemsImports = 9
-		..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.17\libraries\Wire\Wire.vcxitems*{83934f8e-47fc-410f-9018-61e6553ee8df}*SharedItemsImports = 9
-		..\..\..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.17\libraries\Wire\Wire.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
-		..\..\..\Arduino\libraries\TimedAction\TimedAction.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		..\..\AppData\Local\arduino15\packages\arduino\hardware\avr\1.6.17\libraries\Wire\Wire.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		..\..\Arduino\libraries\TimedAction\TimedAction.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
