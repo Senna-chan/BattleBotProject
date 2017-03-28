@@ -24,7 +24,7 @@ namespace BattleBotClientWin10IoT.JoySticks
         public XInputJoyStick(Gamepad gamepad)
         {
             this.gamepad = gamepad;
-            _oldButtons = gamepad.GetCurrentReading().Buttons;
+            _oldButtons = gamepad.GetCurrentReading().Buttons; // Populating old buttons. If not then there could be a crash.
         }
 
         public void GetControllerData()
@@ -59,32 +59,47 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public bool GetShootButtonState()
         {
-            return (_currentButtons & GamepadButtons.A) == 0 && (_oldButtons & GamepadButtons.A) != 0;
+            return ButtonPressed(GamepadButtons.A);
         }
 
         public bool GetSpeedDownGearButtonState()
         {
-            return (_currentButtons & GamepadButtons.DPadDown) == 0 && (_oldButtons & GamepadButtons.DPadDown) != 0;
+            return ButtonPressed(GamepadButtons.DPadDown);
         }
 
         public bool GetSpeedUpGearButtonState()
         {
-            return (_currentButtons & GamepadButtons.DPadUp) == 0 && (_oldButtons & GamepadButtons.DPadUp) != 0;
+            return ButtonPressed(GamepadButtons.DPadUp);
         }
 
         public bool GetTurnSharperGearButtonState()
         {
-            return (_currentButtons & GamepadButtons.DPadRight) == 0 && (_oldButtons & GamepadButtons.DPadRight) != 0;
+            return ButtonPressed(GamepadButtons.DPadRight);
         }
 
         public bool GetTurnWeakerGearButtonState()
         {
-            return (_currentButtons & GamepadButtons.DPadLeft) == 0 && (_oldButtons & GamepadButtons.DPadLeft) != 0;
+            return ButtonPressed(GamepadButtons.DPadLeft);
         }
 
         public void PopulateOldButtons()
         {
             _oldButtons = _currentButtons;
+        }
+
+        public bool GetServoHardLockButtonState()
+        {
+            return ButtonPressed(GamepadButtons.RightThumbstick);
+        }
+
+        public bool GetServoStabalizeButtonState()
+        {
+            return ButtonPressed(GamepadButtons.RightShoulder);
+        }
+
+        private bool ButtonPressed(GamepadButtons button)
+        {
+            return (_currentButtons & button) == 0 && (_oldButtons & button) != 0;
         }
     }
 }

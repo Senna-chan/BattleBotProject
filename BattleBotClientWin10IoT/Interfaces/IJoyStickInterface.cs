@@ -25,6 +25,8 @@
         bool GetSpeedUpGearButtonState();
         bool GetTurnSharperGearButtonState();
         bool GetTurnWeakerGearButtonState();
+        bool GetServoHardLockButtonState();
+        bool GetServoStabalizeButtonState();
         void PopulateOldButtons();
     }
 }

@@ -4,12 +4,14 @@ namespace BattleBotClientWin10IoT.JoySticks
 {
     class PiJoystick : IJoyStickInterface
     {
+        public JoyStickTypes JoystickType => JoyStickTypes.PiHardware;
         public int SpeedAxis { get; set; }
         public int TurnAxis { get; set; }
-
+        public int PanAxis { get; set; }
+        public int TiltAxis { get; set; }
         public void GetControllerData()
         {
-            
+            throw new System.NotImplementedException();
         }
 
         public int GetSpeedAxisPosition()
@@ -57,13 +59,19 @@ namespace BattleBotClientWin10IoT.JoySticks
             throw new System.NotImplementedException();
         }
 
-        public int PanAxis { get; set; }
-        public int TiltAxis { get; set; }
-        public void PopulateOldButtons()
+        public bool GetServoHardLockButtonState()
         {
             throw new System.NotImplementedException();
         }
 
-        public JoyStickTypes JoystickType => JoyStickTypes.PiHardware;
+        public bool GetServoStabalizeButtonState()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void PopulateOldButtons()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -50,20 +50,11 @@ void setupOTA()
 
 	ArduinoOTA.setHostname(mdnsName);
 
-	//ArduinoOTA.setPassword("admin");
-
-	ArduinoOTA.setPasswordHash("4453c907975672a2a27bcacd1ee850b8");
+	ArduinoOTA.setPassword(password);
 
 	ArduinoOTA.onStart([]()
 		{
-			String type;
-			if (ArduinoOTA.getCommand() == U_FLASH)
-				type = "sketch";
-			else // U_SPIFFS
-				type = "filesystem";
-
-			// NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-			Serial.println("Start updating " + type);
+			Serial.println("Start updating sketch");
 		});
 	ArduinoOTA.onEnd([]()
 		{
@@ -299,11 +290,15 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 
 void HandleGenericCommand(String command, String param)
 {
-	if(command == "shoot")
+	if(command == GENSTRSHOOT)
 	{
 		SerialArd.write(COMGENERIC);
 		SerialArd.write(GENSHOOT);
 		SerialArd.write(MESSAGEEND);
+	}
+	if(command == GENSTRSERVOMODE)
+	{
+		
 	}
 }
 
@@ -352,7 +347,7 @@ void HandleUDPData(byte Packet[])
 	arguments.toCharArray(arguments1, sizeof(arguments));
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	if (Debug.isActive(Debug.VERBOSE)) {
+	if (Debug.ative(Debug.VERBOSE)) {
 		Debug.print("Commandtype: ");
 		Debug.println(commandType);
 		Debug.print("Command: ");
@@ -428,7 +423,7 @@ void loop()
 	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		if (Debug.isActive(Debug.VERBOSE)) {
+		if (Debug.ative(Debug.VERBOSE)) {
 			Debug.print(millis() / 1000);
 			Debug.print(":Packet of ");
 			Debug.print(noBytes);

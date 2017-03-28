@@ -96,6 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="JoySticks\JoystickInputMapping.cs" />
     <Compile Include="JoySticks\XInputJoyStick.cs" />
     <Compile Include="Models\KeyHelperModel.cs" />
     <Compile Include="Modules\ESP.cs" />

@@ -15,7 +15,9 @@ namespace BattleBotClientWin10IoT.JoySticks
             new KeyHelperModel {Key = VirtualKey.J, KeyDown = false},
             new KeyHelperModel {Key = VirtualKey.K, KeyDown = false},
             new KeyHelperModel {Key = VirtualKey.L, KeyDown = false},
-            new KeyHelperModel {Key = VirtualKey.Space, KeyDown = false}
+            new KeyHelperModel {Key = VirtualKey.Space, KeyDown = false},
+            new KeyHelperModel {Key = VirtualKey.CapitalLock, KeyDown = false},
+            new KeyHelperModel {Key = VirtualKey.Tab, KeyDown = false}
         };
         public JoyStickTypes JoystickType => JoyStickTypes.Keyboard;
 
@@ -90,27 +92,27 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public bool GetShootButtonState()
         {
-            return oldKeys.First(t => t.Key == VirtualKey.Space).KeyDown && KeyHelper.IsKeyUp(VirtualKey.Space);
+            return ButtonPressed(VirtualKey.Space);
         }
 
         public bool GetSpeedDownGearButtonState()
         {
-            return oldKeys.First(t => t.Key == VirtualKey.K).KeyDown && KeyHelper.IsKeyUp(VirtualKey.K);
+            return ButtonPressed(VirtualKey.K);
         }
 
         public bool GetSpeedUpGearButtonState()
         {
-            return oldKeys.First(t => t.Key == VirtualKey.I).KeyDown && KeyHelper.IsKeyUp(VirtualKey.I);
+            return ButtonPressed(VirtualKey.I);
         }
 
         public bool GetTurnSharperGearButtonState()
         {
-            return oldKeys.First(t => t.Key == VirtualKey.L).KeyDown && KeyHelper.IsKeyUp(VirtualKey.L);
+            return ButtonPressed(VirtualKey.L);
         }
 
         public bool GetTurnWeakerGearButtonState()
         {
-            return oldKeys.First(t => t.Key == VirtualKey.J).KeyDown && KeyHelper.IsKeyUp(VirtualKey.J);
+            return ButtonPressed(VirtualKey.J);
         }
 
         public void PopulateOldButtons()
@@ -119,5 +121,19 @@ namespace BattleBotClientWin10IoT.JoySticks
                 oldKey.KeyDown = KeyHelper.IsKeyDown(oldKey.Key);
         }
 
+        public bool GetServoHardLockButtonState()
+        {
+            return ButtonPressed(VirtualKey.CapitalLock);
+        }
+
+        public bool GetServoStabalizeButtonState()
+        {
+            return ButtonPressed(VirtualKey.Tab);
+        }
+
+        private bool ButtonPressed(VirtualKey key)
+        {
+            return oldKeys.First(k => k.Key == key).KeyDown && KeyHelper.IsKeyDown(key);
+        }
     }
 }

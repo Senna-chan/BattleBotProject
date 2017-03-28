@@ -6,6 +6,23 @@ namespace BattleBotClientWin10IoT.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+
+
+        private int _panTiltLocking;
+
+        public int PanTiltLocking
+        {
+            get { return _panTiltLocking; }
+            set
+            {
+                if (_panTiltLocking != value)
+                {
+                    _panTiltLocking = value;
+                    RaisePropertyChanged("PanTiltLocking");
+                }
+            }
+        }
+
         private string _spiStatus = "Not connected";
         private string _espStatus = "Not connected";
 

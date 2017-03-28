@@ -80,7 +80,6 @@ typedef struct
 	int ipp4;
 	int waittime;
 	int cameraEnabled;
-	int realengineperformance;
 	int getmotordata;
 	int getahrsdata;
 	int getgpsdata;
@@ -338,7 +337,7 @@ void ConfigScreen()
 							break;
 						case 2:
 							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
-								config.realengineperformance = !config.realengineperformance;
+								config.getgpsdata = !config.getgpsdata;
 							break;
 						case 3:
 							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
@@ -347,10 +346,6 @@ void ConfigScreen()
 						case 4:
 							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
 								config.getahrsdata = !config.getahrsdata;
-							break;
-						case 5:
-							if (pad.Buttons & PSP_CTRL_CROSS && !oldButton)
-								config.getgpsdata = !config.getgpsdata;
 							break;
 						}
 						if (pad.Buttons & PSP_CTRL_DOWN && !oldButton)
@@ -375,10 +370,10 @@ void ConfigScreen()
 						PrintText(10, index * 10 + 10, ColorBlue, "==>");
 						PrintText(30, 10, ColorWhite, "Time between transmitting data:     (%i)", config.waittime);
 						PrintText(30, 20, ColorWhite, "Camera enabled:                     (%s)", config.cameraEnabled ? "Yes" : "No");
-						PrintText(30, 30, ColorWhite, "Acceleration/Decelaration?:         (%s)", config.realengineperformance ? "Enabled" : "Disabled");
+						PrintText(30, 30, ColorWhite, "Recieve gps data?:                  (%s)", config.getgpsdata ? "Enabled" : "Disabled");
 						PrintText(30, 40, ColorWhite, "Recieve motor data?:                (%s)", config.getmotordata ? "Enabled" : "Disabled");
 						PrintText(30, 50, ColorWhite, "Recieve AHRS data?:                 (%s)", config.getahrsdata ? "Enabled" : "Disabled");
-						PrintText(30, 60, ColorWhite, "Recieve gps data?:                  (%s)", config.getgpsdata ? "Enabled" : "Disabled");
+						
 						PrintToScreen(ColorBlack);
 					}
 					oldButton = pad.Buttons;
@@ -626,11 +621,6 @@ void readJson()
 			config.cameraEnabled = atoi(*strbuffer);
 			i++;
 		}
-		else if (jsoneq(json_str, &t[i], "realengineperformance") == 0) {
-			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
-			config.realengineperformance = atoi(*strbuffer);
-			i++;
-		}
 		else if (jsoneq(json_str, &t[i], "getmotordata") == 0) {
 			sprintf(*strbuffer, "%.*s", t[i + 1].end - t[i + 1].start, json_str + t[i + 1].start);
 			config.getmotordata = atoi(*strbuffer);
@@ -696,7 +686,6 @@ void writeJson()
 	jwObj_string("ip2", config.ip2);
 	jwObj_string("ip3", config.ip3);
 	jwObj_int("cameraEnabled", config.cameraEnabled);
-	jwObj_int("realengineperformance", config.realengineperformance);
 	jwObj_array("customip");
 	jwArr_int(config.ipp1);
 	jwArr_int(config.ipp2);
@@ -822,8 +811,44 @@ int main(int argc, char *argv[])
 		char temp[10];
 		temp[0] = '\0';
 
-		int lmOldSpeed = 0;
-		int rmOldSpeed = 0;
+		// Data recieving vars
+		//char data_type[10];
+		//char data_data[100];
+		//char data_parameters[100];
+		//char *temperature[10];
+		//char *altitudedof[10];
+		//char *altitudegps[10];
+		//char *headingdof[10];
+		//char *headinggps[10];
+		//char *roll[10];
+		//char *pitch[10];
+		//char *latitude[10];
+		//char *longitude[10];
+		//char *speedgps[10];
+		//char *cell1[10];
+		//char *cell2[10];
+		//char *cell3[10];
+		//char *cells[10];
+		//char *excecutetime[10];
+		//int *m1current = 0;
+		//int *m2current = 0;
+		//temperature[0]	  = '\0' ;
+		//altitudedof[0]	  = '\0' ;
+		//altitudegps[0]	  = '\0' ;
+		//headingdof[0]	  = '\0' ;
+		//headinggps[0]	  = '\0' ;
+		//roll[0]			  = '\0' ;
+		//pitch[0]		  = '\0' ;
+		//latitude[0]		  = '\0' ;
+		//longitude[0]	  = '\0' ;
+		//speedgps[0]		  = '\0' ;
+		//cell1[0]		  = '\0' ;
+		//cell2[0]		  = '\0' ;
+		//cell3[0]		  = '\0' ;
+		//cells[0]		  = '\0' ;
+		//excecutetime[0]	  = '\0' ;
+		//int motorProblem = false;
+		// End of data recieving vars
 
 		int oldButton = 0;
 		socklen_t server_addr_len = 0;
@@ -1086,41 +1111,8 @@ int main(int argc, char *argv[])
 				rmSpeed = speed + wheelpos2;
 			}
 
-			if (config.realengineperformance)
-			{
-				if (BETWEEN(lmOldSpeed, lmSpeed - 3, lmSpeed + 3))
-				{
-					lmOldSpeed = lmSpeed;
-				}
-				else if (lmOldSpeed < lmSpeed)
-				{
-					lmOldSpeed += 5;
-				}
-				else if (lmOldSpeed > lmSpeed)
-				{
-					lmOldSpeed -= 5;
-				}
-				if (BETWEEN(rmOldSpeed, rmSpeed - 3, rmSpeed + 3))
-				{
-					rmOldSpeed = rmSpeed;
-				}
-				else if (rmOldSpeed < rmSpeed)
-				{
-					rmOldSpeed += 5;
-				}
-				else if (rmOldSpeed > rmSpeed)
-				{
-					rmOldSpeed -= 5;
-				}
-			}
-			else
-			{
-				lmOldSpeed = lmSpeed;
-				rmOldSpeed = rmSpeed;
-			}
-
 			char mMessage[30];
-			snprintf(mMessage, sizeof(mMessage), "DC:%i,%i:%i,%i", lmOldSpeed, rmOldSpeed, servoX, servoY);
+			snprintf(mMessage, sizeof(mMessage), "DC:%i,%i:%i,%i", lmSpeed, rmSpeed, servoX, servoY);
 			if (sceNetInetSend(socket_desc, mMessage, strlen(mMessage), 0) < 0)
 			{
 				PrintError("Send failed");
@@ -1128,43 +1120,6 @@ int main(int argc, char *argv[])
 				delay(waittime - 10);
 				running = isRunning();
 			}
-
-			//char data_type[10];
-			//char data_data[100];
-			//char data_parameters[100];
-			//char *temperature[10];
-			//char *altitudedof[10];
-			//char *altitudegps[10];
-			//char *headingdof[10];
-			//char *headinggps[10];
-			//char *roll[10];
-			//char *pitch[10];
-			//char *latitude[10];
-			//char *longitude[10];
-			//char *speedgps[10];
-			//char *cell1[10];
-			//char *cell2[10];
-			//char *cell3[10];
-			//char *cells[10];
-			//char *excecutetime[10];
-			//int *m1current = 0;
-			//int *m2current = 0;
-			//temperature[0]	  = '\0' ;
-			//altitudedof[0]	  = '\0' ;
-			//altitudegps[0]	  = '\0' ;
-			//headingdof[0]	  = '\0' ;
-			//headinggps[0]	  = '\0' ;
-			//roll[0]			  = '\0' ;
-			//pitch[0]		  = '\0' ;
-			//latitude[0]		  = '\0' ;
-			//longitude[0]	  = '\0' ;
-			//speedgps[0]		  = '\0' ;
-			//cell1[0]		  = '\0' ;
-			//cell2[0]		  = '\0' ;
-			//cell3[0]		  = '\0' ;
-			//cells[0]		  = '\0' ;
-			//excecutetime[0]	  = '\0' ;
-			//int motorProblem = false;
 
 			//int k, j;
 			//for (k = 0; k < 4; k++) {

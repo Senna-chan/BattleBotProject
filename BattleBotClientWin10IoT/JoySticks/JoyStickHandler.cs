@@ -16,8 +16,6 @@ namespace BattleBotClientWin10IoT.JoySticks
     {
         private IJoyStickInterface CJoyStick;
         private CancellationTokenSource CancelPolling = new CancellationTokenSource();
-        private int lmTargetSpeed = 0;
-        private int rmTargetSpeed = 0;
 
         public void PollController()
         {
@@ -35,6 +33,26 @@ namespace BattleBotClientWin10IoT.JoySticks
             while (!CancelPolling.Token.IsCancellationRequested)
             {
                 CJoyStick.GetControllerData();
+                if (CJoyStick.GetServoHardLockButtonState() && VariableStorage.ViewModel.PanTiltLocking != 1)
+                {
+                    VariableStorage.ViewModel.PanTiltLocking = 1;
+                    VariableStorage.BattleBotCommunication.Send("SM:1");
+                }
+                else
+                {
+                    VariableStorage.ViewModel.PanTiltLocking = 0;
+                    VariableStorage.BattleBotCommunication.Send("SM:0");
+                }
+                if (CJoyStick.GetServoStabalizeButtonState() && VariableStorage.ViewModel.PanTiltLocking != 2)
+                {
+                    VariableStorage.ViewModel.PanTiltLocking = 2;
+                    VariableStorage.BattleBotCommunication.Send("SM:2");
+                }
+                else
+                {
+                    VariableStorage.ViewModel.PanTiltLocking = 0;
+                    VariableStorage.BattleBotCommunication.Send("SM:0");
+                }
                 if (CJoyStick.GetSpeedUpGearButtonState() && VariableStorage.ViewModel.SpeedGear != 4)
                 {
                     CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -114,7 +132,6 @@ namespace BattleBotClientWin10IoT.JoySticks
             }
             lmSpeed = GeneralHelpers.MapIntToValue(lmSpeed, -100, 100, 0, 200);
             rmSpeed = GeneralHelpers.MapIntToValue(rmSpeed, -100, 100, 0, 200);
-            
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 VariableStorage.ViewModel.LeftMotorSpeed = lmSpeed;

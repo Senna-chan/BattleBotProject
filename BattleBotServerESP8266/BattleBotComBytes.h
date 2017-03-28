@@ -52,4 +52,7 @@ const char *STRERROR		=	"error";
 const char *STRAHRS			=	"ahrs";
 const char *STRDEBUG		=	"debug";
 
+const char *GENSTRSERVOMODE =	"sm";
+const char *GENSTRSHOOT		=	"shoot";
+
 #endif

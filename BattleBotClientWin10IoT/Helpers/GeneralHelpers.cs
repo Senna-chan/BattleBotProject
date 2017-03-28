@@ -10,7 +10,10 @@ namespace BattleBotClientWin10IoT.Helpers
     {
         public static int MapIntToValue(int value, int inMin, int inMax, int outMin, int outMax)
         {
-            return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+            int returnVal = (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+            if (returnVal > outMax) return outMax;
+            if (returnVal < outMin) return outMin;
+            return returnVal;
         }
 
         public static bool Between(int value, int min, int max)
