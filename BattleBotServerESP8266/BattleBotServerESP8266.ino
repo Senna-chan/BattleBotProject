@@ -298,7 +298,11 @@ void HandleGenericCommand(String command, String param)
 	}
 	if(command == GENSTRSERVOMODE)
 	{
-		
+		if (param.length() != 1) return;
+		SerialArd.write(COMGENERIC);
+		SerialArd.write(GENSERVOMODE);
+		SerialArd.write((byte)param[0]);
+		SerialArd.write(MESSAGEEND);
 	}
 }
 

@@ -27,7 +27,7 @@
 #define PANSERVOPIN		8
 #define TILTSERVOPIN    9
 byte DC1MotorSpeedSerial, DC2MotorSpeedSerial, panSerial, tiltSerial;
-int DC1MotorSpeed, DC2MotorSpeed, pan, tilt;
+int DC1MotorSpeed, DC2MotorSpeed, pan, tilt, servoMode;
 
 DualVNH5019MotorShield Motors = DualVNH5019MotorShield(32, 34, 30, A0, 33, 35, 31, A1);
 Servo panServo, tiltServo, shootServo;
@@ -46,7 +46,7 @@ unsigned long previousMillis = millis();
 unsigned long currentMillis = millis();
 bool clientConnected;
 byte buffer[10];
-
+HardwareSerial SerialEsp = Serial3;
 
 float mag_offsets[3] = { -7.07F, 9.55F, -28.22F };
 
@@ -133,7 +133,7 @@ TimedAction connectionThread = TimedAction(30, connectionHandler);
 void setup()
 {
 	Serial.begin(115200);
-	Serial3.begin(250000);
+	SerialEsp.begin(250000);
 
 	if (!gyro.begin())
 	{
@@ -300,6 +300,14 @@ void ReadGenericData()
 			digitalWrite(LASERPIN, LOW);
 		}
 		break;
+	case GENSERVOMODE:
+
+		int newServoMode = SerialEsp.read();
+		if(EndMessage())
+		{
+			servoMode = newServoMode;
+		}
+		break;
 	default: break;
 	}
 }
@@ -368,6 +376,7 @@ void HandleESPData()
 	case (byte)0x00:
 		break;
 	default:
+		Serial.println("");
 		Serial.print(c, HEX);
 		Serial.println(" is a unknown command");
 		break;

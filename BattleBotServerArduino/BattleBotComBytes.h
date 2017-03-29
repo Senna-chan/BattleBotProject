@@ -10,6 +10,7 @@
 // Generic message types
 #define GENSHOOT			0x01
 #define GENRESETDOF			0x02
+#define GENSERVOMODE		0x03
 
 // ClientTypes
 #define CLIENTPC			0x01
