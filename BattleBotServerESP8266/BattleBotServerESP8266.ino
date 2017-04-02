@@ -28,7 +28,7 @@ int counter = 0;
 int noBytes; // Holds the amount of bytes read by either the UDP server or the Serial UART
 boolean clientConnected = false;
 
-SoftwareSerial SerialArd = SoftwareSerial(D5,D6);
+SoftwareSerial SerialArd = SoftwareSerial(D6, D5);
 WiFiUDP server;
 IPAddress clientIP;
 IPAddress serverIP;
@@ -90,7 +90,8 @@ void WiFiEvent(WiFiEvent_t event)
 
 void setup()
 {
-	SerialArd.begin(250000);
+	pinMode(BUILTIN_LED, OUTPUT);
+	SerialArd.begin(115200);
 	Serial.begin(115200);
 	Wire.begin(0x10);
 	Serial.println("Serial monitors activated");
@@ -162,6 +163,7 @@ void setup()
 	SerialArd.write(COMCLIENT);
 	SerialArd.write(CLIENTESPREADY);
 	SerialArd.write(MESSAGEEND);
+	digitalWrite(BUILTIN_LED, HIGH);
 }
 
 void HandleClientCommand(String clienttype, String clientaction)
@@ -183,6 +185,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTCONNECT);
 		SerialArd.write(MESSAGEEND);
+		digitalWrite(BUILTIN_LED, LOW);
 	}
 	if (clientaction == "disconnected")
 	{
@@ -197,6 +200,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTDISCONNECT);
 		SerialArd.write(MESSAGEEND);
+		digitalWrite(BUILTIN_LED, HIGH);
 	}
 	if(clientaction == "paused")
 	{
@@ -249,7 +253,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 
 void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 {
-	int pan, tilt;
+	byte pan, tilt;
 	int leftMotorSpeed, rightMotorSpeed;;
 	if (sscanf(MotorSpeeds, "%i,%i", &leftMotorSpeed, &rightMotorSpeed) == 2){
 		if(leftMotorSpeed > 200 || rightMotorSpeed > 200 || leftMotorSpeed < 0 || rightMotorSpeed < 0)
@@ -271,7 +275,7 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	{
 		Debug.println("Motorspeed was not valid");
 	}
-	if (sscanf(ServoSpeeds, "%i,%i", &pan, &tilt)==2){
+	if (sscanf(ServoSpeeds, "%x,%x", &pan, &tilt)==2){
 		if(pan > 180 || tilt > 180)
 		{
 			Debug.println("Servo positions received are not valid");
@@ -351,7 +355,7 @@ void HandleUDPData(byte Packet[])
 	arguments.toCharArray(arguments1, sizeof(arguments));
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	if (Debug.ative(Debug.VERBOSE)) {
+	if (Debug.isActive(Debug.VERBOSE)) {
 		Debug.print("Commandtype: ");
 		Debug.println(commandType);
 		Debug.print("Command: ");
@@ -427,7 +431,7 @@ void loop()
 	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		if (Debug.ative(Debug.VERBOSE)) {
+		if (Debug.isActive(Debug.VERBOSE)) {
 			Debug.print(millis() / 1000);
 			Debug.print(":Packet of ");
 			Debug.print(noBytes);

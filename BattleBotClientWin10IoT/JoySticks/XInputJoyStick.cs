@@ -33,8 +33,8 @@ namespace BattleBotClientWin10IoT.JoySticks
             _currentButtons = readings.Buttons;
             SpeedAxis = Convert.ToInt32(Math.Floor(readings.LeftThumbstickY * 100));
             TurnAxis = Convert.ToInt32(Math.Floor(readings.LeftThumbstickX * 100));
-            PanAxis = Convert.ToInt32(Math.Floor(readings.RightThumbstickX * 100));
-            TiltAxis = Convert.ToInt32(Math.Floor(readings.RightThumbstickY * 100));
+            PanAxis = GeneralHelpers.MapIntToValue(Convert.ToInt32(Math.Floor(readings.RightThumbstickX * 100)),-100,100,0,180);
+            TiltAxis = GeneralHelpers.MapIntToValue(Convert.ToInt32(Math.Floor(readings.RightThumbstickY * 100)), -100, 100, 0, 180);
         }
 
         public int GetSpeedAxisPosition()
@@ -82,19 +82,19 @@ namespace BattleBotClientWin10IoT.JoySticks
             return ButtonPressed(GamepadButtons.DPadLeft);
         }
 
-        public void PopulateOldButtons()
-        {
-            _oldButtons = _currentButtons;
-        }
-
         public bool GetServoHardLockButtonState()
         {
-            return ButtonPressed(GamepadButtons.RightThumbstick);
+            return ButtonPressed(GamepadButtons.RightShoulder);
         }
 
         public bool GetServoStabalizeButtonState()
         {
-            return ButtonPressed(GamepadButtons.RightShoulder);
+            return ButtonPressed(GamepadButtons.RightThumbstick);
+        }
+
+        public void PopulateOldButtons()
+        {
+            _oldButtons = _currentButtons;
         }
 
         private bool ButtonPressed(GamepadButtons button)

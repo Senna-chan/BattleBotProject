@@ -26,8 +26,8 @@
 
 #define PANSERVOPIN		8
 #define TILTSERVOPIN    9
-byte DC1MotorSpeedSerial, DC2MotorSpeedSerial, panSerial, tiltSerial;
-int DC1MotorSpeed, DC2MotorSpeed, pan, tilt, servoMode;
+byte DC1MotorSpeedSerial, DC2MotorSpeedSerial, panSerial, tiltSerial, servoMode;
+int DC1MotorSpeed, DC2MotorSpeed, pan, tilt;
 
 DualVNH5019MotorShield Motors = DualVNH5019MotorShield(32, 34, 30, A0, 33, 35, 31, A1);
 Servo panServo, tiltServo, shootServo;
@@ -46,7 +46,6 @@ unsigned long previousMillis = millis();
 unsigned long currentMillis = millis();
 bool clientConnected;
 byte buffer[10];
-HardwareSerial SerialEsp = Serial3;
 
 float mag_offsets[3] = { -7.07F, 9.55F, -28.22F };
 
@@ -133,7 +132,7 @@ TimedAction connectionThread = TimedAction(30, connectionHandler);
 void setup()
 {
 	Serial.begin(115200);
-	SerialEsp.begin(250000);
+	Serial3.begin(115200);
 
 	if (!gyro.begin())
 	{
@@ -241,13 +240,7 @@ void ReadMotorData()
 {
 	DC1MotorSpeedSerial = Serial3.read();
 	DC2MotorSpeedSerial = Serial3.read();
-	byte endCommand = Serial3.read();
-	Serial.print(DC1MotorSpeedSerial);
-	Serial.print(" ");
-	Serial.print(DC2MotorSpeedSerial);
-	Serial.print(" ");
-	Serial.println(endCommand);
-	if (endCommand == MESSAGEEND)
+	if (EndMessage())
 	{
 		DC1MotorSpeed = map(DC1MotorSpeedSerial, 0, 200, -400, 400);
 		DC2MotorSpeed = map(DC2MotorSpeedSerial, 0, 200, -400, 400);
@@ -270,10 +263,6 @@ void ReadServoData()
 {
 	panSerial = Serial3.read();
 	tiltSerial = Serial3.read();
-	Serial.print(panSerial, HEX);
-	Serial.print(" ");
-	Serial.print(tiltSerial, HEX);
-	Serial.print(" ");
 	if (EndMessage())
 	{
 		pan = map(panSerial, 0, 200, 0, 180);
@@ -290,6 +279,7 @@ void ReadServoData()
 void ReadGenericData()
 {
 	byte command = Serial3.read();
+	byte newServoMode;
 	switch (command)
 	{
 	case GENSHOOT: // Right now it's just a laser that shoots and that is handled by the Mega itself
@@ -301,8 +291,7 @@ void ReadGenericData()
 		}
 		break;
 	case GENSERVOMODE:
-
-		int newServoMode = SerialEsp.read();
+		newServoMode = Serial3.read();
 		if(EndMessage())
 		{
 			servoMode = newServoMode;
@@ -374,6 +363,7 @@ void HandleESPData()
 	case COMGENERIC:
 		ReadGenericData();
 	case (byte)0x00:
+	case 0xFF:
 		break;
 	default:
 		Serial.println("");
@@ -396,6 +386,6 @@ void loop()
 		HandleESPData();
 		Serial.println();
 	}
-	dofThread.check();
+	//dofThread.check();
 	connectionThread.check();
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,20 +15,29 @@ namespace BattleBotClientWin10IoT.Modules
 {
     public class RecievedDataEventArgs : EventArgs
     {
-        public byte[] RecievedBytes { get; set; }
+        public string RecievedString{ get; set; }
     }
     class WiFiCommunication
     {
         public delegate void RecievedDataEventHandler(object source, RecievedDataEventArgs args);
         public event RecievedDataEventHandler RecievedData;
+        public delegate void RecievedErrorDataEventHandler(object source, RecievedDataEventArgs args);
+        public event RecievedErrorDataEventHandler RecievedErrorData;
         protected virtual void OnDataRecieved()
         {
-            RecievedData?.Invoke(this, new RecievedDataEventArgs() { RecievedBytes = asyncBuffer });
+            if (RecievedString.StartsWith("error"))
+            {
+                RecievedErrorData?.Invoke(this, new RecievedDataEventArgs() { RecievedString = RecievedString });
+            }
+            else
+            { 
+                RecievedData?.Invoke(this, new RecievedDataEventArgs() { RecievedString = RecievedString });
+            }
         }
         private UdpClient BattleBotConnection;
         private IPEndPoint battlebotIp;
         private byte[] buffer = new byte[200];
-        private byte[] asyncBuffer = new byte[200];
+        private string RecievedString = String.Empty;
 
         private CancellationTokenSource CancelRecieving = new CancellationTokenSource();
         private CancellationTokenSource CancelSending = new CancellationTokenSource();
@@ -76,12 +86,14 @@ namespace BattleBotClientWin10IoT.Modules
         }
         private async Task RecieveData()
         {
+            var asyncBuffer = new byte[128];
             var socketArgs = new SocketAsyncEventArgs();
             socketArgs.SetBuffer(asyncBuffer, 0, asyncBuffer.Length);
             while (!CancelRecieving.Token.IsCancellationRequested)
             {
                 var something = await BattleBotConnection.ReceiveAsync();
                 asyncBuffer = something.Buffer;
+                RecievedString = Encoding.ASCII.GetString(asyncBuffer);
                 OnDataRecieved();
             }
         }

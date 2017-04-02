@@ -38,7 +38,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                     VariableStorage.ViewModel.PanTiltLocking = 1;
                     VariableStorage.BattleBotCommunication.Send("SM:1");
                 }
-                else
+                else if(CJoyStick.GetServoHardLockButtonState() && VariableStorage.ViewModel.PanTiltLocking == 1)
                 {
                     VariableStorage.ViewModel.PanTiltLocking = 0;
                     VariableStorage.BattleBotCommunication.Send("SM:0");
@@ -48,7 +48,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                     VariableStorage.ViewModel.PanTiltLocking = 2;
                     VariableStorage.BattleBotCommunication.Send("SM:2");
                 }
-                else
+                else if(CJoyStick.GetServoStabalizeButtonState() && VariableStorage.ViewModel.PanTiltLocking == 2)
                 {
                     VariableStorage.ViewModel.PanTiltLocking = 0;
                     VariableStorage.BattleBotCommunication.Send("SM:0");

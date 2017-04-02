@@ -116,8 +116,8 @@ namespace BattleBotClientWin10IoT.Views
                 {
                     if (Settings.GetBoolSetting("debug"))
                     {
-                        VariableStorage.ViewModel.EspStatus = "Esp found on: 127.0.0.1 in Testing mode";
-                        VariableStorage.EspAddress = IPAddress.Parse("127.0.0.1");
+                        VariableStorage.ViewModel.EspStatus = "Esp found on: 192.168.1.114 in Testing mode";
+                        VariableStorage.EspAddress = IPAddress.Parse("192.168.1.114");
                         connectedToEsp = true;
                         continue;
                     }
@@ -125,6 +125,7 @@ namespace BattleBotClientWin10IoT.Views
 
                     dialog.Commands.Add(new UICommand("Try again") { Id = 0 });
                     dialog.Commands.Add(new UICommand("I'm testing") { Id = 1 });
+                    dialog.Commands.Add(new UICommand("Enter manualy"){Id =2});
                     var result = await dialog.ShowAsync();
                     if ((int)result.Id == 1)
                     {

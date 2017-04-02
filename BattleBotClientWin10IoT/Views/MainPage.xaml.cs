@@ -27,6 +27,12 @@ namespace BattleBotClientWin10IoT.Views
             }
             VariableStorage.JoyStick.PollController();
             VariableStorage.BattleBotCommunication.StartCommunicating();
+            VariableStorage.BattleBotCommunication.RecievedErrorData += BattleBotCommunication_RecievedErrorData;
+        }
+
+        private void BattleBotCommunication_RecievedErrorData(object source, Modules.RecievedDataEventArgs args)
+        {
+            throw new NotImplementedException();
         }
 
         private void mjpeg_OnError(object sender, ErrorEventArgs e)

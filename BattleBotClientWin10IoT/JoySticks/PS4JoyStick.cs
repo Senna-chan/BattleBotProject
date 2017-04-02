@@ -69,5 +69,15 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             throw new NotImplementedException();
         }
+
+        public bool GetServoHardLockButtonState()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool GetServoStabalizeButtonState()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
