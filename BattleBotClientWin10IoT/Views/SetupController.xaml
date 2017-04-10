@@ -3,11 +3,60 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:BattleBotClientWin10IoT.Views"
+    xmlns:viewModels="using:BattleBotClientWin10IoT.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:iconPacks="using:MahApps.Metro.IconPacks"
     mc:Ignorable="d">
-
+    <Page.DataContext>
+        <viewModels:SetupControllerViewModel></viewModels:SetupControllerViewModel>
+    </Page.DataContext>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" x:Name="RowMain"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" x:Name="ColumnMain"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="lbl1">SpeedAxis</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding SpeedAxis}">2</TextBlock>
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="lbl2">TurnAxis</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TurnAxis}">2</TextBlock>
+        <TextBlock Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="lbl3">PanAxis</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding PanAxis}">2</TextBlock>
+        <TextBlock Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="lbl4">TiltAxis</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TiltAxis}">2</TextBlock>
+        <TextBlock Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="lbl5">SpeedAxis</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center">2</TextBlock>
 
+
+        <TextBlock Grid.Row="8" Grid.Column="5" Grid.ColumnSpan="6" x:Name="InputThis" VerticalAlignment="Center" HorizontalAlignment="Center"> Move a axis</TextBlock>
+        <Button x:Name="CloseButton" Grid.Row="0" Grid.Column="15"  Background="#00000000" Click="CloseButton_Click" Width="{Binding ActualWidth, ElementName=ColumnMain}" Height="{Binding ActualHeight, ElementName=RowMain}" VerticalAlignment="Bottom">
+            <iconPacks:PackIconFontAwesome Width="16" Height="16" Kind="Times" Foreground="#FFD40000" VerticalAlignment="Bottom"  />
+        </Button>
     </Grid>
 </Page>
+

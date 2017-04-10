@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
-    class JoystickInputMapping
+    public class JoystickInputMapping
     {
-        public string HardwareId { get; set; }
-        public string VendorId { get; set; }
-
-        public string DeviceId => VendorId + ":" + HardwareId;
-
         public int SpeedAxis { get; set; }
         public int TurnAxis { get; set; }
         public int PanAxis { get; set; }
@@ -22,5 +17,7 @@ namespace BattleBotClientWin10IoT.JoySticks
         public int TurnGearUpButton { get; set; }
         public int TurnGearDownButton { get; set; }
         public int SchootButton { get; set; }
+        public int ServoLockButton { get; set; }
+        public int ServoStabalizeButton { get; set; }
     }
 }

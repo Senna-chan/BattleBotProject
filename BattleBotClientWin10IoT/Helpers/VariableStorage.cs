@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Net;
 using BattleBotClientWin10IoT.JoySticks;
 using BattleBotClientWin10IoT.Modules;
 using BattleBotClientWin10IoT.ViewModels;
@@ -15,8 +17,9 @@ namespace BattleBotClientWin10IoT.Helpers
         public static MjpegDecoder MjpegDecoder = new MjpegDecoder();
         public static WiFiCommunication BattleBotCommunication;
 //        public static MCP3008 mcp3008;
-        public static ServiceInfo[] DiscoveredServices;
         public static IPAddress BattlebotCameraAddress;
         public static IPAddress EspAddress;
+        public static string AssetDirectory = Directory.GetCurrentDirectory() + "\\Assets";
     }
 }
+ 

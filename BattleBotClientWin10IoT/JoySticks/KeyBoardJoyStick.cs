@@ -121,7 +121,7 @@ namespace BattleBotClientWin10IoT.JoySticks
                 oldKey.KeyDown = KeyHelper.IsKeyDown(oldKey.Key);
         }
 
-        public bool GetServoHardLockButtonState()
+        public bool GetServoLockButtonState()
         {
             return ButtonPressed(VirtualKey.CapitalLock);
         }
@@ -134,6 +134,13 @@ namespace BattleBotClientWin10IoT.JoySticks
         private bool ButtonPressed(VirtualKey key)
         {
             return oldKeys.First(k => k.Key == key).KeyDown && KeyHelper.IsKeyDown(key);
+        }
+
+        public bool IsConnected { get { return true; } set { IsConnected = true; }}
+        public bool IsWireless { get { return false; } set { IsWireless = false; } }
+        public int? GetBatteryStatus()
+        {
+            return null;
         }
     }
 }

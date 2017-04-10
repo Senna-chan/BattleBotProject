@@ -11,6 +11,7 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "BattleBotComBytes.h"
+#include <stdio.h>
 
 #define ESPREADYPIN D3
 
@@ -253,9 +254,12 @@ void HandleClientCommand(String clienttype, String clientaction)
 
 void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 {
-	byte pan, tilt;
-	int leftMotorSpeed, rightMotorSpeed;;
-	if (sscanf(MotorSpeeds, "%i,%i", &leftMotorSpeed, &rightMotorSpeed) == 2){
+	byte pan=0; 
+	byte tilt=0;
+	int leftMotorSpeed = 0;
+	int rightMotorSpeed = 0;
+	Debug.println(sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed));
+	if (sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed) == 2){
 		if(leftMotorSpeed > 200 || rightMotorSpeed > 200 || leftMotorSpeed < 0 || rightMotorSpeed < 0)
 		{
 			Debug.println("Speeds received are not valid");
@@ -275,7 +279,7 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	{
 		Debug.println("Motorspeed was not valid");
 	}
-	if (sscanf(ServoSpeeds, "%x,%x", &pan, &tilt)==2){
+	if (sprintf(ServoSpeeds, "%i,%i", pan, tilt)==2){
 		if(pan > 180 || tilt > 180)
 		{
 			Debug.println("Servo positions received are not valid");

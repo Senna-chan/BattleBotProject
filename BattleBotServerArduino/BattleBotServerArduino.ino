@@ -156,10 +156,10 @@ void setup()
 	}
 
 	filter.begin(20);
-	panServo.attach(PANSERVOPIN);
-	tiltServo.attach(TILTSERVOPIN);
+	panServo.attach(PANSERVOPIN, 400,2400);
+	tiltServo.attach(TILTSERVOPIN,650,2000);
 	panServo.write(90);
-	tiltServo.write(90);
+	tiltServo.write(0);
 	Motors.init();
 	Wire.begin();
 	Serial.println("Ready");
@@ -313,9 +313,10 @@ void ReadClientData()
 	}
 	else if (espclientmessage == CLIENTCONNECT)
 	{
-		if (EndMessage())
+		if (EndMessage()) {
 			Serial.println("A client has connected");
-		clientConnected = true;
+			clientConnected = true;
+		}
 	}
 	else if (espclientmessage == CLIENTDISCONNECT)
 	{
@@ -362,6 +363,7 @@ void HandleESPData()
 		break;
 	case COMGENERIC:
 		ReadGenericData();
+		break;
 	case (byte)0x00:
 	case 0xFF:
 		break;

@@ -33,7 +33,6 @@ namespace BattleBotClientWin10IoT.Views
             {
                 Settings.SaveSetting("firstrun", "false");
                 Settings.SaveSetting("waittime", 30);
-                Settings.SaveSetting("realenginehandling", true);
                 Settings.SaveSetting("debug", false);
             }
         }
@@ -41,9 +40,16 @@ namespace BattleBotClientWin10IoT.Views
         private async void Initialize()
         {
             await InitMDNS();
-            await VariableStorage.JoyStick.ConnectToAJoystick();
-            InitWirelessCommunication();
-            Frame.Navigate(typeof(MainPage));
+            var returnvalue = await VariableStorage.JoyStick.ConnectToAJoystick();
+            if (returnvalue.HasValue)
+            {
+                Frame.Navigate(typeof(SetupController));
+            }
+            else
+            {
+                InitWirelessCommunication();
+                Frame.Navigate(typeof(MainPage));
+            }
         }
         private async Task InitMDNS()
         {
@@ -51,8 +57,13 @@ namespace BattleBotClientWin10IoT.Views
             await client.Init();
             int counter = 0;
             bool shouldConnectToCamera = true;
-            do
+            while (shouldConnectToCamera)
             {
+                if (VariableStorage.BattlebotCameraAddress != null)
+                {
+                    shouldConnectToCamera = false;
+                    continue;
+                }
                 var services = await client.List("_workstation._tcp.local.");
                 await Task.Delay(250);
                 if (services != null && services.Length != 0)
@@ -97,12 +108,16 @@ namespace BattleBotClientWin10IoT.Views
                     await Task.Delay(250);
                     counter++;
                 }
-            } while (shouldConnectToCamera);
+            }
             bool connectedToEsp = false;
             counter = 0;
             while (!connectedToEsp)
             {
-
+                if (VariableStorage.EspAddress != null)
+                {
+                    connectedToEsp = true;
+                    continue;
+                }
                 var services = await client.List("_battlebot._udp.local.");
                 await Task.Delay(250);
                 if (services.Length == 1) // This is garantied to be the ESP

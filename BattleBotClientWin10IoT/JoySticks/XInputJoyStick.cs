@@ -17,7 +17,8 @@ namespace BattleBotClientWin10IoT.JoySticks
         public int TurnAxis { get; set; }
         public int PanAxis { get; set; }
         public int TiltAxis { get; set; }
-
+        public bool IsConnected { get; set; }
+        public bool IsWireless { get; set; }
         private GamepadButtons _oldButtons;
         private GamepadButtons _currentButtons;
 
@@ -25,6 +26,11 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             this.gamepad = gamepad;
             _oldButtons = gamepad.GetCurrentReading().Buttons; // Populating old buttons. If not then there could be a crash.
+            IsConnected = true;
+            Gamepad.GamepadRemoved += delegate(object sender, Gamepad gamepad1)
+            {
+                if (gamepad1 == gamepad) IsConnected = false;
+            };
         }
 
         public void GetControllerData()
@@ -82,7 +88,7 @@ namespace BattleBotClientWin10IoT.JoySticks
             return ButtonPressed(GamepadButtons.DPadLeft);
         }
 
-        public bool GetServoHardLockButtonState()
+        public bool GetServoLockButtonState()
         {
             return ButtonPressed(GamepadButtons.RightShoulder);
         }
@@ -100,6 +106,18 @@ namespace BattleBotClientWin10IoT.JoySticks
         private bool ButtonPressed(GamepadButtons button)
         {
             return (_currentButtons & button) == 0 && (_oldButtons & button) != 0;
+        }
+
+        public int? GetBatteryStatus()
+        {
+            var batReport = gamepad.TryGetBatteryReport();
+            var remainingCapacity = batReport.RemainingCapacityInMilliwattHours;
+            var fullCapacity = batReport.FullChargeCapacityInMilliwattHours;
+            if (remainingCapacity.HasValue && fullCapacity.HasValue)
+            {
+                return remainingCapacity.Value / fullCapacity.Value;
+            }
+            return null;
         }
     }
 }

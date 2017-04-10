@@ -59,7 +59,7 @@ namespace BattleBotClientWin10IoT.JoySticks
             throw new System.NotImplementedException();
         }
 
-        public bool GetServoHardLockButtonState()
+        public bool GetServoLockButtonState()
         {
             throw new System.NotImplementedException();
         }
@@ -73,5 +73,13 @@ namespace BattleBotClientWin10IoT.JoySticks
         {
             throw new System.NotImplementedException();
         }
+
+        public int? GetBatteryStatus()
+        {
+            return null;
+        }
+
+        public bool IsConnected { get { return true; } set { IsConnected = true; } }
+        public bool IsWireless { get { return false; } set { IsWireless = false; } }
     }
 }

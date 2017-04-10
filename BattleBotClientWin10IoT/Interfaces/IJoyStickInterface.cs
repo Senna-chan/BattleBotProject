@@ -15,6 +15,8 @@
         int TurnAxis { get; set; }
         int PanAxis { get; set; }
         int TiltAxis { get; set; }
+        bool IsConnected { get; set; }
+        bool IsWireless { get; set; }
         void GetControllerData();
         int GetSpeedAxisPosition();
         int GetTurnAxisPosition();
@@ -25,8 +27,9 @@
         bool GetSpeedUpGearButtonState();
         bool GetTurnSharperGearButtonState();
         bool GetTurnWeakerGearButtonState();
-        bool GetServoHardLockButtonState();
+        bool GetServoLockButtonState();
         bool GetServoStabalizeButtonState();
+        int? GetBatteryStatus();
         void PopulateOldButtons();
     }
 }

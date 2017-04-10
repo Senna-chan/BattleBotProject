@@ -2,6 +2,8 @@
 using BattleBotClientWin10IoT.Interfaces;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
@@ -9,6 +11,7 @@ using Windows.Devices.Enumeration;
 using Windows.Gaming.Input;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using BattleBotClientWin10IoT.Views;
 
 namespace BattleBotClientWin10IoT.JoySticks
 {
@@ -33,12 +36,12 @@ namespace BattleBotClientWin10IoT.JoySticks
             while (!CancelPolling.Token.IsCancellationRequested)
             {
                 CJoyStick.GetControllerData();
-                if (CJoyStick.GetServoHardLockButtonState() && VariableStorage.ViewModel.PanTiltLocking != 1)
+                if (CJoyStick.GetServoLockButtonState() && VariableStorage.ViewModel.PanTiltLocking != 1)
                 {
                     VariableStorage.ViewModel.PanTiltLocking = 1;
                     VariableStorage.BattleBotCommunication.Send("SM:1");
                 }
-                else if(CJoyStick.GetServoHardLockButtonState() && VariableStorage.ViewModel.PanTiltLocking == 1)
+                else if(CJoyStick.GetServoLockButtonState() && VariableStorage.ViewModel.PanTiltLocking == 1)
                 {
                     VariableStorage.ViewModel.PanTiltLocking = 0;
                     VariableStorage.BattleBotCommunication.Send("SM:0");
@@ -149,19 +152,34 @@ namespace BattleBotClientWin10IoT.JoySticks
             return CJoyStick.TiltAxis;
         }
 
-        public async Task ConnectToAJoystick()
+        public async Task<int?> ConnectToAJoystick()
         {
-            await Task.Delay(1000);
+            await Task.Delay(5000);
             if (Gamepad.Gamepads.Count != 0)
             {
                 CJoyStick = new XInputJoyStick(Gamepad.Gamepads[0]);
                 VariableStorage.ViewModel.ControllerStatus = "Connected to XInput controller";
             }
-            else
+            else if(RawGameController.RawGameControllers.Count == 1)
+            {
+                // TODO: Make a box to prompt for the joystick on the desktop side
+                var gameControllerConfigs = Directory.GetFiles(VariableStorage.AssetDirectory + "\\JoyStickMappings");
+                var hidString = RawGameController.RawGameControllers[0].HardwareVendorId + "-" + RawGameController.RawGameControllers[0].HardwareProductId;
+                if (gameControllerConfigs != null && gameControllerConfigs.Contains(hidString))
+                {
+                    CJoyStick = new GenericJoyStick(RawGameController.RawGameControllers[0]);
+                    VariableStorage.ViewModel.ControllerStatus = "Connected to Gemeric controller";
+                }
+                else
+                {// Here we need to initialize the controller setup but because of async that needs to be done in InitializePage
+                    return 1;
+                }
+            }
+            else 
             {
                 var dialog = new Windows.UI.Popups.MessageDialog("Could not find a controller. Do you want to use a keyboard as joystick?");
 
-                dialog.Commands.Add(new Windows.UI.Popups.UICommand("No, onnect to contoller") { Id = 1 });
+                dialog.Commands.Add(new Windows.UI.Popups.UICommand("No, connect to contoller") { Id = 1 });
                 dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes, use my keyboard") { Id = 0 });
 
                 var result = await dialog.ShowAsync();
@@ -189,6 +207,7 @@ namespace BattleBotClientWin10IoT.JoySticks
 
                 }
             }
+            return null;
         }
     }
 }
