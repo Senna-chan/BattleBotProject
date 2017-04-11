@@ -1,24 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Gaming.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.ViewModels;
-using System.Diagnostics;
 using System.Threading;
-using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 
@@ -41,7 +28,7 @@ namespace BattleBotClientWin10IoT.Views
             new Task(MapInput, CancellationToken.None, TaskCreationOptions.LongRunning).Start();
         }
 
-        public void MapInput()
+        public async void MapInput()
         {
             var controller = RawGameController.RawGameControllers.First();
             double[] axis = new double[controller.AxisCount];
@@ -52,6 +39,7 @@ namespace BattleBotClientWin10IoT.Views
             GameControllerSwitchPosition[] oldswitches = new GameControllerSwitchPosition[controller.SwitchCount];
             int setupCount = 0;
             int counter = 0;
+            int firstFoundPosition=-1;
             while (true)
             {
                 controller.GetCurrentReading(buttons, switches, axis);
@@ -59,54 +47,47 @@ namespace BattleBotClientWin10IoT.Views
                 switch (setupCount)
                 {
                     case 0:
-                        foreach (var axiss in axis)
-                        {
-                            var roundedaxis = Math.Round(axiss, 2);
-                            if (roundedaxis > 0.9 || roundedaxis < 0.1 && roundedaxis != oldaxis[counter])
-                            {
-                                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                {
-                                    SetupControllerViewModel.SpeedAxis = counter;
-                                });
-                            }
-                            counter++;
-                        }
-                        break;
                     case 1:
-                        foreach (var axiss in axis)
-                        {
-                            if (axiss > 0.9 || axiss < 0.1)
-                            {
-                                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                {
-                                    SetupControllerViewModel.TurnAxis = counter;
-                                });
-                            }
-                            counter++;
-                        }
-                        break;
                     case 2:
-                        foreach (var axiss in axis)
-                        {
-                            if (axiss > 0.9 || axiss < 0.1)
-                            {
-                                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                {
-                                    SetupControllerViewModel.PanAxis = counter;
-                                });
-                            }
-                            counter++;
-                        }
-                        break;
                     case 3:
                         foreach (var axiss in axis)
                         {
-                            if (axiss > 0.9 || axiss < 0.1)
+                            var roundedaxis = Math.Round(axiss, 1);
+                            if (roundedaxis > 0.9 || roundedaxis < 0.1 && roundedaxis != Math.Round(oldaxis[counter],1))
                             {
-                                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                                if (firstFoundPosition == counter)
                                 {
-                                    SetupControllerViewModel.TiltAxis = counter;
-                                });
+                                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                                        CoreDispatcherPriority.Normal, () =>
+                                        {
+                                            switch (setupCount)
+                                            {
+                                                case 0:
+                                                    SetupControllerViewModel.SpeedAxis = counter;
+                                                    setupCount++;
+                                                    firstFoundPosition = -1;
+                                                    break;
+                                                case 1:
+                                                    SetupControllerViewModel.TurnAxis = counter;
+                                                    setupCount++;
+                                                    firstFoundPosition = -1;
+                                                    break;
+                                                case 2:
+                                                    SetupControllerViewModel.PanAxis = counter;
+                                                    setupCount++;
+                                                    firstFoundPosition = -1;
+                                                    break;
+                                                case 3:
+                                                    SetupControllerViewModel.TiltAxis = counter;
+                                                    setupCount++;
+                                                    firstFoundPosition = -1;
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        });
+                                }
+                                firstFoundPosition = counter;
                             }
                             counter++;
                         }

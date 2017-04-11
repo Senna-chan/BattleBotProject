@@ -38,22 +38,34 @@ namespace BattleBotClientWin10IoT.JoySticks
                 CJoyStick.GetControllerData();
                 if (CJoyStick.GetServoLockButtonState() && VariableStorage.ViewModel.PanTiltLocking != 1)
                 {
-                    VariableStorage.ViewModel.PanTiltLocking = 1;
+                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        VariableStorage.ViewModel.PanTiltLocking = 1;
+                    });
                     VariableStorage.BattleBotCommunication.Send("SM:1");
                 }
                 else if(CJoyStick.GetServoLockButtonState() && VariableStorage.ViewModel.PanTiltLocking == 1)
                 {
-                    VariableStorage.ViewModel.PanTiltLocking = 0;
+                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        VariableStorage.ViewModel.PanTiltLocking = 0;
+                    });
                     VariableStorage.BattleBotCommunication.Send("SM:0");
                 }
                 if (CJoyStick.GetServoStabalizeButtonState() && VariableStorage.ViewModel.PanTiltLocking != 2)
                 {
-                    VariableStorage.ViewModel.PanTiltLocking = 2;
+                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        VariableStorage.ViewModel.PanTiltLocking = 2;
+                    });
                     VariableStorage.BattleBotCommunication.Send("SM:2");
                 }
                 else if(CJoyStick.GetServoStabalizeButtonState() && VariableStorage.ViewModel.PanTiltLocking == 2)
                 {
-                    VariableStorage.ViewModel.PanTiltLocking = 0;
+                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        VariableStorage.ViewModel.PanTiltLocking = 0;
+                    });
                     VariableStorage.BattleBotCommunication.Send("SM:0");
                 }
                 if (CJoyStick.GetSpeedUpGearButtonState() && VariableStorage.ViewModel.SpeedGear != 4)
@@ -154,13 +166,15 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public async Task<int?> ConnectToAJoystick()
         {
-            await Task.Delay(5000);
-            if (Gamepad.Gamepads.Count != 0)
+            var gamepads = Gamepad.Gamepads;
+            var rawGamepads = RawGameController.RawGameControllers;
+            await Task.Delay(2000);
+            if (gamepads.Count == 1)
             {
                 CJoyStick = new XInputJoyStick(Gamepad.Gamepads[0]);
                 VariableStorage.ViewModel.ControllerStatus = "Connected to XInput controller";
             }
-            else if(RawGameController.RawGameControllers.Count == 1)
+            else if(rawGamepads.Count != 1)
             {
                 // TODO: Make a box to prompt for the joystick on the desktop side
                 var gameControllerConfigs = Directory.GetFiles(VariableStorage.AssetDirectory + "\\JoyStickMappings");
@@ -190,10 +204,25 @@ namespace BattleBotClientWin10IoT.JoySticks
                 }
                 else
                 {
-                    if (Gamepad.Gamepads.Count != 0)
+                    if (gamepads.Count == 1)
                     {
                         CJoyStick = new XInputJoyStick(Gamepad.Gamepads[0]);
                         VariableStorage.ViewModel.ControllerStatus = "Connected to XInput controller";
+                    }
+                    else if (rawGamepads.Count == 1)
+                    {
+                        // TODO: Make a box to prompt for the joystick on the desktop side
+                        var gameControllerConfigs = Directory.GetFiles(VariableStorage.AssetDirectory + "\\JoyStickMappings");
+                        var hidString = RawGameController.RawGameControllers[0].HardwareVendorId + "-" + RawGameController.RawGameControllers[0].HardwareProductId;
+                        if (gameControllerConfigs != null && gameControllerConfigs.Contains(hidString))
+                        {
+                            CJoyStick = new GenericJoyStick(RawGameController.RawGameControllers[0]);
+                            VariableStorage.ViewModel.ControllerStatus = "Connected to Gemeric controller";
+                        }
+                        else
+                        {// Here we need to initialize the controller setup but because of async that needs to be done in InitializePage
+                            return 1;
+                        }
                     }
                     else
                     {
