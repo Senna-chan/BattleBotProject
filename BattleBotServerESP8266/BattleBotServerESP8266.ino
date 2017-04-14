@@ -259,7 +259,7 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	int leftMotorSpeed = 0;
 	int rightMotorSpeed = 0;
 	Debug.println(sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed));
-	if (sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed) == 2){
+	if (sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed) != 2){
 		if(leftMotorSpeed > 200 || rightMotorSpeed > 200 || leftMotorSpeed < 0 || rightMotorSpeed < 0)
 		{
 			Debug.println("Speeds received are not valid");
@@ -279,7 +279,7 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	{
 		Debug.println("Motorspeed was not valid");
 	}
-	if (sprintf(ServoSpeeds, "%i,%i", pan, tilt)==2){
+	if (sprintf(ServoSpeeds, "%i,%i", pan, tilt)!=2){
 		if(pan > 180 || tilt > 180)
 		{
 			Debug.println("Servo positions received are not valid");

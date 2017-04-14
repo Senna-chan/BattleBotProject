@@ -1,6 +1,7 @@
 ﻿using BattleBotClientWin10IoT.Helpers;
 using BattleBotClientWin10IoT.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -166,7 +167,12 @@ namespace BattleBotClientWin10IoT.JoySticks
 
         public async Task<int?> ConnectToAJoystick()
         {
-            var gamepads = Gamepad.Gamepads;
+            List<Gamepad> gamepads = new List<Gamepad>();
+            foreach (var gamepad in Gamepad.Gamepads)
+            {
+                
+            }
+            
             var rawGamepads = RawGameController.RawGameControllers;
             await Task.Delay(2000);
             if (gamepads.Count == 1)
