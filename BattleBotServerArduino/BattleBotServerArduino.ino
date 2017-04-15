@@ -7,11 +7,6 @@
 // the setup function runs once when you press reset or power the board
 
 #include <TimedAction.h>
-#include <Adafruit_BMP085_U.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_L3GD20_U.h>
-#include <Adafruit_LSM303_U.h>
-#include <MahonyAHRS.h>
 #include <Servo.h>
 #include <Wire.h>
 #include "BattleBotComBytes.h"
@@ -31,12 +26,6 @@ int DC1MotorSpeed, DC2MotorSpeed, pan, tilt;
 
 DualVNH5019MotorShield Motors = DualVNH5019MotorShield(32, 34, 30, A0, 33, 35, 31, A1);
 Servo panServo, tiltServo, shootServo;
-float roll, heading, pitch;
-
-// Create sensor instances.
-Adafruit_L3GD20_Unified       gyro(20);
-Adafruit_LSM303_Accel_Unified accel(30301);
-Adafruit_LSM303_Mag_Unified   mag(30302);
 
 byte M1Current, M2Current;
 
@@ -47,66 +36,9 @@ unsigned long currentMillis = millis();
 bool clientConnected;
 byte buffer[10];
 
-float mag_offsets[3] = { -7.07F, 9.55F, -28.22F };
-
-float mag_softiron_matrix[3][3] = {
-	{ 0.955, 0.009, 0.004 },
-	{ 0.009, 0.930, -0.034 },
-	{ -0.004, -0.034, 1.127 } 
-};
-
-float mag_field_strength = 54.82F;
-
-Mahony filter;
 
 
 
-
-
-
-void getDofData()
-{
-	sensors_event_t gyro_event;
-	sensors_event_t accel_event;
-	sensors_event_t mag_event;
-	// Get new data samples
-	gyro.getEvent(&gyro_event);
-	accel.getEvent(&accel_event);
-	mag.getEvent(&mag_event);
-
-	// Apply mag offset compensation (base values in uTesla)
-	float x = mag_event.magnetic.x - mag_offsets[0];
-	float y = mag_event.magnetic.y - mag_offsets[1];
-	float z = mag_event.magnetic.z - mag_offsets[2];
-
-	// Apply mag soft iron error compensation
-	float mx = x * mag_softiron_matrix[0][0] + y * mag_softiron_matrix[0][1] + z * mag_softiron_matrix[0][2];
-	float my = x * mag_softiron_matrix[1][0] + y * mag_softiron_matrix[1][1] + z * mag_softiron_matrix[1][2];
-	float mz = x * mag_softiron_matrix[2][0] + y * mag_softiron_matrix[2][1] + z * mag_softiron_matrix[2][2];
-
-	// The filter library expects gyro data in degrees/s, but adafruit sensor
-	// uses rad/s so we need to convert them first (or adapt the filter lib
-	// where they are being converted)
-	float gx = gyro_event.gyro.x * 57.2958F;
-	float gy = gyro_event.gyro.y * 57.2958F;
-	float gz = gyro_event.gyro.z * 57.2958F;
-	// Update the filter
-	filter.update(gx, gy, gz,
-		accel_event.acceleration.x, accel_event.acceleration.y, accel_event.acceleration.z,
-		mx, my, mz);
-
-	roll = filter.getRoll();
-	pitch = filter.getPitch();
-	heading = filter.getYaw();
-
-	Serial.print(millis());
-	Serial.print(" - Orientation: ");
-	Serial.print(heading);
-	Serial.print(" ");
-	Serial.print(pitch);
-	Serial.print(" ");
-	Serial.println(roll);
-}
 
 void connectionHandler() // This is to make sure the tank doesn't go haywire when the ESP stops working
 {
@@ -124,8 +56,6 @@ void connectionHandler() // This is to make sure the tank doesn't go haywire whe
 	}
 }
 
-
-TimedAction dofThread = TimedAction(50, getDofData);
 TimedAction connectionThread = TimedAction(30, connectionHandler);
 
 
@@ -134,28 +64,6 @@ void setup()
 	Serial.begin(115200);
 	Serial3.begin(115200);
 
-	if (!gyro.begin())
-	{
-		/* There was a problem detecting the L3GD20 ... check your connections */
-		Serial.println("Ooops, no L3GD20 detected ... Check your wiring!");
-		while (1);
-	}
-
-	if (!accel.begin())
-	{
-		/* There was a problem detecting the LSM303DLHC ... check your connections */
-		Serial.println("Ooops, no L3M303DLHC accel detected ... Check your wiring!");
-		while (1);
-	}
-
-	if (!mag.begin())
-	{
-		/* There was a problem detecting the LSM303DLHC ... check your connections */
-		Serial.println("Ooops, no L3M303DLHC mag detected ... Check your wiring!");
-		while (1);
-	}
-
-	filter.begin(20);
 	panServo.attach(PANSERVOPIN, 400,2400);
 	tiltServo.attach(TILTSERVOPIN,650,2000);
 	panServo.write(90);
@@ -228,6 +136,10 @@ void MoveMotors()
 		}
 		Motors.setBrakes(0, 0);
 	}
+	Serial3.write(ESPMOTORSTAT);
+	Serial3.write(M1Current);
+	Serial3.write(M2Current);
+	Serial3.write(MESSAGEEND);
 }
 #pragma region ReadSerialData
 bool EndMessage()
@@ -348,6 +260,8 @@ void ReadClientData()
 void HandleESPData()
 {
 	byte c = Serial3.read();
+	if (c != MESSAGESTART) return;
+	c = Serial3.read();
 	Serial.print(c, HEX);
 	Serial.print(" ");
 	switch (c)
@@ -368,15 +282,9 @@ void HandleESPData()
 	case 0xFF:
 		break;
 	default:
-		Serial.println("");
-		Serial.print(c, HEX);
 		Serial.println(" is a unknown command");
 		break;
 	}
-	Serial3.write(ESPMOTORSTAT);
-	Serial3.write(M1Current);
-	Serial3.write(M2Current);
-	Serial3.write(MESSAGEEND);
 }
 
 

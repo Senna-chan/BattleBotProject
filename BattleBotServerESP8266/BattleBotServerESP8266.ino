@@ -2,6 +2,7 @@
 This code is for the ESP8266 that is gonna handle the wifi connection for the Arduino Mega
 */
 
+#include "sscanf.h"
 #include <SoftwareSerial.h>
 #include <RemoteDebug.h>
 #include <Wire.h>
@@ -11,7 +12,6 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "BattleBotComBytes.h"
-#include <stdio.h>
 
 #define ESPREADYPIN D3
 
@@ -161,6 +161,8 @@ void setup()
 	Serial.println();
 	digitalWrite(ESPREADYPIN, HIGH);
 	SerialArd.write((byte)0x00);
+	
+	SerialArd.write(MESSAGESTART);
 	SerialArd.write(COMCLIENT);
 	SerialArd.write(CLIENTESPREADY);
 	SerialArd.write(MESSAGEEND);
@@ -183,6 +185,7 @@ void HandleClientCommand(String clienttype, String clientaction)
 		Debug.print("Senpai noticed me from: ");
 		Debug.println(server.remoteIP());
 		SerialArd.write((byte)0x00);
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTCONNECT);
 		SerialArd.write(MESSAGEEND);
@@ -191,13 +194,13 @@ void HandleClientCommand(String clienttype, String clientaction)
 	if (clientaction == "disconnected")
 	{
 		byte hunderd = 100;
-		SerialArd.write((byte)0x00);
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMMOTOR);
 		SerialArd.write(hunderd);
 		SerialArd.write(hunderd);
 		SerialArd.write(MESSAGEEND);
 
-		SerialArd.write((byte)0x00);
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTDISCONNECT);
 		SerialArd.write(MESSAGEEND);
@@ -206,18 +209,21 @@ void HandleClientCommand(String clienttype, String clientaction)
 	if(clientaction == "paused")
 	{
 		byte hunderd = 100;
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMMOTOR);
 		SerialArd.write(hunderd);
 		SerialArd.write(hunderd);
 		SerialArd.write(MESSAGEEND);
 
+
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTPAUSED);
 		SerialArd.write(MESSAGEEND);
 	}
 	if(clientaction == "continued")
 	{
-		SerialArd.write((byte)0x00);
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMCLIENT);
 		SerialArd.write(CLIENTCONTINUED);
 		SerialArd.write(MESSAGEEND);
@@ -254,12 +260,11 @@ void HandleClientCommand(String clienttype, String clientaction)
 
 void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 {
-	byte pan=0; 
-	byte tilt=0;
+	int pan=0; 
+	int tilt=0;
 	int leftMotorSpeed = 0;
 	int rightMotorSpeed = 0;
-	Debug.println(sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed));
-	if (sprintf(MotorSpeeds, "%i,%i", leftMotorSpeed, rightMotorSpeed) != 2){
+	if (sscanf(MotorSpeeds, "%d,%d", &leftMotorSpeed, &rightMotorSpeed) == 2){
 		if(leftMotorSpeed > 200 || rightMotorSpeed > 200 || leftMotorSpeed < 0 || rightMotorSpeed < 0)
 		{
 			Debug.println("Speeds received are not valid");
@@ -269,6 +274,8 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 		Debug.print(leftMotorSpeed);
 		Debug.print(" m2speed: ");
 		Debug.println(rightMotorSpeed);
+
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMMOTOR);
 		SerialArd.write((byte)leftMotorSpeed);
 		SerialArd.write((byte)rightMotorSpeed);
@@ -279,12 +286,14 @@ void HandleMotorCommand(char* MotorSpeeds, char* ServoSpeeds)
 	{
 		Debug.println("Motorspeed was not valid");
 	}
-	if (sprintf(ServoSpeeds, "%i,%i", pan, tilt)!=2){
+
+	if (sscanf(ServoSpeeds, "%d,%d", &pan, &tilt)==2){
 		if(pan > 180 || tilt > 180)
 		{
 			Debug.println("Servo positions received are not valid");
 			return;
 		}
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMSERVO);
 		SerialArd.write((byte)pan);
 		SerialArd.write((byte)tilt);
@@ -300,6 +309,7 @@ void HandleGenericCommand(String command, String param)
 {
 	if(command == GENSTRSHOOT)
 	{
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMGENERIC);
 		SerialArd.write(GENSHOOT);
 		SerialArd.write(MESSAGEEND);
@@ -307,6 +317,7 @@ void HandleGenericCommand(String command, String param)
 	if(command == GENSTRSERVOMODE)
 	{
 		if (param.length() != 1) return;
+		SerialArd.write(MESSAGESTART);
 		SerialArd.write(COMGENERIC);
 		SerialArd.write(GENSERVOMODE);
 		SerialArd.write((byte)param[0]);
@@ -359,7 +370,7 @@ void HandleUDPData(byte Packet[])
 	arguments.toCharArray(arguments1, sizeof(arguments));
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	if (Debug.isActive(Debug.VERBOSE)) {
+	if (Debug.ative(Debug.VERBOSE)) {
 		Debug.print("Commandtype: ");
 		Debug.println(commandType);
 		Debug.print("Command: ");
@@ -435,7 +446,7 @@ void loop()
 	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		if (Debug.isActive(Debug.VERBOSE)) {
+		if (Debug.ative(Debug.VERBOSE)) {
 			Debug.print(millis() / 1000);
 			Debug.print(":Packet of ");
 			Debug.print(noBytes);

@@ -40,6 +40,7 @@
 #define CURRENTWARNING		0x01
 #define MOTORFAULT			0x02
 
+#define MESSAGESTART		0xFE
 #define MESSAGEEND			0xFF
 
 // String Data
