@@ -15,12 +15,12 @@ This code is for the ESP8266 that is gonna handle the wifi connection for the Ar
 
 #define ESPREADYPIN D3
 
-const char* ssid = "Natsuki-WiFi";
-const char* password = "Golden-Darkness";
+//const char* ssid = "Natsuki-WiFi";
+//const char* password = "Golden-Darkness";
 //const char* ssid = "Sitecom02A1ED";
 //const char* password = "X8FZNV3Z393R";
-//const char* ssid = "hijlkema2.4";
-//const char* password = "Ruudanita.1";
+const char* ssid = "hijlkema2.4";
+const char* password = "Ruudanita.1";
 
 const char* otapassword = "4453c907975672a2a27bcacd1ee850b8";
 const char* apssid = "BattleBotNetwork";
@@ -370,7 +370,7 @@ void HandleUDPData(byte Packet[])
 	arguments.toCharArray(arguments1, sizeof(arguments));
 	Debug.print("ReceivedString: ");
 	Debug.println(ReceivedString);
-	if (Debug.ative(Debug.VERBOSE)) {
+	if (Debug.isActive(Debug.VERBOSE)) {
 		Debug.print("Commandtype: ");
 		Debug.println(commandType);
 		Debug.print("Command: ");
@@ -446,7 +446,7 @@ void loop()
 	noBytes = server.parsePacket();
 	if (noBytes)
 	{
-		if (Debug.ative(Debug.VERBOSE)) {
+		if (Debug.isActive(Debug.VERBOSE)) {
 			Debug.print(millis() / 1000);
 			Debug.print(":Packet of ");
 			Debug.print(noBytes);
