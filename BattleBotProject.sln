@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotClientPSP", "BattleBotClientPSP\BattleBotClientPSP.vcxproj", "{87C8ACB4-C1C5-48AE-847D-AECC1D5CAFEF}"
 EndProject
@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerArduino", "B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BattleBotServerESP8266", "BattleBotServerESP8266\BattleBotServerESP8266.vcxproj", "{304D74C0-8CA9-4545-8858-0A93613A0E0C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlightController", "FlightController\FlightController.vcxproj", "{CC4238E2-43DE-4F33-94E2-3072889A573F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlightController", "FlightController\FlightController.vcxproj", "{F4355E29-A80A-42A9-9710-4FCC10877DBC}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -86,16 +86,16 @@ Global
 		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x86.ActiveCfg = Release|Win32
 		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x86.Build.0 = Release|Win32
 		{304D74C0-8CA9-4545-8858-0A93613A0E0C}.Release|x86.Deploy.0 = Release|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Debug|ARM.ActiveCfg = Debug|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Debug|x64.ActiveCfg = Debug|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Debug|x86.ActiveCfg = Debug|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Debug|x86.Build.0 = Debug|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Release|Any CPU.ActiveCfg = Release|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Release|ARM.ActiveCfg = Release|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Release|x64.ActiveCfg = Release|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Release|x86.ActiveCfg = Release|Win32
-		{CC4238E2-43DE-4F33-94E2-3072889A573F}.Release|x86.Build.0 = Release|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Debug|ARM.ActiveCfg = Debug|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Debug|x64.ActiveCfg = Debug|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Debug|x86.ActiveCfg = Debug|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Debug|x86.Build.0 = Debug|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Release|ARM.ActiveCfg = Release|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Release|x64.ActiveCfg = Release|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Release|x86.ActiveCfg = Release|Win32
+		{F4355E29-A80A-42A9-9710-4FCC10877DBC}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
